@@ -1,6 +1,10 @@
 ### React Frontend test for Scandiweb
 
+<<<<<<< HEAD
 **Note: Project is not finished yet**
+=======
+**Note: Project is not finished yet.**
+>>>>>>> 6d8bab5bfc31082cd6e0edc7560e738a201ff5f2
 
 This is my project for Scandiweb.
 
