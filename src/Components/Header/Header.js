@@ -1,7 +1,7 @@
 import React from 'react';
 import './Header.css'
 import Queries from '../../Queries';
-import logo from './logo.svg'
+import logo from '../../Images/logo.svg';
 import {NavLink} from 'react-router-dom';
 
 class Header extends React.PureComponent {
@@ -27,8 +27,8 @@ class Header extends React.PureComponent {
     render() {
 
         const {categoriesList} = this.state;
-        const {changeCurrentCategory} = this.props;
-
+        const {changeCurrentCategory, currentCategory} = this.props;
+        console.log(currentCategory)
       return (
        
         <nav>
@@ -36,7 +36,7 @@ class Header extends React.PureComponent {
                 <ul className='categories'>
                 {categoriesList.map((category) => (
                     <NavLink onClick={() => {changeCurrentCategory(category.category)}} to={'/category/'+category.category}>
-                    <li key={category.category} className='category-label'>
+                    <li key={category.category} className={(category.category === currentCategory) ? 'selected-category-label' : 'category-label'}>
                         {category.category}
                     </li>
                     </NavLink>

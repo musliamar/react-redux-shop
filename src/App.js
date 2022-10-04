@@ -25,11 +25,9 @@ class App extends React.PureComponent {
 
   render() {
 
-    console.log(this.state.currentCategory);
-
     return (
     <div className='App'>
-        <Header changeCurrentCategory={this.changeCurrentCategory} />
+        <Header currentCategory={this.state.currentCategory} changeCurrentCategory={this.changeCurrentCategory} />
         <main> 
         <Routes>
           <Route exact path={'/category/:category'} element={<CategoryPage currentCategory={this.state.currentCategory}/>} />
