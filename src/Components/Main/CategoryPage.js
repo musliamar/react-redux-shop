@@ -51,8 +51,18 @@ class CategoryPage extends React.PureComponent {
 
     render() {
 
+      const {choosenCurrency} = this.props;
       const {currentCategoryData} = this.state;
-      const categoryName = this.props.currentCategory[0].toUpperCase() + this.props.currentCategory.slice(1);
+      const categoryName = this.props.currentCategory[0] && this.props.currentCategory[0].toUpperCase() + this.props.currentCategory.slice(1);
+
+      const sampleProduct = currentCategoryData[0] && currentCategoryData[0].prices;
+      let currencyToShow;
+
+      for(const priceLabel in sampleProduct){
+        if(choosenCurrency.label === sampleProduct[priceLabel].currency.label){
+          currencyToShow = priceLabel;
+        }
+      }
 
       return (
         
@@ -64,10 +74,11 @@ class CategoryPage extends React.PureComponent {
                    <div className='image-wrapper'>
                     <img className='item-image' src={item.gallery[0]} alt={item.name} />
                    </div>
-                   {(this.state.overId && this.state.overId === item.id) ? <img src={CartIcon} className='cart-icon' alt="Add to cart" /> : null}
+                   {(this.state.overId && this.state.overId === item.id) ? 
+                   <img src={CartIcon} className='cart-icon' alt="Add to cart" /> : null}
                    <div className='item-content'>
-                    <div className='item-name'>{item.name}</div>
-                    <div className='item-price'>{item.prices[0].amount}</div>
+                    <div className='item-name'>{item.brand} {item.name}</div>
+                    <div className='item-price'>{choosenCurrency.symbol} {item.prices[currencyToShow] && item.prices[currencyToShow].amount}</div>
                    </div>
                  </div>
                 ))}

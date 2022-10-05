@@ -10,10 +10,12 @@ class App extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {   
-      currentCategory: 'clothes'
+      currentCategory: 'clothes',
+      choosenCurrency: ''
     } 
     
     this.changeCurrentCategory = this.changeCurrentCategory.bind(this);
+    this.changeCurrency = this.changeCurrency.bind(this);
 
   }
 
@@ -23,14 +25,29 @@ class App extends React.PureComponent {
       });
   }
 
+  changeCurrency(currency) {   
+
+    console.log(currency)
+    
+    this.setState({
+      choosenCurrency: currency,
+      });
+  }
+
   render() {
 
     return (
     <div className='App'>
-        <Header currentCategory={this.state.currentCategory} changeCurrentCategory={this.changeCurrentCategory} />
+        <Header 
+        changeCurrency={this.changeCurrency} 
+        currentCategory={this.state.currentCategory} 
+        changeCurrentCategory={this.changeCurrentCategory}
+        choosenCurrency={this.choosenCurrency} />
         <main> 
         <Routes>
-          <Route exact path={'/category/:category'} element={<CategoryPage currentCategory={this.state.currentCategory}/>} />
+          <Route exact 
+          path={'/category/:category'} 
+          element={<CategoryPage choosenCurrency={this.state.choosenCurrency} currentCategory={this.state.currentCategory}/>} />
         </Routes>
         </main>
     </div>

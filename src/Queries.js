@@ -15,11 +15,19 @@ const getCategory = async (category) => {
   
     const queryCategory = new Query("category", true)
       .addArgument("input", "CategoryInput", { title : category})
-      .addField(new Field("products", true).addFieldList(["id", "name", "brand", "attributes{id, items{value, id}}", "inStock", "gallery", "prices{amount}"]))    
+      .addField(new Field("products", true).addFieldList(["id", "name", "brand", "attributes{id, items{value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]))    
   
     return await client.post(queryCategory)
 }
 
-const Queries = {getCategoriesList, getCategory};
+const getAllCurrencies = async () => {
+  
+  const queryCurrencies = new Query("currencies", true)
+    .addFieldList(['symbol', 'label']);
+
+  return await client.post(queryCurrencies)
+}
+
+const Queries = {getCategoriesList, getCategory, getAllCurrencies};
 
 export default Queries;
