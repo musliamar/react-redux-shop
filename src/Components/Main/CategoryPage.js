@@ -1,18 +1,8 @@
 import React from 'react';
-import Query from '../../Queries';
 import './CategoryPage.css';
 import CartIcon from '../../Images/cart-icon.svg';
 
 class CategoryPage extends React.PureComponent {
-
-  constructor(props) {
-
-    super(props);
-    
-    this.state = {   
-      currentCategoryData: ''
-    }   
-  }
 
   state = {
     showBox: false,
@@ -23,39 +13,12 @@ class CategoryPage extends React.PureComponent {
     this.setState({ showBox: !this.state.showBox, overId: props });
   }
 
-    async componentDidMount() {
-        
-        const category = this.props.currentCategory === '' ? 'aaa' : this.props.currentCategory;
-        const result = await JSON.parse(JSON.stringify((await Query.getCategory(category))))
-        const data = Array.from(new Set(result.category.products.map(JSON.stringify))).map(JSON.parse);
-
-        this.setState({
-          currentCategoryData: data             
-        });      
-              
-      }
-
-      async componentDidUpdate(prevProps) {
-        
-        if(!(this.props.currentCategory === prevProps.currentCategory)){
-          const category = this.props.currentCategory === '' ? 'aaa' : this.props.currentCategory;
-          const result = await JSON.parse(JSON.stringify((await Query.getCategory(category))))
-          const data = Array.from(new Set(result.category.products.map(JSON.stringify))).map(JSON.parse);
-  
-          this.setState({
-            currentCategoryData: data             
-          });   
-        }
-              
-      }
-
     render() {
 
-      const {choosenCurrency} = this.props;
-      const {currentCategoryData} = this.state;
-      const categoryName = this.props.currentCategory[0] && this.props.currentCategory[0].toUpperCase() + this.props.currentCategory.slice(1);
+      const {choosenCurrency, currentCategoryData} = this.props;
+      const categoryName = this.props.currentCategory && this.props.currentCategory[0].toUpperCase() + this.props.currentCategory.slice(1);
 
-      const sampleProduct = currentCategoryData[0] && currentCategoryData[0].prices;
+      const sampleProduct = currentCategoryData && currentCategoryData[0].prices;
       let currencyToShow;
 
       for(const priceLabel in sampleProduct){
