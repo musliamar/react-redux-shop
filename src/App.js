@@ -17,7 +17,7 @@ class App extends React.PureComponent {
     :  {   
       currentCategory: '',
       choosenCurrency: '',
-      currencySwitcherOpened: false,
+      currentlyOpened: '',
       categoriesList: [],
       currenciesList: [],
       currentCategoryData: ''
@@ -25,8 +25,8 @@ class App extends React.PureComponent {
     
     this.changeCurrentCategory = this.changeCurrentCategory.bind(this);
     this.changeCurrency = this.changeCurrency.bind(this);
-    this.openCurrencySwitcher = this.openCurrencySwitcher.bind(this);
-    this.closeCurrencySwitcher = this.closeCurrencySwitcher.bind(this);
+    this.openBox = this.openBox.bind(this);
+    this.closeBox = this.closeBox.bind(this);
 
   }
 
@@ -47,17 +47,29 @@ class App extends React.PureComponent {
       });
   }
 
-  openCurrencySwitcher(){
-    this.setState({
-      ...this.state,
-      currencySwitcherOpened: true,
-      });
+  openBox(props){
+
+    console.log(props)
+
+    if(this.state.currentlyOpened === props){
+      this.setState({
+        ...this.state,
+        currentlyOpened: '',
+        });
+    }else{
+      this.setState({
+        ...this.state,
+        currentlyOpened: props,
+        });
+    }
+
+    console.log(this.state.currentlyOpened)
   }
 
-  closeCurrencySwitcher(){
+  closeBox(){
     this.setState({
       ...this.state,
-      currencySwitcherOpened: false,
+      currentlyOpened: '',
       });
   }
 
@@ -65,7 +77,7 @@ class App extends React.PureComponent {
     this.setState({
       ...this.state,
       choosenCurrency: currency,
-      currencySwitcherOpened: false,
+      currentlyOpened: '',
       });
   }
 
@@ -114,9 +126,9 @@ class App extends React.PureComponent {
         categoriesList={this.state.categoriesList}
         changeCurrency={this.changeCurrency} 
         currentCategory={this.state.currentCategory}
-        currencySwitcherOpened={this.state.currencySwitcherOpened}
-        openCurrencySwitcher={this.openCurrencySwitcher}
-        closeCurrencySwitcher={this.closeCurrencySwitcher}
+        currentlyOpened={this.state.currentlyOpened}
+        openBox={this.openBox}
+        closeBox={this.closeBox}
         changeCurrentCategory={this.changeCurrentCategory}
         choosenCurrency={this.state.choosenCurrency} />
         <main> 

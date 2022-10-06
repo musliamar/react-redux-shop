@@ -42,16 +42,51 @@ nav{
     font-size: 18px;
     font-weight: 500;
 	position: relative;
-    width: 24px;
+    width: 40px;
+    border-style: solid;
+    border-width: 8px;
+    border-color: #fff0;
 }
 
-.currency ul.other-currencies{
+.tooltip-text {
+    visibility: hidden;
+    bottom: 140%;
+    font-size: 12px;
+    background-color: #4848488f;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+}
+
+.currency-tooltip{
+    left: -37px;
+    width: 110px;
+}
+ 
+.cart-tooltip{
+    left: -27px;
+    width: 70px;
+}
+
+.currency:hover .tooltip-text {
+    visibility: visible;
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+    -o-animation: fadeIn 0.5s;
+    -ms-animation: fadeIn 0.5s;
+}
+ 
+.box{
     padding-bottom: 10px;
     padding-top: 10px;
     height: auto;
     overflow: hidden;
     width: 110px;
-    left: -25px;
+    left: -9px;
     top: 30px;
     background: #fff;
     position: absolute;
@@ -66,14 +101,14 @@ nav{
     filter: drop-shadow(0px 4px 35px rgba(168, 172, 176, 0.19));
 }
 
-.currency ul.other-currencies li {
+.box li {
 	display: block;
 	width: 100%;
     padding-left: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
-.currency ul.other-currencies li:hover{
+.box li:hover{
 	background: #eee;
 }
 
@@ -89,20 +124,30 @@ nav{
     width: 10px;
 }
 
+.cart:hover .tooltip-text {
+    visibility: visible;
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+    -o-animation: fadeIn 0.5s;
+    -ms-animation: fadeIn 0.5s;
+}
+
+.cart{
+    width: 20px;
+    position: relative;
+}
+
+.small-cart-icon{
+    width: 100%;
+}
+
 .display-none{
     display: none;
 }
 
 .display-block {
 	display: block
-}
-
-.cart{
-    width: 20px;
-}
-
-.small-cart-icon{
-    width: 100%;
 }
 
 .container{

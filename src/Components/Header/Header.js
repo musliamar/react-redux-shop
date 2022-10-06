@@ -11,11 +11,14 @@ class Header extends React.PureComponent {
     constructor(props) {
         super(props);
         this.currencyRef = React.createRef();
+        this.minicartRef = React.createRef();
     }
 
     componentDidUpdate(){
         window.onclick = (event) => {
-            if(!event.path.includes(this.currencyRef.current)){this.props.closeCurrencySwitcher()}
+            if(!event.path.includes(this.currencyRef.current)
+            && !event.path.includes(this.minicartRef.current))
+            {this.props.closeBox()}
         }
     }
 
@@ -27,11 +30,11 @@ class Header extends React.PureComponent {
             currenciesList,
             currentCategory, 
             choosenCurrency, 
-            openCurrencySwitcher,
-            currencySwitcherOpened,
+            openBox,
+            currentlyOpened,
             changeCurrency
             } = this.props;
-
+            console.log(currentlyOpened)
       return (
        
         <nav>
@@ -48,19 +51,28 @@ class Header extends React.PureComponent {
             <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
             <div className='actions'>
                 <div ref={this.currencyRef} className='currency'>
-                        <div onClick={openCurrencySwitcher} className='first-currency'>
+                        <span class="tooltip-text currency-tooltip">Change currency</span>
+                        <div onClick={() => {openBox('currency')}} className='first-currency'>
                             <span>{choosenCurrency && choosenCurrency.symbol}</span>
-                            {currencySwitcherOpened 
+                            {currentlyOpened === 'currency' 
                             ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
                             : <img className='currency-arrow-icon' src={ArrowDown} alt='Currency switcher arrow down'/>}
                         </div>
-                        <ul className={currencySwitcherOpened ? 'other-currencies display-block' : 'other-currencies display-none'}>
+                        <ul className={currentlyOpened === 'currency' ? 'box display-block' : 'box display-none'}>
                         {currenciesList && currenciesList.map((currency) => (
                         <li onClick={() => {changeCurrency(currency)}} key={currency.symbol}>{currency.symbol} {currency.label}</li>
                         ))}
                 </ul>
                 </div>
-                <div className='cart'><img className='small-cart-icon' src={SmallCartIcon} alt='View cart' /></div>
+                <div ref={this.minicartRef} className='cart'>
+                    <span class="tooltip-text cart-tooltip">View cart</span>
+                    <div onClick={() => {openBox('minicart')}}>
+                        <img className='small-cart-icon' src={SmallCartIcon} alt='View cart' />
+                    </div>
+                    <div className={currentlyOpened === 'minicart' ? 'box display-block' : 'box display-none'}>
+                        aaaaaaaa
+                    </div>
+                </div>
             </div>
             </div>
         </nav>
