@@ -49,8 +49,6 @@ class App extends React.PureComponent {
 
   openBox(props){
 
-    console.log(props)
-
     if(this.state.currentlyOpened === props){
       this.setState({
         ...this.state,
@@ -62,8 +60,6 @@ class App extends React.PureComponent {
         currentlyOpened: props,
         });
     }
-
-    console.log(this.state.currentlyOpened)
   }
 
   closeBox(){
@@ -132,6 +128,7 @@ class App extends React.PureComponent {
         changeCurrentCategory={this.changeCurrentCategory}
         choosenCurrency={this.state.choosenCurrency} />
         <main> 
+        {this.state.currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
         <Routes>
           <Route exact 
           path={'/category/:category'} 

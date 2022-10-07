@@ -33,7 +33,7 @@ class CategoryPage extends React.PureComponent {
             <h1 className='category-title'>{categoryName}</h1>
             <div className='items'>
               {currentCategoryData && currentCategoryData.map((item) => (
-                 <div id={item.id} className='item' onMouseEnter={event => this.handleBoxToggle(event, item.id)} onMouseLeave={this.handleBoxToggle}>
+                 <div key={item.id} className='item' onMouseEnter={event => this.handleBoxToggle(event, item.id)} onMouseLeave={this.handleBoxToggle}>
                    <div className='image-wrapper'>
                     <img className='item-image' src={item.gallery[0]} alt={item.name} />
                    </div>
