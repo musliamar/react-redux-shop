@@ -17,9 +17,12 @@ class App extends React.PureComponent {
     :  {   
       currentCategory: '',
       choosenCurrency: '',
+      currencyToShow: '',
+      itemsInBag: [],
       currentlyOpened: '',
       categoriesList: [],
       currenciesList: [],
+      numberOfItemsInBag: 0,
       currentCategoryData: ''
     } 
     
@@ -27,7 +30,7 @@ class App extends React.PureComponent {
     this.changeCurrency = this.changeCurrency.bind(this);
     this.openBox = this.openBox.bind(this);
     this.closeBox = this.closeBox.bind(this);
-
+    this.addInBag = this.addInBag.bind(this);
   }
 
   setState(state) {
@@ -77,6 +80,81 @@ class App extends React.PureComponent {
       });
   }
 
+  async addInBag(props) {
+
+    const productFetch = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(props))))
+    const product = productFetch.product;
+
+    let choosenAttributes = [];
+    const generateIdForCart = product.id.split('-')
+
+    for(const property in product){
+      if((property === 'attributes')){
+
+        const productProperty = product[property];
+
+        for(const attribute in productProperty){
+
+          const attributeToAdd = {[productProperty[attribute].id]: productProperty[attribute].items[0]}
+         
+          if(productProperty[attribute].items[0].id === ('Yes'|| 'No')){
+            const splitted = productProperty[attribute].id.split(' ');
+            const joined = splitted.join('-');
+            generateIdForCart.push(joined.toLowerCase())
+          }else{
+            generateIdForCart.push(productProperty[attribute].items[0].id.toLowerCase())
+          }
+
+          choosenAttributes.push(attributeToAdd)
+
+        }
+      }
+    }
+
+    product.defaultId = product.id;
+    product.id = generateIdForCart.join('-');
+    product.choosenAttributes = choosenAttributes;
+    product.quantity = 1;
+
+    const sampleProductPrice = product.prices;
+    let currencyToShow;
+
+    for(const priceLabel in sampleProductPrice){
+       if(this.state.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
+           currencyToShow = priceLabel;
+       }
+    }
+
+    let found = false;
+ 
+    for(const itemToFind in this.state.itemsInBag){
+
+      if(product.id === this.state.itemsInBag[itemToFind].id){
+
+        let items = this.state.itemsInBag;
+        items[itemToFind].quantity = items[itemToFind].quantity + 1;
+
+        found = true;
+
+        this.setState({
+          ...this.state,
+          itemsInBag: items,
+          currencyToShow: currencyToShow,
+          numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
+        })
+      }
+    }
+
+    if(!found){
+      this.setState({
+        ...this.state,
+        itemsInBag: [...this.state.itemsInBag, product],
+        currencyToShow: currencyToShow ,
+        numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
+      })
+    }
+  }
+
   setStateOnLoad(props){
 
     const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
@@ -84,13 +162,17 @@ class App extends React.PureComponent {
     if(!(localStorage === null)){
       for(const single in props){
         for(const singleInStorage in localStorage){
-          if(single === singleInStorage){ this.setState({...this.state, [singleInStorage]: localStorage[singleInStorage]})}
+          if(single === singleInStorage){ 
+            this.setState({...this.state, [singleInStorage]: localStorage[singleInStorage]})
+          } else {
+            this.setState({...this.state, [single]: props[single]})
+          }
         }
       }
     }else{
       this.setState(props); 
     }
-    }
+  }
  
   async componentDidMount() {
 
@@ -109,11 +191,33 @@ class App extends React.PureComponent {
          categoriesList: categoriesList, 
          currenciesList: currenciesList,
          choosenCurrency: currenciesList[0],
-         currentCategoryData: data                  
+         numberOfItemsInBag: 0,
+         currentCategoryData: data               
         })
   }
 
+  componentDidUpdate(prevProps){
+
+    if(this.state.choosenCurrency && !(this.state.choosenCurrency === prevProps.choosenCurrency)){
+      const sampleProductPrice = this.state.itemsInBag[0] && this.state.itemsInBag[0].prices;
+      let currencyToShow;
+
+      for(const priceLabel in sampleProductPrice){
+        if(this.state.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
+          currencyToShow = priceLabel;
+        }
+      }
+
+      this.setState({
+        ...this.state,
+        currencyToShow: currencyToShow,            
+      })
+    }
+  }
+
   render() {
+
+    console.log(this.state)
 
     return (
     <div className='App'>
@@ -124,6 +228,9 @@ class App extends React.PureComponent {
         currentCategory={this.state.currentCategory}
         currentlyOpened={this.state.currentlyOpened}
         openBox={this.openBox}
+        numberOfItemsInBag={this.state.numberOfItemsInBag}
+        itemsInBag={this.state.itemsInBag}
+        currencyToShow={this.state.currencyToShow}
         closeBox={this.closeBox}
         changeCurrentCategory={this.changeCurrentCategory}
         choosenCurrency={this.state.choosenCurrency} />
@@ -132,7 +239,13 @@ class App extends React.PureComponent {
         <Routes>
           <Route exact 
           path={'/category/:category'} 
-          element={<CategoryPage currentCategoryData={this.state.currentCategoryData} choosenCurrency={this.state.choosenCurrency} currentCategory={this.state.currentCategory}/>} />
+          element={
+          <CategoryPage 
+            currentCategoryData={this.state.currentCategoryData} 
+            choosenCurrency={this.state.choosenCurrency} 
+            currentCategory={this.state.currentCategory}
+            addInBag={this.addInBag}
+          />} />
         </Routes>
         </main>
     </div>

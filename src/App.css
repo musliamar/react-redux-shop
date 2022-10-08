@@ -5,7 +5,6 @@
 .App {
   display: flex;
   flex-direction: column;
-  margin-top: 30px;  
 }
 
 main {
@@ -15,11 +14,11 @@ main {
   margin-bottom: 30px;
 }
 
-#overlay {
-  position: absolute;
+main #overlay {
+  position: fixed;
   display: block;
   width: 100%;
-  top: 82px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;

@@ -15,7 +15,7 @@ class CategoryPage extends React.PureComponent {
 
     render() {
 
-      const {choosenCurrency, currentCategoryData} = this.props;
+      const {choosenCurrency, currentCategoryData, addInBag} = this.props;
       const categoryName = this.props.currentCategory && this.props.currentCategory[0].toUpperCase() + this.props.currentCategory.slice(1);
 
       const sampleProduct = currentCategoryData && currentCategoryData[0].prices;
@@ -33,15 +33,22 @@ class CategoryPage extends React.PureComponent {
             <h1 className='category-title'>{categoryName}</h1>
             <div className='items'>
               {currentCategoryData && currentCategoryData.map((item) => (
-                 <div key={item.id} className='item' onMouseEnter={event => this.handleBoxToggle(event, item.id)} onMouseLeave={this.handleBoxToggle}>
+                 <div key={item.id} name={item.id} className='item' onMouseEnter={event => this.handleBoxToggle(event, item.id)} onMouseLeave={this.handleBoxToggle}>
                    <div className='image-wrapper'>
                     <img className='item-image' src={item.gallery[0]} alt={item.name} />
                    </div>
                    {(this.state.overId && this.state.overId === item.id) ? 
-                   <img src={CartIcon} className='cart-icon' alt="Add to cart" /> : null}
+                      item.inStock 
+                      ?  <div onClick={() => {addInBag(item.id)}}>
+                            <img src={CartIcon} className='cart-icon' alt="Add to cart" />
+                          </div> 
+                      :  <div className='cart-icon out-of-stock'>
+                            <span>Out of stock</span>
+                          </div> 
+                   : null} 
                    <div className='item-content'>
                     <div className='item-name'>{item.brand} {item.name}</div>
-                    <div className='item-price'>{choosenCurrency.symbol} {item.prices[currencyToShow] && item.prices[currencyToShow].amount}</div>
+                    <div className='item-price'>{choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount}</div>
                    </div>
                  </div>
                 ))}

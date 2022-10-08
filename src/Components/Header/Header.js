@@ -13,7 +13,7 @@ class Header extends React.PureComponent {
         super(props);
         this.state = {   
             itemsInBag: [],
-            currencyToShow: '',
+            numberOfItemsInBag: 0,
         } 
 
         this.currencyRef = React.createRef();
@@ -27,11 +27,12 @@ class Header extends React.PureComponent {
                 <div key={item.id} className='single'>
                     <div className='attributes'>
                         <div className='brand-name'>
-                            {item.brand}<br></br>
-                            {item.name}
+                            <span>{item.brand}</span>
+                            <span>{item.name}</span>
                         </div>
                         <div className='price'>
-                            {this.props.choosenCurrency && this.props.choosenCurrency.symbol} {item.prices[this.state.currencyToShow] && item.prices[this.state.currencyToShow].amount}
+                        <span style={{fontWeight: 'normal', fontSize: 14}}>Per unit {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.prices[this.props.currencyToShow] && item.prices[this.props.currencyToShow].amount}</span>
+                        <span>Sum {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
                         </div>
                         {this.generateListOfAttributes(item.attributes)}  
                     </div>
@@ -40,7 +41,7 @@ class Header extends React.PureComponent {
                             +
                         </span>
                         <span className='attribute-number'>
-                            1
+                            {item.quantity}
                         </span>
                         <span className='attribute-option text plus-minus'>
                             -
@@ -74,58 +75,15 @@ class Header extends React.PureComponent {
         } 
 
     componentDidUpdate(prevProps){
+
         window.onclick = (event) => {
             if(!event.path.includes(this.currencyRef.current)
             && !event.path.includes(this.minicartRef.current))
             {this.props.closeBox()}
         }
-
-        const sampleProductPrice = this.state.itemsInBag[0] && this.state.itemsInBag[0].prices;
-        let currencyToShow;
- 
-        for(const priceLabel in sampleProductPrice){
-            if(this.props.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
-                currencyToShow = priceLabel;
-            }
-        }
- 
-        this.setState({
-         ...this.state,
-         currencyToShow: currencyToShow
-        })
     }
 
-    async componentDidMount() {
-
-        const itemsInBag = [];
-        const product1 = await JSON.parse(JSON.stringify((await Queries.getSingleProduct('huarache-x-stussy-le'))))
-        const product2 = await JSON.parse(JSON.stringify((await Queries.getSingleProduct('apple-iphone-12-pro'))))
-        const product3 = await JSON.parse(JSON.stringify((await Queries.getSingleProduct('jacket-canada-goosee'))))
-
-       itemsInBag.push(product1.product)
-       itemsInBag.push(product2.product)
-       itemsInBag.push(product3.product)
-
-       const sampleProductPrice = itemsInBag[0] && itemsInBag[0].prices;
-       let currencyToShow;
-
-       for(const priceLabel in sampleProductPrice){
-           if(this.props.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
-               currencyToShow = priceLabel;
-           }
-       }
-
-       this.setState({
-        itemsInBag: itemsInBag,
-        currencyToShow: currencyToShow
-       })
-  }
-
     render() {
-
-        const {
-            itemsInBag
-            } = this.state;
 
         const {
             changeCurrentCategory, 
@@ -133,12 +91,25 @@ class Header extends React.PureComponent {
             currenciesList,
             currentCategory, 
             choosenCurrency, 
+            currencyToShow,
             openBox,
+            itemsInBag,
             currentlyOpened,
+            numberOfItemsInBag,
             changeCurrency
             } = this.props;
 
-            console.log(this.state.itemsInBag)
+        let sumOfAllPricesRaw = 0;
+
+        for(const item in itemsInBag){
+
+            itemsInBag[item].sumPriceOfItem = itemsInBag[item].prices[currencyToShow].amount * itemsInBag[item].quantity;
+            itemsInBag[item].sumPriceOfItemFixed = itemsInBag[item].sumPriceOfItem.toFixed(2);
+
+            sumOfAllPricesRaw = sumOfAllPricesRaw + itemsInBag[item].sumPriceOfItem;
+        }
+
+        const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
 
       return (
        
@@ -170,33 +141,45 @@ class Header extends React.PureComponent {
                 </ul>
                 </div>
                 <div ref={this.minicartRef} className='cart'>
-                    <span className="tooltip-text cart-tooltip">View cart</span>
+                    <span className="tooltip-text cart-tooltip">My Bag</span>
                     <div onClick={() => {openBox('minicart')}}>
+                    {!(numberOfItemsInBag === 0) ? <span className="items-number">{numberOfItemsInBag}</span> : null}
                         <img className='small-cart-icon' src={SmallCartIcon} alt='Your bag' />
                     </div>
-                    <div className={currentlyOpened === 'minicart' ? 'box cart-box display-flex' : 'box display-none'}>
-                        <div className='minicart-main'>
+                    <div 
+                    className={currentlyOpened === 'minicart' 
+                    ? !(itemsInBag.length === 0) ? 'box cart-box display-flex' : 'box empty'
+                    : 'box display-none'}>
+                        {!(itemsInBag.length === 0) 
+                        ? <>
+                            <div className='minicart-main'>
                             <div className='title'>
-                                <span className='bold'>My Bag,</span> number of items 
+                                <span style={{display: 'inline'}} className='bold'>My Bag,</span> {numberOfItemsInBag} items 
                             </div>
                             
                                 <div className='items'>
                                     {this.generateListOfItems(itemsInBag)}
                                 </div>
                            
-                            <div className='minicart-total-price'>
-                                <span className='total-label'>aaaaaaaaaa</span>
-                                <span className='total-value'>aaaaaaaaa</span>
+                                <div className='total-price'>
+                                 <span>Total</span>
+                            <span>{choosenCurrency && choosenCurrency.symbol}{sumOfPrices}</span>
                             </div>
                         </div>
                         <div className='minicart-buttons'>
                             <div className='view-bag'>
-                            
+                            <span>View Bag</span>
                             </div>
                             <div className='checkout'>
-                            
+                            <span>Check out</span>
                             </div>
                         </div>
+                        </>
+                        : <div className='minicart-main'>
+                            <div className='title'>
+                            <span style={{display: 'inline'}}>Your bag is currently empty.</span>
+                            </div>
+                        </div>}
                     </div>
                 </div>
             </div>
