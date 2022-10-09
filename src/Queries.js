@@ -5,8 +5,8 @@ client.setEndpoint(REACT_APP_GRAPHQL_ENDPOINT);
 
 const getCategoriesList = async () => {
 
-    const queryCategoriesList = new Query("category", true)    
-    .addField(new Field("products", true).addFieldList(["category"]))    
+    const queryCategoriesList = new Query("categories", true)    
+    .addFieldList(["name"])    
    
     return await client.post(queryCategoriesList)
   }

@@ -23,27 +23,30 @@ class Header extends React.PureComponent {
 
     generateListOfItems(props){
 
-         return props && props.map((item) =>
-                <div key={item.id} className='single'>
+         return props && props.map((item) => {
+                
+                const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes};
+
+                return (<div key={item.id} className='single'>
                     <div className='attributes'>
                         <div className='brand-name'>
                             <span>{item.brand}</span>
                             <span>{item.name}</span>
                         </div>
                         <div className='price'>
-                        <span style={{fontWeight: 'normal', fontSize: 14}}>Per unit {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.prices[this.props.currencyToShow] && item.prices[this.props.currencyToShow].amount}</span>
-                        <span>Sum {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
+                        <span style={{fontWeight: 'normal', fontSize: 14}}>per unit {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.prices[this.props.currencyToShow] && item.prices[this.props.currencyToShow].amount}</span>
+                        <span>{this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
                         </div>
-                        {this.generateListOfAttributes(item.attributes)}  
+                        {this.props.generateListOfAttributes(attributes)}  
                     </div>
                     <div className='quantity'>
-                        <span className='attribute-option text plus-minus'>
+                        <span onClick={() => {this.props.increaseQuantityOfProduct(item.id)}} className='attribute-option text plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {item.quantity}
                         </span>
-                        <span className='attribute-option text plus-minus'>
+                        <span onClick={() => {this.props.removeFromBag(item.id)}} className='attribute-option text plus-minus'>
                             -
                         </span>
                     </div>
@@ -52,27 +55,8 @@ class Header extends React.PureComponent {
                             <img className='item-image' src={item.gallery && item.gallery[0]} />
                         </span>
                     </div>
-                </div>)
+                </div>)})
     }
-
-    generateListOfAttributes(attributes) {
-
-        return attributes && attributes.map((attribute, index) => 
-         
-            <div key={attribute.id} className='attribute'>
-                <span className='attribute-name'>{attribute.name}</span>
-                <div className='attribute-options'>
-                    {attribute.items && attribute.items.map((item) => {
-                    
-                    const color = item.value;
-
-                    return (attribute.type === 'swatch'
-                    ? <span key={item.id} style={{backgroundColor: color}} className='attribute-option swatch'></span>
-                    : <span key={item.id} className='attribute-option text'>{item.value}</span>
-                    )})}
-                </div>
-            </div>)
-        } 
 
     componentDidUpdate(prevProps){
 
@@ -117,11 +101,15 @@ class Header extends React.PureComponent {
             <div className='container'>
                 <nav className='categories'>
                 {categoriesList && categoriesList.map((category) => (
-                    <NavLink key={category.category} onClick={() => {changeCurrentCategory(category.category)}} to={'/category/'+category.category}>
-                    <li key={category.category} className={(category.category === currentCategory) ? 'category-label selected' : 'category-label'}>
-                        {category.category}
-                    </li>
+                    <li key={category.name}>
+                    <NavLink 
+                    key={category.name} 
+                    onClick={() => {changeCurrentCategory(category.name)}} 
+                    to={'/category/'+category.name}
+                    className={(category.name === currentCategory) ? 'category-label selected' : 'category-label'}>  
+                        {category.name}
                     </NavLink>
+                    </li>
                 ))}
                 </nav>
             <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
@@ -167,9 +155,9 @@ class Header extends React.PureComponent {
                             </div>
                         </div>
                         <div className='minicart-buttons'>
-                            <div className='view-bag'>
-                            <span>View Bag</span>
-                            </div>
+                            <NavLink onClick={this.props.closeBox} className='view-bag' to={'/cart'}>
+                                View Bag   
+                            </NavLink>
                             <div className='checkout'>
                             <span>Check out</span>
                             </div>

@@ -182,7 +182,7 @@ header{
 
 .cart-box{
     width: 325px;
-    height: 597px;
+    max-height: 597px;
     top: 52px;
     right: -120%;
     padding: 15px;
@@ -298,6 +298,18 @@ header{
     gap: 8px;
 }
 
+span.attribute-option.text.selected {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #1D1F22;;
+    background-color: #1D1F22;;
+    color: #fff;
+}
+
+span.attribute-option.swatch.selected {
+    border-color: #5ECE7B;
+}
+
 .minicart-main .attribute-option {
     width: 24px;
     height: 24px;
@@ -313,22 +325,28 @@ header{
     font-size: 14px;
     line-height: 160%;
     width: fit-content;
-    min-width: 24px;
+    min-width: 15px;
     block-size: fit-content;
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 .minicart-main .swatch {
     width: 18px;
     height: 18px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #ffffff00;
+    padding: 1px;
+    background-clip: content-box, padding-box;
 }
 
 .minicart-main span.attribute-number {
     text-align: right;
-    font-family: 'Source Sans Pro';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
@@ -336,12 +354,20 @@ header{
 }
 
 .minicart-main span.plus-minus {
-    font-size: 16px;
-    line-height: 150%;
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
     padding-left: 0px;
     padding-right: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;
 }
 
 .minicart-main .quantity {
@@ -353,7 +379,6 @@ header{
 
 .minicart-main .gallery{
     width: 121px;
-    height: 190px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -372,7 +397,7 @@ header{
     margin-top: 30px;
 }
 
-.minicart-buttons div {
+.minicart-buttons a {
     text-align: center;
     font-style: normal;
     height: 40px;
@@ -389,6 +414,7 @@ header{
 .view-bag {
     border-style: solid;
     border-width: 1px;
+    color: #000;
 }
 
 .checkout {
@@ -433,7 +459,7 @@ span.bold {
     display: flex;
 }
 
-.category-label{
+.category-label {
     font-style: normal;
     font-weight: 600;
     font-size: 16px;
@@ -449,9 +475,13 @@ span.bold {
     padding-top: 5px;
 }
 
-.selected {
+header nav .selected {
     color: #5ECE7B;
     border-bottom: solid;
     border-bottom-color: #5ECE7B;
     border-bottom-width: medium;
+}
+
+li {
+    list-style: none;
 }
