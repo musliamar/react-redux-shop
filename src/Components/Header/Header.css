@@ -455,6 +455,11 @@ span.bold {
     height: 41px;
 }
 
+.logo {
+    position: absolute;
+    left: 50%;
+}
+
 .categories{
     display: flex;
 }

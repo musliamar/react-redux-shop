@@ -1,19 +1,135 @@
 import React from 'react';
 import './CartPage.css';
-
+import ArrowLeft from '../../Images/arrow-left.svg';
+import ArrowRight from '../../Images/arrow-right.svg';
 
 class CartPage extends React.Component {
 
+    state = {
+        currentImages: [],
+        style: {objectPosition: '0% 0%'},
+        overId: ''
+      };
 
+
+      handleMouseMove = (event) => {
+        const { left, top, width, height } = event.target.getBoundingClientRect()
+        const x = (event.pageX - left) / width * 100
+        const y = (event.pageY - top) / height * 100
+        this.setState({style: {objectPosition: `${x}% ${y}%` }})
+      }
+
+      handleMouseLeave = () => {
+        this.setState({overId: '', style: {objectPosition: '0% 0%' }})
+      }
+
+      setOverId = (props) => {
+        this.setState({overId: props})
+      }
+
+    nextImage = (props) => {
+
+        const {currentImages} = this.state;
+        const {item, gallery} = props;
+
+        if(currentImages.length === 0){
+            const array = [];
+            array.push({ item: item, currentImage: 1 })
+            this.setState({currentImages: array});
+        }else{
+            for(const single in currentImages){
+
+                const array = currentImages;
+
+                if(currentImages[single].item === item){
+                    if((gallery.length - 1) === currentImages[single].currentImage){
+                        array.push({ item: item, currentImage: 0 })
+                    }else{
+                        const hold = currentImages[single].currentImage
+                        array.push({ item: item, currentImage: hold + 1 })
+                    }
+                    this.setState({currentImages: array});
+                    array.splice(single, 1);
+                }else{
+                    array.push({ item: item, currentImage: 1 })
+                    this.setState({currentImages: array});
+                    array.splice(single, 1);
+                }
+            }
+        }
+        this.setState({style: {objectPosition: '0% 0%' }})
+    }
+
+    previousImage = (props) => {
+
+        const {currentImages} = this.state;
+        const {item, gallery} = props;
+
+        if(currentImages.length === 0){
+            const array = [];
+            array.push({ item: item, currentImage: gallery.length - 1 })
+            this.setState({currentImages: array});
+        }else{
+            for(const single in currentImages){
+
+                const array = currentImages;
+
+                if(currentImages[single].item === item){
+                    if(currentImages[single].currentImage === 0){
+                        array.push({ item: item, currentImage: gallery.length - 1 })
+                    }else{
+                        const hold = currentImages[single].currentImage
+                        array.push({ item: item, currentImage: hold - 1 })
+                    }
+                    this.setState({currentImages: array});
+                    array.splice(single, 1);
+                }else{
+                    array.push({ item: item, currentImage: gallery.length - 1 })
+                    this.setState({currentImages: array});
+                    array.splice(single, 1);
+                }
+            }
+        }
+        this.setState({style: {objectPosition: '0% 0%' }})
+    } 
+      
     render() {
+        const {
+            itemsInBag, 
+            choosenCurrency, 
+            currencyToShow,
+            sumOfPrices,
+            numberOfItemsInBag,
+            generateListOfAttributes, 
+            increaseQuantityOfProduct,
+            removeFromBag } = this.props;
 
+            const taxRaw = 0.21 * sumOfPrices;
+            const tax = taxRaw.toFixed(2);
+
+            console.log(this.state)
 
       return (
         
         <div className='items-container'>
             <h1 className='cart-title'>Cart</h1>
             <div className='cart-page-items'>
-            {this.props.itemsInBag && this.props.itemsInBag.map((item) => {
+            {!(itemsInBag.length === 0)
+            ? itemsInBag && itemsInBag.map((item) => {
+
+                const toCompare = {item: item.id, gallery: item.gallery};
+
+                let imageToShow = 0;
+
+                if(!(this.state.currentImages.length === 0)){
+                    for(const single in this.state.currentImages){
+                        if(this.state.currentImages[single].item === item.id){
+                            imageToShow = this.state.currentImages[single].currentImage;
+                        }
+                    }
+                }else{
+                    imageToShow = 0;
+                }
                 
                 const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes};
 
@@ -27,29 +143,71 @@ class CartPage extends React.Component {
                             <span className='name'>{item.name}</span>
                         </div>
                         <div className='price'>
-                        <span style={{fontWeight: 'normal', fontSize: 14}}>per unit {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.prices[this.props.currencyToShow] && item.prices[this.props.currencyToShow].amount}</span>
-                        <span>{this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
+                        <span style={{fontWeight: 'normal', fontSize: 14}}>per unit {choosenCurrency && choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount}</span>
+                        <span>{choosenCurrency && choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
                         </div>
-                        {this.props.generateListOfAttributes(attributes)}  
+                        {generateListOfAttributes(attributes)}  
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => {this.props.increaseQuantityOfProduct(item.id)}} className='attribute-option text plus-minus'>
+                        <span onClick={() => {increaseQuantityOfProduct(item.id)}} className='attribute-option text plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {item.quantity}
                         </span>
-                        <span onClick={() => {this.props.removeFromBag(item.id)}} className='attribute-option text plus-minus'>
+                        <span onClick={() => {removeFromBag(item.id)}} className='attribute-option text plus-minus'>
                             -
                         </span>
                     </div>
                     <div className='gallery'>
-                        <span>
-                            <img className='item-image' src={item.gallery && item.gallery[0]} />
-                        </span>
+                         {item.gallery.length > 1
+                            ?   
+                            <>
+                            <div onMouseEnter={() => {this.setOverId(item.id)}} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                                <div>
+                                    <img 
+                                    alt={item.name+' product'}
+                                    onMouseMove={this.handleMouseMove}
+                                    style={(this.state.overId === item.id) ? this.state.style : null} 
+                                    className='item-image' 
+                                    src={item.gallery[imageToShow]} />
+                                </div>
+                                <div><div className='gallery-arrows'>
+                                    <img onClick={() => {this.previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
+                                    <img onClick={() => {this.nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
+                                 </div>
+                                </div>
+                            </div>
+                            </>
+                            : <div onMouseEnter={() => this.setOverId(item.id)} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                                <img 
+                                alt={item.name+' product'} 
+                                className='item-image' 
+                                onMouseMove={this.handleMouseMove} 
+                                style={(this.state.overId === item.id) ? this.state.style : null} 
+                                src={item.gallery[0]} />
+                            </div>} 
+                            
                     </div>
                 </div>
-                </>)})}
+                </>)})
+                : <span>Your cart is currently empty.</span>}
+                <div className='divider'></div>
+            </div>
+            <div className='summary'>
+                <div className='labels'>
+                    <span>Tax 21%:</span>
+                    <span>Quantity:</span>
+                    <span>Total:</span>
+                </div>
+                <div className='values'>
+                    <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{tax}</span>
+                    <span className='bold'>{numberOfItemsInBag}</span>
+                    <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{sumOfPrices}</span>
+                </div>
+            </div>
+            <div className='order'>
+                        <span>Order</span>
             </div>
         </div>
 

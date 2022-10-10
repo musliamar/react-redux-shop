@@ -68,11 +68,12 @@
         width: 100%;
         padding-bottom: 30px;
         padding-top: 30px;
+        gap: 10px;
     
 }
 
 .cart-page-items .attributes {
-    width: 75%;
+    width: 80%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -186,15 +187,74 @@ span.attribute-option.swatch.selected {
     padding-right: 0px;
 }
 
+.summary {
+    display: flex;
+    flex-direction: row;
+    padding-top: 30px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28px;
+    color: #1D1F22;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.summary .labels{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.summary .values{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order{
+        height: 45px;
+        width: 280px;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 120%;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #5ECE7B;
+        color: #fff;
+}
+
+.gallery-arrow-icon{
+    width: 24px;
+    height: 24px;
+}
+
+.gallery .gallery-arrows {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    position: absolute;
+    opacity: 85%;
+    bottom: 16px;
+    right: 16px;
+}
+
+.gallery .item-image-wrapper{
+    position: relative;
+}
+
 .cart-page-items .quantity {
     display: flex;
-    width: 25px;
+    width: 37px;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .cart-page-items .gallery{
-    width: 200px;
+    max-width: 200px;
+    width: 15%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -205,6 +265,10 @@ span.attribute-option.swatch.selected {
     height: 100%;
     object-fit: contain; 
 }
+
+.cart-page-items .item-image:hover {
+    object-fit:none;
+  }
 
 .minicart-buttons {
     display: flex;
@@ -243,3 +307,5 @@ span.attribute-option.swatch.selected {
 span.bold {
     font-weight: 700;
 }
+  
+  

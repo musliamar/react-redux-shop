@@ -5,16 +5,11 @@ import {NavLink} from 'react-router-dom';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import ArrowUp from '../../Images/arrow-up.svg';
 import ArrowDown from '../../Images/arrow-down.svg';
-import Queries from '../../Queries.js';
 
 class Header extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {   
-            itemsInBag: [],
-            numberOfItemsInBag: 0,
-        } 
 
         this.currencyRef = React.createRef();
         this.minicartRef = React.createRef();
@@ -75,25 +70,13 @@ class Header extends React.PureComponent {
             currenciesList,
             currentCategory, 
             choosenCurrency, 
-            currencyToShow,
+            sumOfPrices,
             openBox,
             itemsInBag,
             currentlyOpened,
             numberOfItemsInBag,
             changeCurrency
             } = this.props;
-
-        let sumOfAllPricesRaw = 0;
-
-        for(const item in itemsInBag){
-
-            itemsInBag[item].sumPriceOfItem = itemsInBag[item].prices[currencyToShow].amount * itemsInBag[item].quantity;
-            itemsInBag[item].sumPriceOfItemFixed = itemsInBag[item].sumPriceOfItem.toFixed(2);
-
-            sumOfAllPricesRaw = sumOfAllPricesRaw + itemsInBag[item].sumPriceOfItem;
-        }
-
-        const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
 
       return (
        

@@ -5,12 +5,12 @@ import CartIcon from '../../Images/cart-icon.svg';
 class CategoryPage extends React.PureComponent {
 
   state = {
-    showBox: false,
+    addToCart: false,
     overId: ''
   };
 
-  handleBoxToggle = (event, props) => {
-    this.setState({ showBox: !this.state.showBox, overId: props });
+  showAddToCart = (event, props) => {
+    this.setState({ addToCart: !this.state.addToCart, overId: props });
   }
 
     render() {
@@ -33,16 +33,16 @@ class CategoryPage extends React.PureComponent {
             <h1 className='category-title'>{categoryName}</h1>
             <div className='items'>
               {currentCategoryData && currentCategoryData.map((item) => (
-                 <div key={item.id} name={item.id} className='item' onMouseEnter={event => this.handleBoxToggle(event, item.id)} onMouseLeave={this.handleBoxToggle}>
+                 <div key={item.id} name={item.id} className='item' onMouseEnter={event => this.showAddToCart(event, item.id)} onMouseLeave={this.handleBoxToggle}>
                    <div className='image-wrapper'>
                     <img className='item-image' src={item.gallery[0]} alt={item.name} />
                    </div>
-                   {(this.state.overId && this.state.overId === item.id) ? 
+                  {(this.state.overId && this.state.overId === item.id) ? 
                       item.inStock 
-                      ?  <div onClick={() => {addInBag(item.id)}}>
+                      ?    <div onClick={() => {addInBag(item.id)}}>
                             <img src={CartIcon} className='cart-icon' alt="Add to cart" />
                           </div> 
-                      :  <div className='cart-icon out-of-stock'>
+                     :  <div className='cart-icon out-of-stock'>
                             <span>Out of stock</span>
                           </div> 
                    : null} 

@@ -281,7 +281,18 @@ class App extends React.PureComponent {
 
   render() {
 
-    console.log(this.state)
+    let sumOfAllPricesRaw = 0;
+    const {itemsInBag} = this.state;
+
+    for(const item in itemsInBag){
+
+        itemsInBag[item].sumPriceOfItem = itemsInBag[item].prices[this.state.currencyToShow].amount * itemsInBag[item].quantity;
+        itemsInBag[item].sumPriceOfItemFixed = itemsInBag[item].sumPriceOfItem.toFixed(2);
+
+        sumOfAllPricesRaw = sumOfAllPricesRaw + itemsInBag[item].sumPriceOfItem;
+    }
+
+    const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
 
     return (
     <div className='App'>
@@ -299,6 +310,7 @@ class App extends React.PureComponent {
         changeCurrentCategory={this.changeCurrentCategory}
         increaseQuantityOfProduct={this.increaseQuantityOfProduct}
         removeFromBag={this.removeFromBag}
+        sumOfPrices={sumOfPrices}
         generateListOfAttributes={this.generateListOfAttributes}
         choosenCurrency={this.state.choosenCurrency} />
         <main> 
@@ -331,6 +343,9 @@ class App extends React.PureComponent {
             removeFromBag={this.removeFromBag}
             generateListOfAttributes={this.generateListOfAttributes}
             itemsInBag={this.state.itemsInBag}
+            currencyToShow={this.state.currencyToShow}
+            sumOfPrices={sumOfPrices}
+            numberOfItemsInBag={this.state.numberOfItemsInBag}
           />} />
         </Routes>
         </main>
