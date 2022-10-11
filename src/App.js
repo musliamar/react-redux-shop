@@ -1,10 +1,11 @@
 import './App.css';
 import React from 'react';
 import {Routes, Route} from 'react-router-dom';
-import Header from './Components/Header/Header.js';
-import CategoryPage from './Components/Main/CategoryPage.js';
-import CartPage from './Components/Main/CartPage.js';
-import Queries from './Queries.js';
+import Header from './Components/Header/Header';
+import CategoryPage from './Components/Main/CategoryPage';
+import CartPage from './Components/Main/CartPage';
+import ProductPage from './Components/Main/ProductPage';
+import Queries from './Queries';
 
 class App extends React.PureComponent {
 
@@ -86,8 +87,7 @@ class App extends React.PureComponent {
 
   async addInBag(props) {
 
-    const productFetch = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(props))))
-    const product = productFetch.product;
+    const product = props;
 
     let choosenAttributes = [];
     const generateIdForCart = product.id.split('-')
@@ -260,6 +260,13 @@ class App extends React.PureComponent {
         })
   }
 
+  async getSingleProduct(props){
+    console.log(props)
+    const singleProductRaw = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(props))))
+    const product = Array.from(new Set(singleProductRaw.product.map(JSON.stringify))).map(JSON.parse);
+    return product;
+  }
+
   componentDidUpdate(prevProps){
 
     if(this.state.choosenCurrency && !(this.state.choosenCurrency === prevProps.choosenCurrency)){
@@ -332,6 +339,14 @@ class App extends React.PureComponent {
             currentCategoryData={this.state.currentCategoryData} 
             choosenCurrency={this.state.choosenCurrency} 
             currentCategory={this.state.currentCategory}
+            addInBag={this.addInBag}
+          />} />
+           <Route exact 
+          path={'/product/:product'} 
+          element={({match}) =>
+          <ProductPage 
+            choosenCurrency={this.state.choosenCurrency} 
+            match={match}
             addInBag={this.addInBag}
           />} />
            <Route exact 

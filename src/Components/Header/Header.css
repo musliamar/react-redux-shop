@@ -39,7 +39,7 @@
     background: #555; 
   }
 
-a {
+header nav a {
     text-decoration: none;
     color: #5ECE7B;
 }
@@ -71,6 +71,7 @@ header{
     border-bottom-style: solid;
     border-width: 8px;
     border-color: #fff0;
+    cursor: pointer;
 }
 
 .total-price{
@@ -202,6 +203,7 @@ header{
 
 .small-cart-icon{
     width: 100%;
+    cursor: pointer;
 }
 
 .items-number{
@@ -223,6 +225,7 @@ header{
     -o-radius: 50%;
     -ms-radius: 50%;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .minicart-main .title {
@@ -368,6 +371,7 @@ span.attribute-option.swatch.selected {
     justify-content: center;
     padding-left: 0px;
     padding-right: 0px;
+    cursor: pointer;
 }
 
 .minicart-main .quantity {
@@ -423,6 +427,7 @@ span.attribute-option.swatch.selected {
     border-color: #5ECE7B;
     background: #5ECE7B;
     color: #fff;
+    cursor: pointer;
 }
 
 .display-none{

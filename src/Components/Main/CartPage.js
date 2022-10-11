@@ -13,7 +13,9 @@ class CartPage extends React.Component {
 
 
       handleMouseMove = (event) => {
-        const { left, top, width, height } = event.target.getBoundingClientRect()
+
+        const { left, width, height } = event.target.getBoundingClientRect()
+        const top = event.target.getBoundingClientRect().top + window.scrollY;
         const x = (event.pageX - left) / width * 100
         const y = (event.pageY - top) / height * 100
         this.setState({style: {objectPosition: `${x}% ${y}%` }})
@@ -107,15 +109,15 @@ class CartPage extends React.Component {
             const taxRaw = 0.21 * sumOfPrices;
             const tax = taxRaw.toFixed(2);
 
-            console.log(this.state)
-
       return (
         
         <div className='items-container'>
             <h1 className='cart-title'>Cart</h1>
             <div className='cart-page-items'>
             {!(itemsInBag.length === 0)
-            ? itemsInBag && itemsInBag.map((item) => {
+            ? 
+            <>
+            {itemsInBag && itemsInBag.map((item) => {
 
                 const toCompare = {item: item.id, gallery: item.gallery};
 
@@ -190,11 +192,9 @@ class CartPage extends React.Component {
                             
                     </div>
                 </div>
-                </>)})
-                : <span>Your cart is currently empty.</span>}
+                </>)})}
                 <div className='divider'></div>
-            </div>
-            <div className='summary'>
+                <div className='summary'>
                 <div className='labels'>
                     <span>Tax 21%:</span>
                     <span>Quantity:</span>
@@ -208,6 +208,9 @@ class CartPage extends React.Component {
             </div>
             <div className='order'>
                         <span>Order</span>
+            </div>
+            </>
+                : <span>Your cart is currently empty.</span>}
             </div>
         </div>
 
