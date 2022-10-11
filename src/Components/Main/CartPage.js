@@ -111,7 +111,7 @@ class CartPage extends React.Component {
 
       return (
         
-        <div className='items-container'>
+        <div className='cart-container'>
             <h1 className='cart-title'>Cart</h1>
             <div className='cart-page-items'>
             {!(itemsInBag.length === 0)
@@ -151,13 +151,13 @@ class CartPage extends React.Component {
                         {generateListOfAttributes(attributes)}  
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => {increaseQuantityOfProduct(item.id)}} className='attribute-option text plus-minus'>
+                        <span onClick={() => {increaseQuantityOfProduct(item.id)}} className='attribute-option plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {item.quantity}
                         </span>
-                        <span onClick={() => {removeFromBag(item.id)}} className='attribute-option text plus-minus'>
+                        <span onClick={() => {removeFromBag(item.id)}} className='attribute-option plus-minus'>
                             -
                         </span>
                     </div>
@@ -206,7 +206,7 @@ class CartPage extends React.Component {
                     <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{sumOfPrices}</span>
                 </div>
             </div>
-            <div className='order'>
+            <div className='wide-green-button'>
                         <span>Order</span>
             </div>
             </>

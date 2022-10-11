@@ -19,7 +19,7 @@ class App extends React.PureComponent {
     :  {   
       currentCategory: '',
       choosenCurrency: '',
-      currencyToShow: '',
+      currencyToShow: 0,
       itemsInBag: [],
       currentlyOpened: '',
       categoriesList: [],
@@ -114,15 +114,6 @@ class App extends React.PureComponent {
     product.choosenAttributes = choosenAttributes;
     product.quantity = 1;
 
-    const sampleProductPrice = product.prices;
-    let currencyToShow;
-
-    for(const priceLabel in sampleProductPrice){
-       if(this.state.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
-           currencyToShow = priceLabel;
-       }
-    }
-
     let found = false;
  
     for(const itemToFind in this.state.itemsInBag){
@@ -134,7 +125,6 @@ class App extends React.PureComponent {
         this.setState({
           ...this.state,
           itemsInBag: items,
-          currencyToShow: currencyToShow,
           numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
         })
       }
@@ -144,7 +134,6 @@ class App extends React.PureComponent {
       this.setState({
         ...this.state,
         itemsInBag: [...this.state.itemsInBag, product],
-        currencyToShow: currencyToShow ,
         numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
       })
     }
@@ -191,13 +180,13 @@ class App extends React.PureComponent {
 
     if(!(localStorage === null)){
       for(const single in props){
-        for(const singleInStorage in localStorage){
-          if(single === singleInStorage){ 
-            this.setState({...this.state, [singleInStorage]: localStorage[singleInStorage]})
-          } else {
-            this.setState({...this.state, [single]: props[single]})
+          for(const singleInStorage in localStorage){
+            if(single === singleInStorage){ 
+              this.setState({...this.state, [singleInStorage]: localStorage[singleInStorage]})
+            } else {
+              this.setState({...this.state, [single]: props[single]})
+            }
           }
-        }
       }
     }else{
       this.setState(props); 
@@ -206,7 +195,7 @@ class App extends React.PureComponent {
 
   generateListOfAttributes(attributes) {
 
-    return attributes && attributes.attributes.map((attribute, index) => {
+    return attributes.attributes && attributes.attributes.map((attribute, index) => {
 
         for(const choosenAttribute in attributes.choosenAttributes){
             const attributeToCompare = attributes.choosenAttributes[choosenAttribute];
@@ -220,6 +209,7 @@ class App extends React.PureComponent {
             <span className='attribute-name'>{attribute.name}:</span>
             <div className='attribute-options'>
                 {attribute.items && attribute.items.map((item) => {
+
                 const color = item.value;
 
                 return (
@@ -250,10 +240,21 @@ class App extends React.PureComponent {
         const categoryData = await JSON.parse(JSON.stringify((await Queries.getCategory(category))))
         const data = Array.from(new Set(categoryData.category.products.map(JSON.stringify))).map(JSON.parse);
 
+        const sampleProductPrice = data[0].prices;
+
+        let currencyToShow;
+
+        for(const priceLabel in sampleProductPrice){
+          if(currenciesList[0].label === sampleProductPrice[priceLabel].currency.label){
+            currencyToShow = priceLabel;
+          }
+        }
+        
         this.setStateOnLoad({
          currentCategory: category,
          categoriesList: categoriesList, 
          currenciesList: currenciesList,
+         currencyToShow: currencyToShow,
          choosenCurrency: currenciesList[0],
          numberOfItemsInBag: 0,
          currentCategoryData: data               
@@ -261,7 +262,6 @@ class App extends React.PureComponent {
   }
 
   async getSingleProduct(props){
-    console.log(props)
     const singleProductRaw = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(props))))
     const product = Array.from(new Set(singleProductRaw.product.map(JSON.stringify))).map(JSON.parse);
     return product;
@@ -270,7 +270,7 @@ class App extends React.PureComponent {
   componentDidUpdate(prevProps){
 
     if(this.state.choosenCurrency && !(this.state.choosenCurrency === prevProps.choosenCurrency)){
-      const sampleProductPrice = this.state.itemsInBag[0] && this.state.itemsInBag[0].prices;
+      const sampleProductPrice = this.state.currentCategoryData[0] && this.state.currentCategoryData[0].prices;
       let currencyToShow;
 
       for(const priceLabel in sampleProductPrice){
@@ -281,7 +281,7 @@ class App extends React.PureComponent {
 
       this.setState({
         ...this.state,
-        currencyToShow: currencyToShow,            
+        currencyToShow: currencyToShow          
       })
     }
   }
@@ -323,34 +323,37 @@ class App extends React.PureComponent {
         <main> 
         {this.state.currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
         <Routes>
-        <Route exact 
-          path={'/'} 
+        <Route 
+          path='/'
+          element={
+          <CategoryPage 
+            currentCategoryData={this.state.currentCategoryData} 
+            choosenCurrency={this.state.choosenCurrency}
+            currencyToShow={this.state.currencyToShow} 
+            currentCategory={this.state.currentCategory}
+            addInBag={this.addInBag}
+          />} />
+          <Route  
+          path='/category/:category'
           element={
           <CategoryPage 
             currentCategoryData={this.state.currentCategoryData} 
             choosenCurrency={this.state.choosenCurrency} 
             currentCategory={this.state.currentCategory}
+            currencyToShow={this.state.currencyToShow}
             addInBag={this.addInBag}
           />} />
-          <Route exact 
-          path={'/category/:category'} 
+           <Route
+          path='/product/:product'
           element={
-          <CategoryPage 
-            currentCategoryData={this.state.currentCategoryData} 
-            choosenCurrency={this.state.choosenCurrency} 
-            currentCategory={this.state.currentCategory}
-            addInBag={this.addInBag}
-          />} />
-           <Route exact 
-          path={'/product/:product'} 
-          element={({match}) =>
           <ProductPage 
             choosenCurrency={this.state.choosenCurrency} 
-            match={match}
+            currencyToShow={this.state.currencyToShow}
             addInBag={this.addInBag}
+            generateListOfAttributes={this.generateListOfAttributes}
           />} />
-           <Route exact 
-          path={'/cart'} 
+           <Route 
+          path='/cart'
           element={
           <CartPage 
             choosenCurrency={this.state.choosenCurrency} 

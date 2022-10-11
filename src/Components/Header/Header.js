@@ -1,7 +1,7 @@
 import React from 'react';
 import './Header.css'
 import logo from '../../Images/logo.svg';
-import {NavLink} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import ArrowUp from '../../Images/arrow-up.svg';
 import ArrowDown from '../../Images/arrow-down.svg';
@@ -85,13 +85,13 @@ class Header extends React.PureComponent {
                 <nav className='categories'>
                 {categoriesList && categoriesList.map((category) => (
                     <li key={category.name}>
-                    <NavLink 
+                    <Link 
                     key={category.name} 
                     onClick={() => {changeCurrentCategory(category.name)}} 
                     to={'/category/'+category.name}
                     className={(category.name === currentCategory) ? 'category-label selected' : 'category-label'}>  
                         {category.name}
-                    </NavLink>
+                    </Link>
                     </li>
                 ))}
                 </nav>
@@ -131,16 +131,15 @@ class Header extends React.PureComponent {
                                 <div className='items'>
                                     {this.generateListOfItems(itemsInBag)}
                                 </div>
-                           
-                                <div className='total-price'>
+                        </div>
+                        <div className='total-price'>
                                  <span>Total</span>
                             <span>{choosenCurrency && choosenCurrency.symbol}{sumOfPrices}</span>
                             </div>
-                        </div>
                         <div className='minicart-buttons'>
-                            <NavLink onClick={this.props.closeBox} className='view-bag' to={'/cart'}>
+                            <Link onClick={this.props.closeBox} className='view-bag' to={'/cart'}>
                                 View Bag   
-                            </NavLink>
+                            </Link>
                             <div className='checkout'>
                             <span>Check out</span>
                             </div>

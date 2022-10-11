@@ -2,6 +2,35 @@
   font-family: 'Raleway';
 }
 
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-moz-keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-webkit-keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-o-keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-ms-keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+a{
+  text-decoration: none;
+}
+
 .App {
   display: flex;
   flex-direction: column;
@@ -30,4 +59,133 @@ main #overlay {
   -moz-animation: fadeIn 0.5s;
   -o-animation: fadeIn 0.5s;
   -ms-animation: fadeIn 0.5s;
+}
+
+.display-none{
+  display: none;
+}
+
+.display-flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.display-block {
+  display: block;
+}
+
+span.bold {
+  font-weight: 700;
+}
+
+li {
+  list-style: none;
+}
+
+.attributes {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.price {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 24px;
+  color: #1D1F22;
+
+}
+
+span.bold {
+  font-weight: 700;
+}
+
+.attribute {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+span.attribute-name {
+  font-family: 'Roboto Condensed';
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 18px;
+  color: #1D1F22;
+  text-transform: uppercase;
+  padding-top: 10px;
+}
+
+.attribute-options {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 8px;
+}
+
+span.attribute-option.text.selected {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #1D1F22;;
+  background-color: #1D1F22;;
+  color: #fff;
+}
+
+span.attribute-option.swatch.selected {
+  border-color: #5ECE7B;
+}
+
+.attribute-option {
+  width: 24px;
+  height: 24px;
+}
+
+.text {
+  min-width: 64px;
+  min-height: 45px;
+  border-style: solid;
+  border-width: 1px;
+  font-family: 'Source Sans Pro';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 160%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  width: fit-content;
+}
+
+.swatch {
+  width: 32px;
+  height: 32px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ffffff00;
+  padding: 1px;
+  background-clip: content-box, padding-box;
+}
+
+span.attribute-number {
+  text-align: right;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 160%;
+}
+
+.wide-green-button{
+  height: 45px;
+  width: 280px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 120%;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #5ECE7B;
+  color: #fff;
+  cursor: pointer;
 }

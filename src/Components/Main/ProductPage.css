@@ -1,0 +1,25 @@
+.product-page {
+    display: flex;
+    flex-direction: row;
+    margin-top: 70px;
+    gap: 30px;
+}
+
+.product-page .add-to-cart{
+        height: 45px;
+        width: 280px;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 120%;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #5ECE7B;
+        color: #fff;
+        cursor: pointer;
+}
+
+.product-page .single-image{
+    width: 600px;
+}

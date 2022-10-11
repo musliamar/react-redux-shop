@@ -1,17 +1,15 @@
-.total-price{
+.cart-container .total-price{
     margin-top: 30px;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
-    font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 18px;
 }
 
-.cart-title{
-    font-style: normal;
+.cart-container .cart-title{
     font-weight: 700;
     font-size: 32px;
     line-height: 40px;
@@ -21,8 +19,7 @@
     margin-bottom: 50px;
 }
 
-.cart-page-items .brand{
-    font-style: normal;
+.cart-container .cart-page-items .brand{
     font-weight: 600;
     font-size: 30px;
     line-height: 27px;
@@ -30,37 +27,39 @@
     margin-bottom: 16px;
 }
 
-.cart-page-items .name{
-    font-style: normal;
+.cart-container .cart-page-items .name{
     font-weight: 400;
     font-size: 30px;
     line-height: 27px;
     color: #1D1F22;
 }
 
-.cart-page-items {
+.cart-container .cart-page-items {
     width: 100%;
 }
 
-.cart-page-items .divider {
+.cart-container .cart-page-items .divider {
     width: 100%;
     height: 1px;
     background: #E5E5E5;
 }
 
-.cart-page-items .title {
-    font-style: normal;
+.cart-container .cart-page-items .title {
     font-weight: 500;
     font-size: 16px;
     line-height: 160%;
     color: #1D1F22;
 }
 
-.cart-page-items span{
+.cart-container .cart-page-items .brand-name span{
     display: block;
 }
 
-.cart-page-items .single {
+.cart-container .cart-page-items .price span{
+    display: block;
+}
+
+.cart-container .cart-page-items .single {
     
         display: flex;
         flex-direction: row;
@@ -72,109 +71,11 @@
     
 }
 
-.cart-page-items .attributes {
-    width: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 8px;
-}
-
-.cart-page-items .price {
-    font-style: normal;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 24px;
-    color: #1D1F22;
-
-}
-
-.cart-page-items .attribute {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.cart-page-items span.attribute-name {
-    font-family: 'Roboto Condensed';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 18px;
-    line-height: 18px;
-    color: #1D1F22;
-    text-transform: uppercase;
-    padding-top: 10px;
-}
-
-.cart-page-items .attribute-options {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 8px;
-}
-
-span.attribute-option.text.selected {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #1D1F22;;
-    background-color: #1D1F22;;
-    color: #fff;
-}
-
-span.attribute-option.swatch.selected {
-    border-color: #5ECE7B;
-}
-
-.cart-page-items .attribute-option {
-    width: 24px;
-    height: 24px;
-}
-
-.cart-page-items .text {
+.cart-container .cart-page-items span.plus-minus {
     border-style: solid;
     border-width: 1px;
     text-align: center;
     font-family: 'Source Sans Pro';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 160%;
-    width: fit-content;
-    block-size: fit-content;
-    min-width: 25px;
-    min-height: 35px;
-    padding-right:10px;
-    padding-left: 10px;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-}
-
-.cart-page-items .swatch {
-    width: 18px;
-    height: 18px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #ffffff00;
-    padding: 1px;
-    background-clip: content-box, padding-box;
-}
-
-.cart-page-items span.attribute-number {
-    text-align: right;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 160%;
-}
-
-.cart-page-items span.plus-minus {
-    border-style: solid;
-    border-width: 1px;
-    text-align: center;
-    font-family: 'Source Sans Pro';
-    font-style: normal;
     font-weight: 300;
     font-size: 28px;
     width: 35px;
@@ -188,11 +89,10 @@ span.attribute-option.swatch.selected {
     cursor: pointer;
 }
 
-.summary {
+.cart-container .summary {
     display: flex;
     flex-direction: row;
     padding-top: 30px;
-    font-style: normal;
     font-weight: 400;
     font-size: 24px;
     line-height: 28px;
@@ -201,40 +101,25 @@ span.attribute-option.swatch.selected {
     margin-bottom: 15px;
 }
 
-.summary .labels{
+.cart-container .summary .labels{
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.summary .values{
+.cart-container .summary .values{
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.order{
-        height: 45px;
-        width: 280px;
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 120%;
-        text-transform: uppercase;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #5ECE7B;
-        color: #fff;
-        cursor: pointer;
-}
-
-.gallery-arrow-icon{
+.cart-container .gallery-arrow-icon{
     width: 24px;
     height: 24px;
     cursor: pointer;
 }
 
-.gallery .gallery-arrows {
+.cart-container .gallery .gallery-arrows {
     display: flex;
     flex-direction: row;
     gap: 8px;
@@ -244,18 +129,18 @@ span.attribute-option.swatch.selected {
     right: 16px;
 }
 
-.gallery .item-image-wrapper{
+.cart-container .gallery .item-image-wrapper{
     position: relative;
 }
 
-.cart-page-items .quantity {
+.cart-container .cart-page-items .quantity {
     display: flex;
     width: 37px;
     flex-direction: column;
     justify-content: space-between;
 }
 
-.cart-page-items .gallery{
+.cart-container .cart-page-items .gallery{
     max-width: 200px;
     width: 15%;
     display: flex;
@@ -263,27 +148,25 @@ span.attribute-option.swatch.selected {
     justify-content: space-between;
 }
 
-.cart-page-items .item-image{
+.cart-container .cart-page-items .item-image{
     width: 100%;
     height: 100%;
     object-fit: contain; 
     cursor: zoom-in;
 }
 
-.cart-page-items .item-image:hover {
+.cart-container .cart-page-items .item-image:hover {
     object-fit: none;
   }
 
-.minicart-buttons {
+  .cart-container .minicart-buttons {
     display: flex;
     flex-direction: row;
     gap: 12px;
     margin-top: 30px;
 }
 
-.minicart-buttons div {
-    text-align: center;
-    font-style: normal;
+.cart-container .minicart-buttons div {
     height: 40px;
     width: 50%;
     font-weight: 600;
@@ -295,21 +178,16 @@ span.attribute-option.swatch.selected {
     align-items: center;
 }
 
-.view-bag {
+.cart-container .view-bag {
     border-style: solid;
     border-width: 1px;
 }
 
-.checkout {
+.cart-container .checkout {
     border-style: solid;
     border-width: 1px;
     border-color: #5ECE7B;
     background: #5ECE7B;
     color: #fff;
 }
-
-span.bold {
-    font-weight: 700;
-}
-  
   

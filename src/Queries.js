@@ -32,7 +32,7 @@ const getSingleProduct = async (product) => {
   
   const querySingleProduct = new Query("product", true)
   .addArgument("id", "String!", product)
-  .addFieldList(["id", "name", "brand", "attributes{id, name, type, items{displayValue, value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]);   
+  .addFieldList(["id", "name", "description", "brand", "attributes{id, name, type, items{displayValue, value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]);   
 
   return await client.post(querySingleProduct)
 }

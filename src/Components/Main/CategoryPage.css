@@ -1,14 +1,10 @@
-a{
-  text-decoration: none;
-}
-
 .items-container{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-.items{
+.items-container .items{
     display: flex;
     flex-flow: row wrap;
     justify-content: flex-start;
@@ -17,7 +13,7 @@ a{
     width: 100%;
 }
 
-.item{
+.items-container .item{
   position: relative;
   display: flex;
   flex-direction: column;
@@ -27,20 +23,20 @@ a{
   width: 27%;
 }
 
-.image-wrapper {
+.items-container .image-wrapper {
   width: 100%;
   height: 100%;
   margin-bottom: 25px;
   z-index: -1;
 }
 
-.item-image{
+.items-container .item-image{
     width: 100%;
     max-height: 300px;
     object-fit: contain;
 }
 
-.item-name{
+.items-container .item-name{
   font-weight: 300;
   font-size: 18px;
   line-height: 160%;
@@ -49,44 +45,18 @@ a{
   color: #1D1F22;
 }
 
-.item-price{
-  font-style: normal;
+.items-container .item-price{
   font-weight: 500;
   font-size: 18px;
   line-height: 160%;
   color: #1D1F22;;
 }
 
-.item:hover{
+.items-container .item:hover{
     box-shadow: 0px 4px 35px rgba(143, 146, 150, 0.19);
 }
-
-@keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-
-  @-moz-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
   
-  @-webkit-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  
-  @-o-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  
-  @-ms-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  
-.cart-icon {
+.items-container .cart-icon {
     width: 50px;
     height: 50px;
     position: absolute;
@@ -100,7 +70,7 @@ a{
     cursor: pointer;
 }
 
-.out-of-stock{
+.items-container .out-of-stock{
     display: flex;
     justify-content: center;
     align-content: center;
@@ -119,10 +89,9 @@ a{
     border-radius: 50%;
 }
 
-.category-title{
+.items-container .category-title{
     margin-top: 50px;
     margin-bottom: 100px;
-    font-style: normal;
     font-weight: 400;
     font-size: 42px;
     line-height: 160%;

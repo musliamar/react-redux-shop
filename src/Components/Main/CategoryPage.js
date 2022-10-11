@@ -1,9 +1,10 @@
 import React from 'react';
 import './CategoryPage.css';
 import CartIcon from '../../Images/cart-icon.svg';
-import {NavLink} from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import Queries from '../../Queries';
 
-class CategoryPage extends React.PureComponent {
+class CategoryPage extends React.Component {
 
   state = {
     addToCart: false,
@@ -16,17 +17,8 @@ class CategoryPage extends React.PureComponent {
 
     render() {
 
-      const {choosenCurrency, currentCategoryData, addInBag} = this.props;
+      const {choosenCurrency, currentCategoryData, currencyToShow, addInBag} = this.props;
       const categoryName = this.props.currentCategory && this.props.currentCategory[0].toUpperCase() + this.props.currentCategory.slice(1);
-
-      const sampleProduct = currentCategoryData && currentCategoryData[0].prices;
-      let currencyToShow;
-
-      for(const priceLabel in sampleProduct){
-        if(choosenCurrency.label === sampleProduct[priceLabel].currency.label){
-          currencyToShow = priceLabel;
-        }
-      }
 
       return (
         
@@ -49,11 +41,11 @@ class CategoryPage extends React.PureComponent {
                           </div> 
                    : null} 
                    <div className='item-content'>
-                   <NavLink 
+                   <Link 
                  key={item.id} 
                  to={'/product/'+item.id}>
                   <div className='item-name'>{item.brand} {item.name}</div>
-                 </NavLink>
+                 </Link>
                     <div className='item-price'>{choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount}</div>
                    </div>
                  </div>
