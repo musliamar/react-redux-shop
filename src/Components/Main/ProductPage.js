@@ -27,7 +27,7 @@ class ProductPage extends React.Component {
   } 
 
   addProductInBag(props){
-   window.location.reload(false);
+   /* window.location.reload(false); */
      this.props.addInBag(props);
   }
 
@@ -35,6 +35,8 @@ class ProductPage extends React.Component {
 
        const {choosenCurrency, currencyToShow, choosenAttributes, generateListOfAttributes, addInBag} = this.props;
       const {item} = this.state;
+
+      console.log(choosenAttributes);
 
       return (
 
@@ -79,7 +81,7 @@ class ProductPage extends React.Component {
             <span className='attribute-name'>Price:</span>
           <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
             </div>
-            <div onClick={() => {this.addProductInBag({item: item, choosenAttributes: choosenAttributes})}} className='wide-green-button'>
+            <div onClick={() => {this.addProductInBag({item: item})}} className='wide-green-button'>
           <span>Add to cart</span>
             </div>
             <div dangerouslySetInnerHTML={{ __html: item.description}} className='description'>

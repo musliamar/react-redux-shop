@@ -40,25 +40,29 @@ class CartPage extends React.Component {
             array.push({ item: item, currentImage: 1 })
             this.setState({currentImages: array});
         }else{
-            for(const single in currentImages){
+
+
+            currentImages.forEach((image) => {
 
                 const array = currentImages;
 
-                if(currentImages[single].item === item){
-                    if((gallery.length - 1) === currentImages[single].currentImage){
+                    if(image.item === item){
+                    if((gallery.length - 1) === image.currentImage){
                         array.push({ item: item, currentImage: 0 })
                     }else{
-                        const hold = currentImages[single].currentImage
+                        const hold = image.currentImage
                         array.push({ item: item, currentImage: hold + 1 })
                     }
                     this.setState({currentImages: array});
-                    array.splice(single, 1);
+                    array.splice(image, 1);
                 }else{
                     array.push({ item: item, currentImage: 1 })
                     this.setState({currentImages: array});
-                    array.splice(single, 1);
+                    array.splice(image, 1);
                 }
-            }
+                })
+
+        
         }
         this.setState({style: {objectPosition: '0% 0%' }})
     }
@@ -73,25 +77,25 @@ class CartPage extends React.Component {
             array.push({ item: item, currentImage: gallery.length - 1 })
             this.setState({currentImages: array});
         }else{
-            for(const single in currentImages){
+            currentImages.forEach((image) => {
 
                 const array = currentImages;
 
-                if(currentImages[single].item === item){
-                    if(currentImages[single].currentImage === 0){
+                if(image.item === item){
+                    if(image.currentImage === 0){
                         array.push({ item: item, currentImage: gallery.length - 1 })
                     }else{
-                        const hold = currentImages[single].currentImage
+                        const hold = image.currentImage
                         array.push({ item: item, currentImage: hold - 1 })
                     }
                     this.setState({currentImages: array});
-                    array.splice(single, 1);
+                    array.splice(image, 1);
                 }else{
                     array.push({ item: item, currentImage: gallery.length - 1 })
                     this.setState({currentImages: array});
-                    array.splice(single, 1);
+                    array.splice(image, 1);
                 }
-            }
+            })
         }
         this.setState({style: {objectPosition: '0% 0%' }})
     } 
@@ -125,11 +129,11 @@ class CartPage extends React.Component {
                 let imageToShow = 0;
 
                 if(!(this.state.currentImages.length === 0)){
-                    for(const single in this.state.currentImages){
-                        if(this.state.currentImages[single].item === item.cartId){
-                            imageToShow = this.state.currentImages[single].currentImage;
+                    this.state.currentImages.forEach((image) => {
+                        if(image.item === item.cartId){
+                            imageToShow = image.currentImage;
                         }
-                    }
+                    })
                 }else{
                     imageToShow = 0;
                 }

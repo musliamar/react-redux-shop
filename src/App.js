@@ -86,38 +86,42 @@ class App extends React.PureComponent {
   }
 
   increaseQuantityOfProduct(props){
-    for(const itemToFind in this.state.itemsInBag){
-      const itemsInBag = this.state.itemsInBag;
-      if(itemsInBag[itemToFind].cartId === props){
-        let items = this.state.itemsInBag;
-        items[itemToFind].quantity = items[itemToFind].quantity + 1;
 
-        this.setState({
-          ...this.state,
-          itemsInBag: items,
-          numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
-        })
+    const items = this.state.itemsInBag;
+
+    items.forEach((item) => {
+      
+      if(item.cartId === props){
+        item.quantity = item.quantity + 1;
       }
-    }
+    })
+
+    this.setState({
+      ...this.state,
+      itemsInBag: items,
+      numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
+    })
   }
 
   removeFromBag(props){
-    for(const itemToFind in this.state.itemsInBag){
-      const itemsInBag = this.state.itemsInBag;
 
-      if(itemsInBag[itemToFind].cartId === props){
-        if(itemsInBag[itemToFind].quantity > 1){
-          itemsInBag[itemToFind].quantity = itemsInBag[itemToFind].quantity - 1;
+    const items = this.state.itemsInBag;
+
+    items.forEach((item) => {
+
+      if(item.cartId === props){
+        if(item.quantity > 1){
+          item.quantity = item.quantity - 1;
         }else{
-          itemsInBag.splice(itemToFind, 1);
+          items.splice(item, 1);
         }
-        this.setState({
-          ...this.state,
-          itemsInBag: itemsInBag,
-          numberOfItemsInBag: this.state.numberOfItemsInBag - 1         
-        })
       }
-    }
+    })
+    this.setState({
+      ...this.state,
+      itemsInBag: items,
+      numberOfItemsInBag: this.state.numberOfItemsInBag - 1         
+    })
   }
 
   addInBag(props) {
@@ -129,37 +133,33 @@ class App extends React.PureComponent {
     let choosenAttributes = [];
     const generateIdForCart = product.id.split('-')
 
-    console.log(props.choosenAttributes)
-
-    if(!props.choosenAttributes || props.choosenAttributes.length === 0){
-      console.log('prvo')
-      for(const property in product){
-        if((property === 'attributes')){
-          const productProperty = product[property];
-          for(const attribute in productProperty){
-            const attributeToAdd = {[productProperty[attribute].id]: productProperty[attribute].items[0]}
-            if(productProperty[attribute].items[0].id === ('Yes'|| 'No')){
-              const splitted = productProperty[attribute].id.split(' ');
+    if(!this.state.choosenAttributes || this.state.choosenAttributes.length === 0){
+      Object.keys(product).forEach((item) => {
+        if((item === 'attributes')){
+          Object.values(product[item]).forEach((attribute) => {
+            const attributeToAdd = {[attribute.id]: attribute.items[0]}
+            if(attribute.items[0].id === ('Yes'|| 'No')){
+              const splitted = item[attribute].id.split(' ');
               const joined = splitted.join('-');
               generateIdForCart.push(joined.toLowerCase())
             }else{
-              generateIdForCart.push(productProperty[attribute].items[0].id.toLowerCase())
+              generateIdForCart.push(attribute.items[0].id.toLowerCase())
             }
             choosenAttributes.push(attributeToAdd)
-          }
+          })
         }
-      }
+      })
     }else{
-        choosenAttributes = props.choosenAttributes;
-        for(const attribute in choosenAttributes){
-          if(choosenAttributes[attribute].item.id === ('Yes'|| 'No')){
-            const splitted = choosenAttributes[attribute].id.split(' ');
+        choosenAttributes = this.state.choosenAttributes;
+        choosenAttributes.forEach((attribute) => {
+          if(attribute.item.id === ('Yes'|| 'No')){
+            const splitted = attribute.id.split(' ');
             const joined = splitted.join('-');
             generateIdForCart.push(joined.toLowerCase())
           }else{
-            generateIdForCart.push(choosenAttributes[attribute].item.id.toLowerCase())
+            generateIdForCart.push(attribute.item.id.toLowerCase())
           }
-        }
+        })
     }
 
     product.cartId = generateIdForCart.join('-');
@@ -167,33 +167,27 @@ class App extends React.PureComponent {
     product.choosenAttributes = choosenAttributes;
     product.quantity = 1;
 
-    console.log(product)
-
     let found = false;
  
-    for(const itemToFind in this.state.itemsInBag){
-      if(product.cartId === this.state.itemsInBag[itemToFind].cartId){
-        let items = this.state.itemsInBag;
-        console.log(items)
-        items[itemToFind].quantity = items[itemToFind].quantity + 1;
+    const items = this.state.itemsInBag;
 
-        console.log(items)
+    items.forEach((item) => {
+      if(item.cartId === product.cartId){
+        item.quantity = item.quantity + 1;
         found = true;
-
-        this.setState({
-          ...this.state,
-          itemsInBag: items,
-          choosenAttributes: [],
-          numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
-        })
       }
-    }
+    })
+
+    this.setState({
+      ...this.state,
+      itemsInBag: items,
+      numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
+    })
 
     if(!found){
       this.setState({
         ...this.state,
         itemsInBag: [...this.state.itemsInBag, product],
-        choosenAttributes: [],
         numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
       })
     }
@@ -386,9 +380,12 @@ class App extends React.PureComponent {
           element={
           <CategoryPage 
             defaultCategory={this.state.defaultCategory}
+            choosenCurrency={this.state.choosenCurrency} 
+            currencyToShow={this.state.currencyToShow}
+            addInBag={this.addInBag}
           />} />
            <Route  
-          path='/category/'
+          path='/category'
           element={
           <CategoryPage 
             message={'Please choose one category.'}

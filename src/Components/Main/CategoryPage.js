@@ -18,8 +18,8 @@ class CategoryPage extends React.Component {
     if(!this.props.message){
       console.log(this.props)
       const category = (this.props.defaultCategory || !this.props.params.category) ? this.props.defaultCategory : this.props.params.category
-      const data = await JSON.parse(JSON.stringify((await Queries.getCategory('all'))))
-      const categoryData = Array.from(new Set(data.category.products.map(JSON.stringify))).map(JSON.parse);
+      const data = await JSON.parse(JSON.stringify((await Queries.getCategory(category))))
+      const categoryData = !(data.category === null) ? Array.from(new Set(data.category.products.map(JSON.stringify))).map(JSON.parse) : null;
       console.log(categoryData)
       this.setState({
       ...this.state,
@@ -32,8 +32,8 @@ class CategoryPage extends React.Component {
     if(!(this.props.params.category === prevProps.params.category)){
       const category = (this.props.defaultCategory || !this.props.params.category) ? this.props.defaultCategory : this.props.params.category
       const data = await JSON.parse(JSON.stringify((await Queries.getCategory(category))))
-      const categoryData = Array.from(new Set(data.category.products.map(JSON.stringify))).map(JSON.parse);
-      console.log(categoryData)
+      const categoryData = !(data === null) ? Array.from(new Set(data.category.products.map(JSON.stringify))).map(JSON.parse) : null;
+    
       this.setState({
       ...this.state,
       categoryData: categoryData
