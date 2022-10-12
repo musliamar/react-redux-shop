@@ -55,7 +55,6 @@ header .total-price{
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
-    font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 18px;
@@ -205,7 +204,6 @@ header .items-number{
 }
 
 header .minicart-main .title {
-    font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 160%;
@@ -245,13 +243,11 @@ header .minicart-main .attributes {
 }
 
 header .minicart-main .brand-name {
-    font-style: normal;
     font-weight: 300;
     font-size: 16px;
 }
 
 header .minicart-main .price {
-    font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 160%;
@@ -315,8 +311,6 @@ header .minicart-buttons {
 }
 
 header .minicart-buttons a {
-    text-align: center;
-    font-style: normal;
     height: 40px;
     font-weight: 600;
     font-size: 14px;
@@ -375,7 +369,6 @@ header .categories{
 }
 
 header .category-label {
-    font-style: normal;
     font-weight: 600;
     font-size: 16px;
     line-height: 120%;

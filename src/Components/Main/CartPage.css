@@ -19,21 +19,6 @@
     margin-bottom: 50px;
 }
 
-.cart-container .cart-page-items .brand{
-    font-weight: 600;
-    font-size: 30px;
-    line-height: 27px;
-    color: #1D1F22;
-    margin-bottom: 16px;
-}
-
-.cart-container .cart-page-items .name{
-    font-weight: 400;
-    font-size: 30px;
-    line-height: 27px;
-    color: #1D1F22;
-}
-
 .cart-container .cart-page-items {
     width: 100%;
 }
@@ -49,14 +34,6 @@
     font-size: 16px;
     line-height: 160%;
     color: #1D1F22;
-}
-
-.cart-container .cart-page-items .brand-name span{
-    display: block;
-}
-
-.cart-container .cart-page-items .price span{
-    display: block;
 }
 
 .cart-container .cart-page-items .single {
@@ -89,7 +66,7 @@
     cursor: pointer;
 }
 
-.cart-container .summary {
+.cart-container .price-summary {
     display: flex;
     flex-direction: row;
     padding-top: 30px;
@@ -101,13 +78,22 @@
     margin-bottom: 15px;
 }
 
-.cart-container .summary .labels{
+.cart-container .summary{
+        width: 78%;
+        gap: 14px;
+}
+
+.cart-container .text {
+    font-size: 16px;
+}
+
+.cart-container .price-summary .labels{
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.cart-container .summary .values{
+.cart-container .price-summary .values{
     display: flex;
     flex-direction: column;
     gap: 8px;

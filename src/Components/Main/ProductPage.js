@@ -6,40 +6,57 @@ import Queries from '../../Queries';
 class ProductPage extends React.Component {
 
   state = {
-      item: ''
+      item: '',
+      overImage: '',
+      reload: false
+    }
+
+   handleMouseClick = (props) => {
+      this.setState({...this.state, overImage: props })
     }
 
   async componentDidMount() {
 
-    const productRaw = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(this.props.params.product))))
+    if(!this.props.message){
+      const productRaw = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(this.props.params.product))))
+      this.setState({
+      ...this.state,
+      item: productRaw.product
+      })
+    }
+  } 
 
-    this.setState({
-     item: productRaw.product
-     
-    })
+  addProductInBag(props){
+   window.location.reload(false);
+     this.props.addInBag(props);
   }
 
     render() {
 
-       const {choosenCurrency, currencyToShow, generateListOfAttributes, addinBag} = this.props;
-        const {item} = this.state;
+       const {choosenCurrency, currencyToShow, choosenAttributes, generateListOfAttributes, addInBag} = this.props;
+      const {item} = this.state;
 
       return (
-        !(item === null)
-        ?   <div key={item.id} className='product-page'>
+
+        this.props.message
+        ? <div>{this.props.message}</div>
+        : !(item === null)
+          ?   <div key={item.id} className='product-page'>
         <div className='gallery'>
             {item.gallery && item.gallery.length > 1
                 ?   
                 <>
                 <div className='all-images'>
-                    <div class='small-image'>
-                        <img 
-                        alt={item.name+' product'}
-                        onMouseMove={this.handleMouseMove}
-                        style={(this.state.overId === item.id) ? this.state.style : null} 
-                        className='item-image' 
-                        src={item.gallery[0]} />
+                   {item.gallery.map((image) => {
+
+                    return (
+                    image === this.state.overImage || (this.state.overImage === '' && image === item.gallery[0])
+                    ? <div key={image} onClick={() => {this.handleMouseClick(image)}} className='small-image'>
+                    <img alt={item.name+' product gallery item'} className='item-image' src={image} />
                     </div>
+                    : <div key={image} onClick={() => {this.handleMouseClick(image)}} className='small-image'>
+                    <img alt={item.name+' product gallery item'} style={{opacity: 0.5}} className='item-image' src={image} />
+                    </div>)})}
                 </div>
                 </>
                 : null}
@@ -47,25 +64,25 @@ class ProductPage extends React.Component {
                     <img 
                     alt={item.name+' product'} 
                     className='item-image' 
-                    onMouseMove={this.handleMouseMove} 
-                    style={(this.state.overId === item.id) ? this.state.style : null} 
-                    src={item.gallery && item.gallery[0]} />
+                    src={!(this.state.overImage === '') ? this.state.overImage : item.gallery && item.gallery[0]} />
                 </div>
-        </div>  
-        <div className='attributes'>
-            <div className='brand-name'>
+        </div> 
+        <div className='summary' >
+        <div className='brand-name'>
                 <span className='brand'>{item.brand}</span>
                 <span className='name'>{item.name}</span>
             </div>
-            {generateListOfAttributes({attributes: item.attributes, choosenAttributes: ''})}
-            <div className='price'>
-          <span>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
+        <div className='attributes'>
+            {generateListOfAttributes({attributes: item.attributes, choosenAttributes: '', from: 'product-page'})}
+        </div>
+        <div className='attribute'>
+            <span className='attribute-name'>Price:</span>
+          <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
             </div>
-            <div className='wide-green-button'>
+            <div onClick={() => {this.addProductInBag({item: item, choosenAttributes: choosenAttributes})}} className='wide-green-button'>
           <span>Add to cart</span>
             </div>
-            <div className='description'>
-          <span>{item.description}</span>
+            <div dangerouslySetInnerHTML={{ __html: item.description}} className='description'>
             </div>
         </div>
         </div>

@@ -20,12 +20,12 @@ class Header extends React.PureComponent {
 
          return props && props.map((item) => {
                 
-                const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes};
+                const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes, from: 'minicart'};
 
-                return (<div key={item.id} className='single'>
+                return (<div key={item.cartId} className='single'>
                     <div className='attributes'>
                         <div className='brand-name'>
-                            <span>{item.brand}</span>
+                        <span>{item.brand}</span>
                             <span>{item.name}</span>
                         </div>
                         <div className='price'>
@@ -35,13 +35,13 @@ class Header extends React.PureComponent {
                         {this.props.generateListOfAttributes(attributes)}  
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => {this.props.increaseQuantityOfProduct(item.id)}} className='attribute-option text plus-minus'>
+                        <span onClick={() => {this.props.increaseQuantityOfProduct(item.cartId)}} className='attribute-option text plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {item.quantity}
                         </span>
-                        <span onClick={() => {this.props.removeFromBag(item.id)}} className='attribute-option text plus-minus'>
+                        <span onClick={() => {this.props.removeFromBag(item.cartId)}} className='attribute-option text plus-minus'>
                             -
                         </span>
                     </div>
@@ -58,14 +58,13 @@ class Header extends React.PureComponent {
         window.onclick = (event) => {
             if(!event.path.includes(this.currencyRef.current)
             && !event.path.includes(this.minicartRef.current))
-            {this.props.closeBox()}
+            this.props.closeBox()
         }
     }
 
     render() {
 
         const {
-            changeCurrentCategory, 
             categoriesList,
             currenciesList,
             currentCategory, 
@@ -87,7 +86,6 @@ class Header extends React.PureComponent {
                     <li key={category.name}>
                     <Link 
                     key={category.name} 
-                    onClick={() => {changeCurrentCategory(category.name)}} 
                     to={'/category/'+category.name}
                     className={(category.name === currentCategory) ? 'category-label selected' : 'category-label'}>  
                         {category.name}

@@ -2,6 +2,7 @@ import React from 'react';
 import './CartPage.css';
 import ArrowLeft from '../../Images/arrow-left.svg';
 import ArrowRight from '../../Images/arrow-right.svg';
+import {Link} from 'react-router-dom';
 
 class CartPage extends React.Component {
 
@@ -119,13 +120,13 @@ class CartPage extends React.Component {
             <>
             {itemsInBag && itemsInBag.map((item) => {
 
-                const toCompare = {item: item.id, gallery: item.gallery};
+                const toCompare = {item: item.cartId, gallery: item.gallery};
 
                 let imageToShow = 0;
 
                 if(!(this.state.currentImages.length === 0)){
                     for(const single in this.state.currentImages){
-                        if(this.state.currentImages[single].item === item.id){
+                        if(this.state.currentImages[single].item === item.cartId){
                             imageToShow = this.state.currentImages[single].currentImage;
                         }
                     }
@@ -133,31 +134,37 @@ class CartPage extends React.Component {
                     imageToShow = 0;
                 }
                 
-                const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes};
+                const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes, from: 'cart'};
 
                 return (
-                <>
-                <div key={item.id+'-divider'} className='divider'></div>
-                <div key={item.id} className='single'>
-                    <div className='attributes'>
-                        <div className='brand-name'>
+                <div key={item.cartId}>
+                <div className='divider'></div>
+                <div className='single'>
+                <div className='summary'>
+                <div className='brand-name'>
+                <Link 
+                 key={item.id} 
+                 to={'/product/'+item.id}>
                             <span className='brand'>{item.brand}</span>
                             <span className='name'>{item.name}</span>
+                            </Link>
                         </div>
                         <div className='price'>
                         <span style={{fontWeight: 'normal', fontSize: 14}}>per unit {choosenCurrency && choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount}</span>
                         <span>{choosenCurrency && choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
                         </div>
+                        <div className='attributes'>
                         {generateListOfAttributes(attributes)}  
                     </div>
+                        </div>
                     <div className='quantity'>
-                        <span onClick={() => {increaseQuantityOfProduct(item.id)}} className='attribute-option plus-minus'>
+                        <span onClick={() => {increaseQuantityOfProduct(item.cartId)}} className='attribute-option plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {item.quantity}
                         </span>
-                        <span onClick={() => {removeFromBag(item.id)}} className='attribute-option plus-minus'>
+                        <span onClick={() => {removeFromBag(item.cartId)}} className='attribute-option plus-minus'>
                             -
                         </span>
                     </div>
@@ -165,12 +172,12 @@ class CartPage extends React.Component {
                          {item.gallery.length > 1
                             ?   
                             <>
-                            <div onMouseEnter={() => {this.setOverId(item.id)}} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                            <div onMouseEnter={() => {this.setOverId(item.cartId)}} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
                                 <div>
                                     <img 
                                     alt={item.name+' product'}
                                     onMouseMove={this.handleMouseMove}
-                                    style={(this.state.overId === item.id) ? this.state.style : null} 
+                                    style={(this.state.overId === item.cartId) ? this.state.style : null} 
                                     className='item-image' 
                                     src={item.gallery[imageToShow]} />
                                 </div>
@@ -181,20 +188,20 @@ class CartPage extends React.Component {
                                 </div>
                             </div>
                             </>
-                            : <div onMouseEnter={() => this.setOverId(item.id)} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                            : <div onMouseEnter={() => this.setOverId(item.cartId)} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
                                 <img 
                                 alt={item.name+' product'} 
                                 className='item-image' 
                                 onMouseMove={this.handleMouseMove} 
-                                style={(this.state.overId === item.id) ? this.state.style : null} 
+                                style={(this.state.overId === item.cartId) ? this.state.style : null} 
                                 src={item.gallery[0]} />
                             </div>} 
                             
                     </div>
                 </div>
-                </>)})}
+                </div>)})}
                 <div className='divider'></div>
-                <div className='summary'>
+                <div className='price-summary'>
                 <div className='labels'>
                     <span>Tax 21%:</span>
                     <span>Quantity:</span>
