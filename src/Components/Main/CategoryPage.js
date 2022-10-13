@@ -16,11 +16,10 @@ class CategoryPage extends React.Component {
   async componentDidMount() {
 
     if(!this.props.message){
-      console.log(this.props)
       const category = (this.props.defaultCategory || !this.props.params.category) ? this.props.defaultCategory : this.props.params.category
       const data = await JSON.parse(JSON.stringify((await Queries.getCategory(category))))
       const categoryData = !(data.category === null) ? Array.from(new Set(data.category.products.map(JSON.stringify))).map(JSON.parse) : null;
-      console.log(categoryData)
+      
       this.setState({
       ...this.state,
       categoryData: categoryData
@@ -38,6 +37,7 @@ class CategoryPage extends React.Component {
       ...this.state,
       categoryData: categoryData
       })
+      this.props.changeCurrentCategory(category);
     }
   }
 
@@ -67,7 +67,7 @@ class CategoryPage extends React.Component {
                    </div>
                   {(this.state.overId && this.state.overId === item.id) ? 
                       item.inStock 
-                      ?    <div onClick={() => {addInBag({item: item, choosenAttributes: []})}}>
+                      ?    <div onClick={() => {addInBag({item: item})}}>
                             <img src={CartIcon} className='cart-icon' alt="Add to cart" />
                           </div> 
                      :  <div className='cart-icon out-of-stock'>

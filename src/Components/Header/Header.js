@@ -67,10 +67,10 @@ class Header extends React.PureComponent {
         const {
             categoriesList,
             currenciesList,
-            currentCategory, 
             choosenCurrency, 
             sumOfPrices,
             openBox,
+            currentCategory,
             itemsInBag,
             currentlyOpened,
             numberOfItemsInBag,

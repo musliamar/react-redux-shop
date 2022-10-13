@@ -24,6 +24,7 @@ class ProductPage extends React.Component {
       item: productRaw.product
       })
     }
+    this.props.resetChoosenAttributes();
   } 
 
   addProductInBag(props){
@@ -35,8 +36,6 @@ class ProductPage extends React.Component {
 
        const {choosenCurrency, currencyToShow, choosenAttributes, generateListOfAttributes, addInBag} = this.props;
       const {item} = this.state;
-
-      console.log(choosenAttributes);
 
       return (
 
@@ -75,7 +74,7 @@ class ProductPage extends React.Component {
                 <span className='name'>{item.name}</span>
             </div>
         <div className='attributes'>
-            {generateListOfAttributes({attributes: item.attributes, choosenAttributes: '', from: 'product-page'})}
+            {generateListOfAttributes({attributes: item.attributes, from: 'product-page'})}
         </div>
         <div className='attribute'>
             <span className='attribute-name'>Price:</span>
