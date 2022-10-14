@@ -38,13 +38,13 @@
 
 .cart-container .cart-page-items .single {
     
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 100%;
-        padding-bottom: 30px;
-        padding-top: 30px;
-        gap: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 30px;
+    padding-top: 30px;
+    gap: 10px;
     
 }
 
@@ -79,8 +79,8 @@
 }
 
 .cart-container .summary{
-        width: 78%;
-        gap: 14px;
+    width: 78%;
+    gap: 14px;
 }
 
 .cart-container .text {

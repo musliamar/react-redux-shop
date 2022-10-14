@@ -38,6 +38,8 @@ class App extends React.PureComponent {
     this.increaseQuantityOfProduct = this.increaseQuantityOfProduct.bind(this);
     this.generateListOfAttributes = this.generateListOfAttributes.bind(this);
     this.resetChoosenAttributes = this.resetChoosenAttributes.bind(this);
+    this.generateDefaultAttributes = this.generateDefaultAttributes.bind(this);
+    this.runOnFirstVisitWithoutLocalStorage = this.runOnFirstVisitWithoutLocalStorage.bind(this);
   }
 
   setState(state) {
@@ -49,19 +51,17 @@ class App extends React.PureComponent {
     this.setState({
       ...this.state,
       choosenAttributes: []
-      });
+    });
   }
 
   changeCurrentCategory(category) {   
-
     this.setState({
       ...this.state,
       currentCategory: category
-      });
+    });
   }
 
   openBox(props){
-
     if(this.state.currentlyOpened === props){
       this.setState({
         ...this.state,
@@ -79,7 +79,7 @@ class App extends React.PureComponent {
     this.setState({
       ...this.state,
       currentlyOpened: '',
-      });
+    });
   }
 
   changeCurrency(currency) {   
@@ -87,7 +87,7 @@ class App extends React.PureComponent {
       ...this.state,
       choosenCurrency: currency,
       currentlyOpened: '',
-      });
+    });
   }
 
   increaseQuantityOfProduct(props){
@@ -124,7 +124,6 @@ class App extends React.PureComponent {
 
   generateDefaultAttributes(props){
     const choosenAttributes = [];
-  
     Object.keys(props).forEach((item) => {
       if((item === 'attributes')){
         Object.values(props[item]).forEach((attribute) => {
@@ -133,6 +132,7 @@ class App extends React.PureComponent {
         })
       }
     })
+    this.setState({...this.state, choosenAttributes: choosenAttributes})
     return choosenAttributes;
   }
 
@@ -142,13 +142,11 @@ class App extends React.PureComponent {
     let transformedAttribute;
 
     choosenAttributes.map((attribute) => 
-
       {if(attribute.id){
         transformedAttribute = {[attribute.id]: attribute.item}
       }else{
         transformedAttribute = attribute;
       }
-
       const cartIdArray = Object.keys(transformedAttribute).map((key) =>
       {if(transformedAttribute[key].id === 'Yes'){
           const splitted = key.split(' ');
@@ -163,18 +161,12 @@ class App extends React.PureComponent {
   }
 
   addInBag(props) {
-
     const product = props.item;
-    let choosenAttributes = this.state.choosenAttributes;
-
-    product.choosenAttributes = (choosenAttributes.length === 0 || choosenAttributes === (undefined || 'undefined'))
-      ? this.generateDefaultAttributes(product)
-      : choosenAttributes 
+    product.choosenAttributes = this.state.choosenAttributes.length === 0 
+                                ? this.generateDefaultAttributes(props.item) 
+                                : this.state.choosenAttributes;
 
     product.cartId = this.generateCartIdOfItem({id: product.id, choosenAttributes: product.choosenAttributes})
- 
-    console.log(product)
-
     const items = this.state.itemsInBag;
 
     if(!(items.length === 0)){
@@ -204,143 +196,114 @@ class App extends React.PureComponent {
   }
 
   setStateOnLoad(props){
-
     const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
-
+    let newState = {};
     if(!(localStorage === null)){
-      for(const single in props){
-          for(const singleInStorage in localStorage){
+      for(const singleInStorage in localStorage){
+          for(const single in props){
             if(single === singleInStorage){ 
-              this.setState({...this.state, [singleInStorage]: localStorage[singleInStorage]})
-            } else {
-              this.setState({...this.state, [single]: props[single]})
+              newState[singleInStorage] = localStorage[singleInStorage]
             }
           }
       }
     }else{
-      this.setState(props); 
+      newState = props;
     }
+    this.setState(newState);
   }
 
   selectAttribute(props){
-
     const choosenAttributes = this.state.choosenAttributes;
-
-    if(!(choosenAttributes.length === 0)){
-      for(const single in choosenAttributes){
-        const attributeToCompare = choosenAttributes[single];
-        if(attributeToCompare.id === props.id){
-          if(!(attributeToCompare.item === props.item)){
-            choosenAttributes.splice(single, 1);
-            choosenAttributes.push(props);
-          }
+    const toCompare = {[props.id]: props.item}
+    let newArray = [];
+    choosenAttributes.map((key) =>
+        {if(Object.keys(key)[0] === props.id){
+          newArray.push({[props.id]: props.item})
         }else{
-          choosenAttributes.push(props);
-        }
-      }
-    }else{
-      choosenAttributes.push(props);
-    }
-
-    const finalArray = [...new Map(choosenAttributes.map((a) => [a.id, a])).values()];
-
-    this.setState({...this.state, choosenAttributes: finalArray}); 
+          newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
+        }}
+    )
+    /* const finalArray = [...new Map(choosenAttributes.map((a) => [a.id, a])).values()]; */
+    this.setState({...this.state, choosenAttributes: newArray}); 
   }
 
   generateListOfAttributes(attributes) {
-
-    return attributes.attributes && attributes.attributes.map((attribute, index) => {
-
-        let selectingEnabled = false;
-
-        const attributesFromState = this.state.choosenAttributes && this.state.choosenAttributes.map((attribute) => {
-
-          return ({[attribute.id]: attribute.item})
-        })
-
-        let choosenAttributes = attributes.from === 'product-page' ? attributesFromState : attributes.choosenAttributes;
-
-        if(attributes.from === 'product-page'){
-          selectingEnabled = true;
+    return(attributes.attributes && attributes.attributes.map((attribute, index) => {
+      let selectingEnabled = false;
+      const attributesFromState = this.state.choosenAttributes;
+      let choosenAttributes = attributes.from === 'product-page' ? attributesFromState : attributes.choosenAttributes;
+      if(attributes.from === 'product-page'){
+        selectingEnabled = true;
+      }
+      for(const choosenAttribute in choosenAttributes){
+        const attributeToCompare = choosenAttributes[choosenAttribute];
+        const id = attribute.id;
+        if(attributeToCompare[id]){
+          attribute.selectedValue = attributeToCompare[id];
         }
-
-        for(const choosenAttribute in choosenAttributes){
-            const attributeToCompare = choosenAttributes[choosenAttribute];
-            const id = attribute.id;
-            if(attributeToCompare[id]){
-                attribute.selectedValue = attributeToCompare[id];
-            }
-        }
-
+      }
        return (<div key={attribute.id} className='attribute'>
-            <span className='attribute-name'>{attribute.name}:</span>
-            <div className='attribute-options'>
-                {attribute.items && attribute.items.map((item) => {
+                <span className='attribute-name'>{attribute.name}:</span>
+                <div className='attribute-options'>
+                  {attribute.items && attribute.items.map((item) => {
+                    const color = item.value;
+                    return (
+                      attribute.type === 'swatch'
+                      ? (attribute.selectedValue && item.id === attribute.selectedValue.id) 
+                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch selected'></span>
+                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch'></span>
+                      : (attribute.selectedValue && item.id === attribute.selectedValue.id) 
+                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text selected'>{item.value}</span>
+                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text'>{item.value}</span>
+                    )})}
+                </div>
+              </div>)
+    }))
+  } 
 
-                const color = item.value;
+  async runOnFirstVisitWithoutLocalStorage(){
+    const categories = await JSON.parse(JSON.stringify((await Queries.getCategoriesList())))
+    const currencies = await JSON.parse(JSON.stringify((await Queries.getAllCurrencies())))
+    const categoriesList = Array.from(new Set(categories.categories.map(JSON.stringify))).map(JSON.parse);
+    const currenciesList = Array.from(new Set(currencies.currencies.map(JSON.stringify))).map(JSON.parse);
+    const defaultCategory = categories.categories[0].name
+    const categoryData = await JSON.parse(JSON.stringify((await Queries.getCategory(defaultCategory))))
+    const data = Array.from(new Set(categoryData.category.products.map(JSON.stringify))).map(JSON.parse);
+    const sampleProductPrice = data[0].prices;
+    let currencyToShow;
 
-                return (
-                 
-                attribute.type === 'swatch'
-                  ? 
-                    (attribute.selectedValue && item.id === attribute.selectedValue.id) 
-                    ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch selected'></span>
-                    : <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch'></span>
-                  : (attribute.selectedValue && item.id === attribute.selectedValue.id) 
-                    ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text selected'>{item.value}</span>
-                    : <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text'>{item.value}</span>
-
-                )})}
-            </div>
-        </div>)})
-    } 
+    for(const priceLabel in sampleProductPrice){
+      if(currenciesList[0].label === sampleProductPrice[priceLabel].currency.label){
+         currencyToShow = priceLabel;
+      }
+    }
+    this.setStateOnLoad({
+      categoriesList: categoriesList, 
+      currenciesList: currenciesList,
+      defaultCategory: defaultCategory,
+      currencyToShow: currencyToShow,
+      choosenCurrency: currenciesList[0],
+      numberOfItemsInBag: 0, 
+      currentCategoryData: data             
+    })
+  }
  
   async componentDidMount() {
-
-        const categories = await JSON.parse(JSON.stringify((await Queries.getCategoriesList())))
-        const currencies = await JSON.parse(JSON.stringify((await Queries.getAllCurrencies())))
-
-        const categoriesList = Array.from(new Set(categories.categories.map(JSON.stringify))).map(JSON.parse);
-        const currenciesList = Array.from(new Set(currencies.currencies.map(JSON.stringify))).map(JSON.parse);
-
-        const defaultCategory = categories.categories[0].name
-        
-        const categoryData = await JSON.parse(JSON.stringify((await Queries.getCategory(defaultCategory))))
-        const data = Array.from(new Set(categoryData.category.products.map(JSON.stringify))).map(JSON.parse);
-  
-        const sampleProductPrice = data[0].prices;
-
-        let currencyToShow;
-
-        for(const priceLabel in sampleProductPrice){
-          if(currenciesList[0].label === sampleProductPrice[priceLabel].currency.label){
-            currencyToShow = priceLabel;
-          }
-        }
-        
-        this.setStateOnLoad({
-         categoriesList: categoriesList, 
-         currenciesList: currenciesList,
-         defaultCategory: defaultCategory,
-         currencyToShow: currencyToShow,
-         choosenCurrency: currenciesList[0],
-         numberOfItemsInBag: 0, 
-         currentCategoryData: data             
-        })
+    const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
+     if(!localStorage || (localStorage === null)){
+      this.runOnFirstVisitWithoutLocalStorage()
+     }
   }
 
   componentDidUpdate(prevProps){
-
     if(this.state.choosenCurrency && !(this.state.choosenCurrency === prevProps.choosenCurrency)){
       const sampleProductPrice = this.state.currentCategoryData[0] && this.state.currentCategoryData[0].prices;
       let currencyToShow;
-
       for(const priceLabel in sampleProductPrice){
         if(this.state.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
           currencyToShow = priceLabel;
         }
       }
-
       this.setState({
         ...this.state,
         currencyToShow: currencyToShow          
@@ -354,10 +317,8 @@ class App extends React.PureComponent {
     const {itemsInBag} = this.state;
 
     for(const item in itemsInBag){
-
         itemsInBag[item].sumPriceOfItem = itemsInBag[item].prices[this.state.currencyToShow].amount * itemsInBag[item].quantity;
         itemsInBag[item].sumPriceOfItemFixed = itemsInBag[item].sumPriceOfItem.toFixed(2);
-
         sumOfAllPricesRaw = sumOfAllPricesRaw + itemsInBag[item].sumPriceOfItem;
     }
 
@@ -380,6 +341,7 @@ class App extends React.PureComponent {
         removeFromBag={this.removeFromBag}
         sumOfPrices={sumOfPrices}
         generateListOfAttributes={this.generateListOfAttributes}
+        runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage}
         choosenCurrency={this.state.choosenCurrency} />
         <main> 
         {this.state.currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
@@ -393,12 +355,15 @@ class App extends React.PureComponent {
             choosenCurrency={this.state.choosenCurrency} 
             currencyToShow={this.state.currencyToShow}
             addInBag={this.addInBag}
+            resetChoosenAttributes={this.resetChoosenAttributes}
+           /*  runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
           />} />
            <Route  
           path='/category'
           element={
           <CategoryPage 
             message={'Please choose one category.'}
+            /* runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
           />} />
           <Route  
           path='/category/:category'
@@ -407,6 +372,9 @@ class App extends React.PureComponent {
             choosenCurrency={this.state.choosenCurrency} 
             currencyToShow={this.state.currencyToShow}
             changeCurrentCategory={this.changeCurrentCategory}
+            currentCategory={this.currentCategory}
+            resetChoosenAttributes={this.resetChoosenAttributes}
+            /* runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
             addInBag={this.addInBag}
           />} />
           <Route  
@@ -414,6 +382,7 @@ class App extends React.PureComponent {
           element={
           <ProductPage 
             message={'Please choose one product.'}
+            runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage}
           />} />
            <Route
           path='/product/:product'
@@ -425,7 +394,8 @@ class App extends React.PureComponent {
             numberOfItemsInBag={this.state.numberOfItemsInBag}
             addInBag={this.addInBag}
             generateListOfAttributes={this.generateListOfAttributes}
-            resetChoosenAttributes={this.resetChoosenAttributes}
+            generateDefaultAttributes={this.generateDefaultAttributes}
+            runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage}
           />} />
            <Route 
           path='/cart'
@@ -439,6 +409,7 @@ class App extends React.PureComponent {
             currencyToShow={this.state.currencyToShow}
             sumOfPrices={sumOfPrices}
             numberOfItemsInBag={this.state.numberOfItemsInBag}
+            /* runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
           />} />
         </Routes>
         </main>
