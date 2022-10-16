@@ -7,7 +7,7 @@ import CartPage from './Components/Main/CartPage';
 import ProductPage from './Components/Main/ProductPage';
 import Queries from './Queries';
 
-class App extends React.PureComponent {
+class App extends React.Component {
 
   constructor(props) {
     super(props);
@@ -21,15 +21,14 @@ class App extends React.PureComponent {
       currencyToShow: 0,
       itemsInBag: [],
       currentlyOpened: '',
-      categoriesList: [],
+      categoriesData: [],
       currenciesList: [],
       currentCategory: '',
-      defaultCategory: '',
       numberOfItemsInBag: 0,
       choosenAttributes: []
     } 
     
-    this.changeCurrentCategory = this.changeCurrentCategory.bind(this);
+    this.updateStateFromChild = this.updateStateFromChild.bind(this);
     this.changeCurrency = this.changeCurrency.bind(this);
     this.openBox = this.openBox.bind(this);
     this.closeBox = this.closeBox.bind(this);
@@ -39,7 +38,6 @@ class App extends React.PureComponent {
     this.generateListOfAttributes = this.generateListOfAttributes.bind(this);
     this.resetChoosenAttributes = this.resetChoosenAttributes.bind(this);
     this.generateDefaultAttributes = this.generateDefaultAttributes.bind(this);
-    this.runOnFirstVisitWithoutLocalStorage = this.runOnFirstVisitWithoutLocalStorage.bind(this);
   }
 
   setState(state) {
@@ -47,17 +45,14 @@ class App extends React.PureComponent {
     super.setState(state);
   }
 
+  updateStateFromChild(props){
+    this.setState({...this.state, [props.name]: props.value});
+  }
+
   resetChoosenAttributes(){
     this.setState({
       ...this.state,
       choosenAttributes: []
-    });
-  }
-
-  changeCurrentCategory(category) {   
-    this.setState({
-      ...this.state,
-      currentCategory: category
     });
   }
 
@@ -83,47 +78,43 @@ class App extends React.PureComponent {
   }
 
   changeCurrency(currency) {   
+
+      const sampleProductPrice = this.state.categoriesData[0] && this.state.categoriesData[0].products[0].prices;
+
+      let currencyToShow;
+      for(const priceLabel in sampleProductPrice){
+        if(currency.label === sampleProductPrice[priceLabel].currency.label){
+          currencyToShow = priceLabel;
+        }
+      }
+
     this.setState({
       ...this.state,
       choosenCurrency: currency,
       currentlyOpened: '',
+      currencyToShow: currencyToShow
     });
   }
 
-  increaseQuantityOfProduct(props){
-    const items = this.state.itemsInBag;
-    items.forEach((item) => {
-      if(item.cartId === props){
-        item.quantity = item.quantity + 1;
-      }
-    })
-    this.setState({
-      ...this.state,
-      itemsInBag: items,
-      numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
-    })
-  }
+  selectAttribute(props){
+    const choosenAttributes = this.state.choosenAttributes;
 
-  removeFromBag(props){
-    const items = this.state.itemsInBag;
-    items.forEach((item) => {
-      if(item.cartId === props){
-        if(item.quantity > 1){
-          item.quantity = item.quantity - 1;
+    let newArray = [];
+    choosenAttributes.map((key) =>
+        {if(Object.keys(key)[0] === props.id){
+          newArray.push({[props.id]: props.item})
         }else{
-          items.splice(item, 1);
-        }
-      }
-    })
-    this.setState({
-      ...this.state,
-      itemsInBag: items,
-      numberOfItemsInBag: this.state.numberOfItemsInBag - 1         
-    })
+          newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
+        }}
+    )
+  
+    /* const finalArray = [...new Map(choosenAttributes.map((a) => [a.id, a])).values()]; */
+    this.setState({...this.state, choosenAttributes: newArray}); 
   }
 
   generateDefaultAttributes(props){
     const choosenAttributes = [];
+  
     Object.keys(props).forEach((item) => {
       if((item === 'attributes')){
         Object.values(props[item]).forEach((attribute) => {
@@ -160,8 +151,76 @@ class App extends React.PureComponent {
     return generateIdForCart.join('-'); 
   }
 
+  generateListOfAttributes(attributes) {
+    return(attributes.attributes && attributes.attributes.map((attribute, index) => {
+
+      let newAttribute = JSON.parse(JSON.stringify(attribute));
+      let selectingEnabled = false;
+      const attributesFromState = this.state.choosenAttributes;
+      let choosenAttributes = attributes.from === 'product-page' ? attributesFromState : attributes.choosenAttributes;
+      if(attributes.from === 'product-page'){
+        selectingEnabled = true;
+      }
+      for(const choosenAttribute in choosenAttributes){
+        const attributeToCompare = choosenAttributes[choosenAttribute];
+        const id = attribute.id;
+        if(attributeToCompare[id]){
+          newAttribute.selectedValue = attributeToCompare[id];
+        }
+      }
+       return (<div key={attribute.id} className='attribute'>
+                <span className='attribute-name'>{attribute.name}:</span>
+                <div className='attribute-options'>
+                  {attribute.items && attribute.items.map((item) => {
+                    const color = item.value;
+                    return (
+                      attribute.type === 'swatch'
+                      ? (newAttribute.selectedValue && item.id === newAttribute.selectedValue.id) 
+                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch selected'></span>
+                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch'></span>
+                      : (newAttribute.selectedValue && item.id === newAttribute.selectedValue.id) 
+                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text selected'>{item.value}</span>
+                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text'>{item.value}</span>
+                    )})}
+                </div>
+              </div>)
+    }))
+  }
+  
+  increaseQuantityOfProduct(props){
+    const items = this.state.itemsInBag;
+    items.forEach((item) => {
+      if(item.cartId === props){
+        item.quantity = item.quantity + 1;
+      }
+    })
+    this.setState({
+      ...this.state,
+      itemsInBag: items,
+      numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
+    })
+  }
+
+  removeFromBag(props){
+    const items = this.state.itemsInBag;
+    items.forEach((item) => {
+      if(item.cartId === props){
+        if(item.quantity > 1){
+          item.quantity = item.quantity - 1;
+        }else{
+          items.splice(item, 1);
+        }
+      }
+    })
+    this.setState({
+      ...this.state,
+      itemsInBag: items,
+      numberOfItemsInBag: this.state.numberOfItemsInBag - 1         
+    })
+  }
+
   addInBag(props) {
-    const product = props.item;
+    const product = JSON.parse(JSON.stringify(props.item));;
     product.choosenAttributes = this.state.choosenAttributes.length === 0 
                                 ? this.generateDefaultAttributes(props.item) 
                                 : this.state.choosenAttributes;
@@ -195,81 +254,22 @@ class App extends React.PureComponent {
     }
   }
 
-  setStateOnLoad(props){
-    const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
-    let newState = {};
-    if(!(localStorage === null)){
-      for(const singleInStorage in localStorage){
-          for(const single in props){
-            if(single === singleInStorage){ 
-              newState[singleInStorage] = localStorage[singleInStorage]
-            }
-          }
-      }
-    }else{
-      newState = props;
-    }
-    this.setState(newState);
-  }
-
-  selectAttribute(props){
-    const choosenAttributes = this.state.choosenAttributes;
-    const toCompare = {[props.id]: props.item}
-    let newArray = [];
-    choosenAttributes.map((key) =>
-        {if(Object.keys(key)[0] === props.id){
-          newArray.push({[props.id]: props.item})
-        }else{
-          newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
-        }}
-    )
-    /* const finalArray = [...new Map(choosenAttributes.map((a) => [a.id, a])).values()]; */
-    this.setState({...this.state, choosenAttributes: newArray}); 
-  }
-
-  generateListOfAttributes(attributes) {
-    return(attributes.attributes && attributes.attributes.map((attribute, index) => {
-      let selectingEnabled = false;
-      const attributesFromState = this.state.choosenAttributes;
-      let choosenAttributes = attributes.from === 'product-page' ? attributesFromState : attributes.choosenAttributes;
-      if(attributes.from === 'product-page'){
-        selectingEnabled = true;
-      }
-      for(const choosenAttribute in choosenAttributes){
-        const attributeToCompare = choosenAttributes[choosenAttribute];
-        const id = attribute.id;
-        if(attributeToCompare[id]){
-          attribute.selectedValue = attributeToCompare[id];
-        }
-      }
-       return (<div key={attribute.id} className='attribute'>
-                <span className='attribute-name'>{attribute.name}:</span>
-                <div className='attribute-options'>
-                  {attribute.items && attribute.items.map((item) => {
-                    const color = item.value;
-                    return (
-                      attribute.type === 'swatch'
-                      ? (attribute.selectedValue && item.id === attribute.selectedValue.id) 
-                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch selected'></span>
-                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch'></span>
-                      : (attribute.selectedValue && item.id === attribute.selectedValue.id) 
-                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text selected'>{item.value}</span>
-                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text'>{item.value}</span>
-                    )})}
-                </div>
-              </div>)
-    }))
-  } 
-
   async runOnFirstVisitWithoutLocalStorage(){
-    const categories = await JSON.parse(JSON.stringify((await Queries.getCategoriesList())))
-    const currencies = await JSON.parse(JSON.stringify((await Queries.getAllCurrencies())))
-    const categoriesList = Array.from(new Set(categories.categories.map(JSON.stringify))).map(JSON.parse);
-    const currenciesList = Array.from(new Set(currencies.currencies.map(JSON.stringify))).map(JSON.parse);
-    const defaultCategory = categories.categories[0].name
-    const categoryData = await JSON.parse(JSON.stringify((await Queries.getCategory(defaultCategory))))
-    const data = Array.from(new Set(categoryData.category.products.map(JSON.stringify))).map(JSON.parse);
-    const sampleProductPrice = data[0].prices;
+
+    const categories = await Queries.getCategoriesList();
+    const currencies = await Queries.getAllCurrencies();
+    const categoriesList = categories.categories;
+    const currenciesList = currencies.currencies;
+
+    let categoriesData = [];
+
+    for(let category in categoriesList){
+      const products = await Queries.getCategory(categoriesList[category].name)
+      categoriesData.push({name: categoriesList[category].name, products: products.category.products});
+    }
+
+    const sampleProductPrice = categoriesData[0].products[0].prices;
+
     let currencyToShow;
 
     for(const priceLabel in sampleProductPrice){
@@ -277,38 +277,24 @@ class App extends React.PureComponent {
          currencyToShow = priceLabel;
       }
     }
-    this.setStateOnLoad({
-      categoriesList: categoriesList, 
+
+    this.setState({
+      categoriesData: categoriesData, 
       currenciesList: currenciesList,
-      defaultCategory: defaultCategory,
       currencyToShow: currencyToShow,
       choosenCurrency: currenciesList[0],
       numberOfItemsInBag: 0, 
-      currentCategoryData: data             
+      itemsInBag: [],
+      currentlyOpened: '',
+      choosenAttributes: []             
     })
   }
  
   async componentDidMount() {
-    const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
+   const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
      if(!localStorage || (localStorage === null)){
-      this.runOnFirstVisitWithoutLocalStorage()
+      this.runOnFirstVisitWithoutLocalStorage();
      }
-  }
-
-  componentDidUpdate(prevProps){
-    if(this.state.choosenCurrency && !(this.state.choosenCurrency === prevProps.choosenCurrency)){
-      const sampleProductPrice = this.state.currentCategoryData[0] && this.state.currentCategoryData[0].prices;
-      let currencyToShow;
-      for(const priceLabel in sampleProductPrice){
-        if(this.state.choosenCurrency.label === sampleProductPrice[priceLabel].currency.label){
-          currencyToShow = priceLabel;
-        }
-      }
-      this.setState({
-        ...this.state,
-        currencyToShow: currencyToShow          
-      })
-    }
   }
 
   render() {
@@ -328,7 +314,7 @@ class App extends React.PureComponent {
     <div className='App'>
         <Header 
         currenciesList={this.state.currenciesList}
-        categoriesList={this.state.categoriesList}
+        categoriesData={this.state.categoriesData}
         changeCurrency={this.changeCurrency} 
         currentCategory={this.state.currentCategory}
         currentlyOpened={this.state.currentlyOpened}
@@ -341,76 +327,58 @@ class App extends React.PureComponent {
         removeFromBag={this.removeFromBag}
         sumOfPrices={sumOfPrices}
         generateListOfAttributes={this.generateListOfAttributes}
-        runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage}
         choosenCurrency={this.state.choosenCurrency} />
         <main> 
         {this.state.currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
         <Routes>
-        <Route 
-          path='/'
-          element={
-          <CategoryPage 
-            defaultCategory={this.state.defaultCategory}
-            changeCurrentCategory={this.changeCurrentCategory}
-            choosenCurrency={this.state.choosenCurrency} 
-            currencyToShow={this.state.currencyToShow}
-            addInBag={this.addInBag}
-            resetChoosenAttributes={this.resetChoosenAttributes}
-           /*  runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
-          />} />
-           <Route  
-          path='/category'
-          element={
-          <CategoryPage 
-            message={'Please choose one category.'}
-            /* runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
-          />} />
-          <Route  
-          path='/category/:category'
-          element={
-          <CategoryPage 
-            choosenCurrency={this.state.choosenCurrency} 
-            currencyToShow={this.state.currencyToShow}
-            changeCurrentCategory={this.changeCurrentCategory}
-            currentCategory={this.currentCategory}
-            resetChoosenAttributes={this.resetChoosenAttributes}
-            /* runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
-            addInBag={this.addInBag}
-          />} />
-          <Route  
-          path='/product/'
-          element={
-          <ProductPage 
-            message={'Please choose one product.'}
-            runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage}
-          />} />
-           <Route
-          path='/product/:product'
-          element={
-          <ProductPage 
-            choosenCurrency={this.state.choosenCurrency} 
-            choosenAttributes={this.state.choosenAttributes}
-            currencyToShow={this.state.currencyToShow}
-            numberOfItemsInBag={this.state.numberOfItemsInBag}
-            addInBag={this.addInBag}
-            generateListOfAttributes={this.generateListOfAttributes}
-            generateDefaultAttributes={this.generateDefaultAttributes}
-            runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage}
-          />} />
-           <Route 
-          path='/cart'
-          element={
-          <CartPage 
-            choosenCurrency={this.state.choosenCurrency} 
-            increaseQuantityOfProduct={this.increaseQuantityOfProduct}
-            removeFromBag={this.removeFromBag}
-            generateListOfAttributes={this.generateListOfAttributes}
-            itemsInBag={this.state.itemsInBag}
-            currencyToShow={this.state.currencyToShow}
-            sumOfPrices={sumOfPrices}
-            numberOfItemsInBag={this.state.numberOfItemsInBag}
-            /* runOnFirstVisitWithoutLocalStorage={this.runOnFirstVisitWithoutLocalStorage} */
-          />} />
+          <Route path="/">
+            <Route index element={
+              <CategoryPage 
+                categoriesData={this.state.categoriesData}
+                updateStateFromChild={this.updateStateFromChild}
+                choosenCurrency={this.state.choosenCurrency} 
+                currencyToShow={this.state.currencyToShow}
+                addInBag={this.addInBag}
+                resetChoosenAttributes={this.resetChoosenAttributes}/>
+            } />
+              <Route path=":category">
+                <Route index element={
+                  <CategoryPage 
+                    choosenCurrency={this.state.choosenCurrency} 
+                    categoriesData={this.state.categoriesData}
+                    currencyToShow={this.state.currencyToShow}
+                    updateStateFromChild={this.updateStateFromChild}
+                    currentCategory={this.currentCategory}
+                    resetChoosenAttributes={this.resetChoosenAttributes}
+                    addInBag={this.addInBag}/>
+                } />
+                <Route path=":product" element={
+                  <ProductPage 
+                    choosenCurrency={this.state.choosenCurrency} 
+                    choosenAttributes={this.state.choosenAttributes}
+                    currencyToShow={this.state.currencyToShow}
+                    numberOfItemsInBag={this.state.numberOfItemsInBag}
+                    categoriesData={this.state.categoriesData}
+                    updateStateFromChild={this.updateStateFromChild}
+                    addInBag={this.addInBag}
+                    generateListOfAttributes={this.generateListOfAttributes}
+                    generateDefaultAttributes={this.generateDefaultAttributes}/>
+                } />
+              </Route>
+              <Route 
+              path='/cart'
+              element={
+                <CartPage 
+                  choosenCurrency={this.state.choosenCurrency} 
+                  increaseQuantityOfProduct={this.increaseQuantityOfProduct}
+                  removeFromBag={this.removeFromBag}
+                  generateListOfAttributes={this.generateListOfAttributes}
+                  itemsInBag={this.state.itemsInBag}
+                  currencyToShow={this.state.currencyToShow}
+                  sumOfPrices={sumOfPrices}
+                  numberOfItemsInBag={this.state.numberOfItemsInBag}/>
+            } />
+            </Route>
         </Routes>
         </main>
     </div>

@@ -49,16 +49,22 @@ class Header extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps){
+
         window.onclick = (event) => {
             if(!event.path.includes(this.currencyRef.current)
             && !event.path.includes(this.minicartRef.current))
             this.props.closeBox()
         }
+
+        if(this.props.currentCategory !== prevProps.currentCategory){
+            console.log(this.props.currentCategory)
+        }
     }
 
     render() {
+
         const {
-            categoriesList,
+            categoriesData,
             currenciesList,
             choosenCurrency, 
             sumOfPrices,
@@ -70,20 +76,22 @@ class Header extends React.PureComponent {
             changeCurrency
             } = this.props;
 
+            console.log(this.props.currentCategory)
+
       return (
         <header>
             <div className='container'>
                 <nav className='categories'>
-                {categoriesList && categoriesList.map((category) => (
+                {categoriesData && categoriesData.map((category) => (
                     <li key={category.name}>
                     <Link 
                     key={category.name} 
-                    to={'/category/'+category.name}
+                    to={category.name}
                     className={(category.name === currentCategory) ? 'category-label selected' : 'category-label'}>  
                         {category.name}
                     </Link>
                     </li>
-                ))}
+                ))} 
                 </nav>
                 <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
                 <div className='actions'>

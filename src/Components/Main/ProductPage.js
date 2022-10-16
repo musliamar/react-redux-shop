@@ -1,40 +1,87 @@
 import React from 'react';
 import './ProductPage.css';
 import {  useParams } from "react-router-dom";
-import Queries from '../../Queries';
 
 class ProductPage extends React.Component {
 
   state = {
       item: '',
       overImage: '',
-      reload: false
+      reload: false,
+      productData: ''
   }
 
   handleMouseClick = (props) => {
       this.setState({...this.state, overImage: props })
   }
 
-  addProductInBag(props){
-      window.location.reload(false);
-        this.props.addInBag(props);
+  async componentDidMount(){
+
+    const categoriesData = this.props.categoriesData;
+
+    if((categoriesData.length !== 0)){
+        let found = false;
+        for(const category in categoriesData){
+          if(categoriesData[category].name === this.props.params.category){
+            const foundCategory = categoriesData[category].products;
+            for(const product in foundCategory){
+              if(foundCategory[product].id === this.props.params.product){
+                found = true;
+                this.setState({
+                  ...this.state, 
+                  productData: foundCategory[product]
+                  })
+                this.props.generateDefaultAttributes(foundCategory[product])
+              }
+            }
+          }
+        }
+        if(!found){
+          this.setState({
+            ...this.state, 
+            productData: null
+            })
+        }
+    }
   }
 
-  async componentDidMount() {
-    if(!this.props.message){
-      const productRaw = await JSON.parse(JSON.stringify((await Queries.getSingleProduct(this.props.params.product))))
-      this.setState({
-      ...this.state,
-      item: productRaw.product
-      })
-      this.props.generateDefaultAttributes(productRaw.product)
+  async componentDidUpdate(prevProps, prevState){
+
+    if((this.props.categoriesData !== prevProps.categoriesData)){
+      const categoriesData = this.props.categoriesData;
+      let found = false;
+        for(const category in categoriesData){
+          if(categoriesData[category].name === this.props.params.category){
+            const foundCategory = categoriesData[category].products;
+            for(const product in foundCategory){
+              if(foundCategory[product].id === this.props.params.product){
+                found = true;
+                this.setState({
+                  ...this.state, 
+                  productData: foundCategory[product]
+                  })
+                  console.log(foundCategory[product])
+                this.props.generateDefaultAttributes(foundCategory[product])
+                this.props.updateStateFromChild({name: 'currentCategory', value: categoriesData[category].name})  
+              }
+            }
+          }
+        }
+       if(!found){
+          this.setState({
+            ...this.state, 
+            productData: null
+            })
+        }
     }
-  } 
+  }
 
   render() {
 
     const {choosenCurrency, currencyToShow, choosenAttributes, generateListOfAttributes, addInBag} = this.props;
-    const {item} = this.state;
+    const item = this.state.productData;
+
+    console.log(item)
 
     return (
 
@@ -76,7 +123,7 @@ class ProductPage extends React.Component {
               <span className='attribute-name'>Price:</span>
               <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
             </div>
-            <div onClick={() => this.addProductInBag({item: item})} className='wide-green-button'>
+            <div onClick={() => this.props.addInBag({item: item})} className='wide-green-button'>
               <span>Add to cart</span>
             </div>
             <div dangerouslySetInnerHTML={{ __html: item.description}} className='description'></div>
