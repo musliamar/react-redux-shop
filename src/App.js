@@ -98,7 +98,6 @@ class App extends React.Component {
 
   selectAttribute(props){
     const choosenAttributes = this.state.choosenAttributes;
-
     let newArray = [];
     choosenAttributes.map((key) =>
         {if(Object.keys(key)[0] === props.id){
@@ -107,8 +106,6 @@ class App extends React.Component {
           newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
         }}
     )
-  
-    /* const finalArray = [...new Map(choosenAttributes.map((a) => [a.id, a])).values()]; */
     this.setState({...this.state, choosenAttributes: newArray}); 
   }
 

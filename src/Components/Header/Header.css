@@ -1,18 +1,18 @@
 header .minicart-main ::-webkit-scrollbar {
     width: 5px;
-  }
+}
   
-  header .minicart-main ::-webkit-scrollbar-track {
+header .minicart-main ::-webkit-scrollbar-track {
     background: #f1f1f1; 
-  }
+}
    
-  header .minicart-main ::-webkit-scrollbar-thumb {
+header .minicart-main ::-webkit-scrollbar-thumb {
     background: #888; 
-  }
+}
   
-  header .minicart-main ::-webkit-scrollbar-thumb:hover {
+header .minicart-main ::-webkit-scrollbar-thumb:hover {
     background: #555; 
-  }
+}
 
 header nav a {
     text-decoration: none;
@@ -26,6 +26,11 @@ header{
     padding-top: 2%;  
     z-index: 3;
     background-color: #fff;
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+    -o-animation: fadeIn 0.5s;
+    -ms-animation: fadeIn 0.5s;
 }
 
 header .actions{

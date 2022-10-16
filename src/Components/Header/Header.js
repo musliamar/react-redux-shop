@@ -49,15 +49,10 @@ class Header extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps){
-
         window.onclick = (event) => {
             if(!event.path.includes(this.currencyRef.current)
             && !event.path.includes(this.minicartRef.current))
             this.props.closeBox()
-        }
-
-        if(this.props.currentCategory !== prevProps.currentCategory){
-            console.log(this.props.currentCategory)
         }
     }
 
@@ -75,8 +70,6 @@ class Header extends React.PureComponent {
             numberOfItemsInBag,
             changeCurrency
             } = this.props;
-
-            console.log(this.props.currentCategory)
 
       return (
         <header>

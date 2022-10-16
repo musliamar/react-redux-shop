@@ -2,6 +2,11 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  animation: fadeIn 0.5s;
+  -webkit-animation: fadeIn 0.5s;
+  -moz-animation: fadeIn 0.5s;
+  -o-animation: fadeIn 0.5s;
+  -ms-animation: fadeIn 0.5s;
 }
 
 .items-container .items{

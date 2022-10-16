@@ -138,7 +138,7 @@ class CartPage extends React.Component {
                                 <div className='brand-name'>
                                     <Link 
                                     key={item.id} 
-                                    to={'/product/'+item.id}>
+                                    to={'/'+item.category+'/'+item.id}>
                                         <span className='brand'>{item.brand}</span>
                                         <span className='name'>{item.name}</span>
                                     </Link>

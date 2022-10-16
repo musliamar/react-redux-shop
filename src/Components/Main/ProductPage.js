@@ -46,7 +46,6 @@ class ProductPage extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState){
-
     if((this.props.categoriesData !== prevProps.categoriesData)){
       const categoriesData = this.props.categoriesData;
       let found = false;
@@ -60,7 +59,6 @@ class ProductPage extends React.Component {
                   ...this.state, 
                   productData: foundCategory[product]
                   })
-                  console.log(foundCategory[product])
                 this.props.generateDefaultAttributes(foundCategory[product])
                 this.props.updateStateFromChild({name: 'currentCategory', value: categoriesData[category].name})  
               }
@@ -80,8 +78,6 @@ class ProductPage extends React.Component {
 
     const {choosenCurrency, currencyToShow, choosenAttributes, generateListOfAttributes, addInBag} = this.props;
     const item = this.state.productData;
-
-    console.log(item)
 
     return (
 
