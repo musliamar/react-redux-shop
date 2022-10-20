@@ -16,6 +16,11 @@
   row-gap: 100px;
   column-gap: 5%;
   width: 100%;
+  animation: fadeIn 0.5s;
+  -webkit-animation: fadeIn 0.5s;
+  -moz-animation: fadeIn 0.5s;
+  -o-animation: fadeIn 0.5s;
+  -ms-animation: fadeIn 0.5s;
 }
 
 .items-container .item{
@@ -26,6 +31,11 @@
   align-items: flex-start;
   padding: 15px;
   width: 27%;
+  animation: fadeIn 0.5s;
+  -webkit-animation: fadeIn 0.5s;
+  -moz-animation: fadeIn 0.5s;
+  -o-animation: fadeIn 0.5s;
+  -ms-animation: fadeIn 0.5s;
 }
 
 .items-container .image-wrapper {
@@ -39,6 +49,11 @@
   width: 100%;
   max-height: 300px;
   object-fit: contain;
+  animation: fadeIn 0.5s;
+  -webkit-animation: fadeIn 0.5s;
+  -moz-animation: fadeIn 0.5s;
+  -o-animation: fadeIn 0.5s;
+  -ms-animation: fadeIn 0.5s;
 }
 
 .items-container .item-name{
@@ -92,6 +107,7 @@
   -o-radius: 50%;
   -ms-radius: 50%;
   border-radius: 50%;
+  cursor: not-allowed;
 }
 
 .items-container .category-title{

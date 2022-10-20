@@ -47,7 +47,7 @@ class Header extends React.PureComponent {
                 </div>)})
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(){
         window.onclick = (event) => {
             if(!event.path.includes(this.currencyRef.current)
             && !event.path.includes(this.minicartRef.current))

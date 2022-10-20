@@ -7,6 +7,7 @@ import CategoryPage from './Components/Main/CategoryPage';
 import CartPage from './Components/Main/CartPage';
 import ProductPage from './Components/Main/ProductPage';
 import Queries from './Queries';
+import SmallCartIcon from './Images/small-cart-icon.svg';
 
 class App extends React.Component {
 
@@ -26,7 +27,9 @@ class App extends React.Component {
       currenciesList: [],
       currentCategory: '',
       numberOfItemsInBag: 0,
-      choosenAttributes: []
+      choosenAttributes: [],
+      notificationArr: [],
+      notificationKey: 0
     } 
     
     this.updateStateFromChild = this.updateStateFromChild.bind(this);
@@ -37,8 +40,9 @@ class App extends React.Component {
     this.removeFromBag = this.removeFromBag.bind(this);
     this.increaseQuantityOfProduct = this.increaseQuantityOfProduct.bind(this);
     this.generateListOfAttributes = this.generateListOfAttributes.bind(this);
-    this.resetChoosenAttributes = this.resetChoosenAttributes.bind(this);
     this.generateDefaultAttributes = this.generateDefaultAttributes.bind(this);
+    this.addNotification = this.addNotification.bind(this);
+    this.removeNotification = this.removeNotification.bind(this);
   }
 
   setState(state) {
@@ -50,10 +54,37 @@ class App extends React.Component {
     this.setState({...this.state, [props.name]: props.value, choosenAttributes: []});
   }
 
-  resetChoosenAttributes(){
+  // notification will show only if new product is added in bag
+  // if choosen product is already in bag, addInBag function will only increase its quantity
+  // and notification will not be shown 
+  // if user add same product but with different attributes, notification will be shown
+
+  addNotification(props) {
+    const notification =
+      <div key={this.state.notificationKey} className='message'>
+        <p><img src={SmallCartIcon} style={{width: '20px', marginRight: 10}} alt='Cart icon in notification' /> 
+        Product {props.product.brand} {props.product.name} has been added in bag.</p>
+      </div>;
+
     this.setState({
       ...this.state,
-      choosenAttributes: []
+      itemsInBag: props.itemsInBag,
+      numberOfItemsInBag: props.numberOfItemsInBag,   
+      notificationArr: this.state.notificationArr.concat(notification),
+      notificationKey: this.state.notificationKey + 1
+    });
+    setTimeout(this.removeNotification, 3000);
+  }
+
+  removeNotification() {
+    const arr = this.state.notificationArr;
+    const arrLength = arr.length;
+    const newArr = arrLength ? arr.slice(0, arrLength - 1) : [];
+
+   this.setState({
+      ...this.state,
+      notificationArr: newArr,
+      notificationKey: this.state.notificationKey - 1
     });
   }
 
@@ -79,16 +110,13 @@ class App extends React.Component {
   }
 
   changeCurrency(currency) {   
-
-      const sampleProductPrice = this.state.categoriesData[0] && this.state.categoriesData[0].products[0].prices;
-
-      let currencyToShow;
-      for(const priceLabel in sampleProductPrice){
-        if(currency.label === sampleProductPrice[priceLabel].currency.label){
-          currencyToShow = priceLabel;
-        }
+    const sampleProductPrice = this.state.categoriesData[0] && this.state.categoriesData[0].products[0].prices;
+    let currencyToShow;
+    for(const priceLabel in sampleProductPrice){
+      if(currency.label === sampleProductPrice[priceLabel].currency.label){
+        currencyToShow = priceLabel;
       }
-
+    }
     this.setState({
       ...this.state,
       choosenCurrency: currency,
@@ -112,7 +140,6 @@ class App extends React.Component {
 
   generateDefaultAttributes(props){
     const choosenAttributes = [];
-  
     Object.keys(props).forEach((item) => {
       if((item === 'attributes')){
         Object.values(props[item]).forEach((attribute) => {
@@ -151,7 +178,6 @@ class App extends React.Component {
 
   generateListOfAttributes(attributes) {
     return(attributes.attributes && attributes.attributes.map((attribute, index) => {
-
       let newAttribute = JSON.parse(JSON.stringify(attribute));
       let selectingEnabled = false;
       const attributesFromState = this.state.choosenAttributes;
@@ -235,17 +261,17 @@ class App extends React.Component {
         }
       })
       if(!found){
-      product.quantity = 1;
-      this.setState({
-        ...this.state,
-        itemsInBag: [...this.state.itemsInBag, product],
-        numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
-      })
+        product.quantity = 1;
+        this.addNotification({
+          product: product,
+          itemsInBag: [...this.state.itemsInBag, product],
+          numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
+        })
       }
     }else{
       product.quantity = 1;
-      this.setState({
-        ...this.state,
+      this.addNotification({
+        product: product,
         itemsInBag: [...this.state.itemsInBag, product],
         numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
       })
@@ -253,7 +279,6 @@ class App extends React.Component {
   }
 
   async runOnFirstVisitWithoutLocalStorage(){
-
     const categories = await Queries.getCategoriesList();
     const currencies = await Queries.getAllCurrencies();
     const categoriesList = categories.categories;
@@ -267,7 +292,6 @@ class App extends React.Component {
     }
 
     const sampleProductPrice = categoriesData[0].products[0].prices;
-
     let currencyToShow;
 
     for(const priceLabel in sampleProductPrice){
@@ -295,6 +319,19 @@ class App extends React.Component {
      }
   }
 
+  componentDidUpdate(){
+    window.onmouseout = (event) => {
+      let target = event.relatedTarget || event.toElement;
+      if (!target || target.nodeName === "HTML") {
+        this.setState({
+          ...this.state,
+          notificationArr: [],
+          notificationKey: 0
+        })
+      }
+    }
+  }
+
   render() {
 
     let sumOfAllPricesRaw = 0;
@@ -307,6 +344,7 @@ class App extends React.Component {
     }
 
     const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
+    const notifications = this.state.notificationArr;
 
     return (
     <div className='App'>
@@ -376,6 +414,11 @@ class App extends React.Component {
             } />
             </Route>
         </Routes>
+          <div className='notification'>
+            <div className='container'>
+              {notifications}
+            </div>
+          </div>
         </main>
         <Footer />
     </div>

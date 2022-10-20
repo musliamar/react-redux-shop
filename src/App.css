@@ -221,3 +221,46 @@ span.attribute-number {
   display: flex;
   flex-direction: column;
 }
+
+.notification .container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: fixed;
+  padding: 0 10px 10px;
+  z-index: 1;
+  box-sizing: border-box;
+  height: auto;
+  top: 0px;
+  bottom: auto;
+  left: auto;
+  right: 0px;
+  top: auto;
+  bottom: 0px;
+  left: 0px;
+}
+
+.notification .message {
+  position: relative;
+  font-size: 16px;
+  margin: 0 0 0;
+  border-radius: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+  display: inline-block;
+  opacity: 1;
+  margin: 10px 0 0;
+  transition: 0.3s ease-in-out;
+  transform: translate3d(0px, 0px, 0px);
+  will-change: transform, opacity;
+  background: #93ffaf;
+  color: #000000;
+  animation: fadeIn 0.5s;
+  -webkit-animation: fadeIn 0.5s;
+  -moz-animation: fadeIn 0.5s;
+  -o-animation: fadeIn 0.5s;
+  -ms-animation: fadeIn 0.5s;
+}
