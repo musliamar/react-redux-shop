@@ -76,13 +76,14 @@ class ProductPage extends React.Component {
 
   render() {
 
-    const {choosenCurrency, currencyToShow, choosenAttributes, generateListOfAttributes, addInBag} = this.props;
+    const {choosenCurrency, currencyToShow, message, addInBag, generateListOfAttributes} = this.props;
     const item = this.state.productData;
+    const {overImage} = this.state;
 
     return (
 
-      this.props.message
-      ? <div>{this.props.message}</div>
+      message
+      ? <div>{message}</div>
       : !(item === null)
         ? <div key={item.id} className='product-page'>
             <div className='gallery'>
@@ -90,7 +91,7 @@ class ProductPage extends React.Component {
             ? <>
               <div className='all-images'>
                 {item.gallery.map((image) => 
-                    image === this.state.overImage || (this.state.overImage === '' && image === item.gallery[0])
+                    image === overImage || (overImage === '' && image === item.gallery[0])
                     ? <div key={image} onClick={() => {this.handleMouseClick(image)}} className='small-image'>
                     <img alt={item.name+' product gallery item'} className='item-image' src={image} />
                     </div>
@@ -104,7 +105,7 @@ class ProductPage extends React.Component {
                 <img 
                   alt={item.name+' product'} 
                   className='item-image' 
-                  src={!(this.state.overImage === '') ? this.state.overImage : item.gallery && item.gallery[0]} />
+                  src={!(overImage === '') ? overImage : item.gallery && item.gallery[0]} />
               </div>
             </div> 
           <div className='summary' >
@@ -120,7 +121,7 @@ class ProductPage extends React.Component {
               <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
             </div>
             {item.inStock
-            ? <div onClick={() => this.props.addInBag({item: item})} className='wide-green-button'>
+            ? <div onClick={() => addInBag({item: item})} className='wide-green-button'>
                 <span>Add to cart</span>
               </div>
             : <div className='wide-green-button out-of-stock'>

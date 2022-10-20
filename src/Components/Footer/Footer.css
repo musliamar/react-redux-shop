@@ -1,0 +1,19 @@
+footer{
+    padding-left: 9%; 
+    padding-right: 9%;
+    padding-bottom: 3%;
+    padding-top: 3%;  
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+    -o-animation: fadeIn 0.5s;
+    -ms-animation: fadeIn 0.5s;
+}
+
+footer .container{
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+    justify-content: center;
+    align-items: flex-start;
+}

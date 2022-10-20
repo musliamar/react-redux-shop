@@ -65,6 +65,7 @@ class Header extends React.PureComponent {
             openBox,
             currentCategory,
             itemsInBag,
+            closeBox,
             currentlyOpened,
             numberOfItemsInBag,
             changeCurrency
@@ -127,7 +128,7 @@ class Header extends React.PureComponent {
                                     <span>{choosenCurrency && choosenCurrency.symbol}{sumOfPrices}</span>
                             </div>
                             <div className='minicart-buttons'>
-                                    <Link onClick={this.props.closeBox} className='view-bag' to={'/cart'}>
+                                    <Link onClick={closeBox} className='view-bag' to={'/cart'}>
                                         View Bag   
                                     </Link>
                                     <div className='checkout'>

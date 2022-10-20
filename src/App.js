@@ -2,6 +2,7 @@ import './App.css';
 import React from 'react';
 import {Routes, Route} from 'react-router-dom';
 import Header from './Components/Header/Header';
+import Footer from './Components/Footer/Footer';
 import CategoryPage from './Components/Main/CategoryPage';
 import CartPage from './Components/Main/CartPage';
 import ProductPage from './Components/Main/ProductPage';
@@ -99,7 +100,7 @@ class App extends React.Component {
   selectAttribute(props){
     const choosenAttributes = this.state.choosenAttributes;
     let newArray = [];
-    choosenAttributes.map((key) =>
+    choosenAttributes.forEach((key) =>
         {if(Object.keys(key)[0] === props.id){
           newArray.push({[props.id]: props.item})
         }else{
@@ -335,8 +336,7 @@ class App extends React.Component {
                 updateStateFromChild={this.updateStateFromChild}
                 choosenCurrency={this.state.choosenCurrency} 
                 currencyToShow={this.state.currencyToShow}
-                addInBag={this.addInBag}
-                resetChoosenAttributes={this.resetChoosenAttributes}/>
+                addInBag={this.addInBag}/>
             } />
               <Route path=":category">
                 <Route index element={
@@ -346,7 +346,6 @@ class App extends React.Component {
                     currencyToShow={this.state.currencyToShow}
                     updateStateFromChild={this.updateStateFromChild}
                     currentCategory={this.currentCategory}
-                    resetChoosenAttributes={this.resetChoosenAttributes}
                     addInBag={this.addInBag}/>
                 } />
                 <Route path=":product" element={
@@ -378,6 +377,7 @@ class App extends React.Component {
             </Route>
         </Routes>
         </main>
+        <Footer />
     </div>
   );
 }}

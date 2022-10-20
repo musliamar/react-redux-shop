@@ -102,6 +102,8 @@ class CartPage extends React.Component {
             increaseQuantityOfProduct,
             removeFromBag } = this.props;
 
+            const {currentImages, overId, style} = this.state;
+
             const taxRaw = 0.21 * sumOfPrices;
             const tax = taxRaw.toFixed(2);
 
@@ -118,8 +120,8 @@ class CartPage extends React.Component {
 
                 let imageToShow = 0;
 
-                if(!(this.state.currentImages.length === 0)){
-                    this.state.currentImages.forEach((image) => {
+                if(!(currentImages.length === 0)){
+                    currentImages.forEach((image) => {
                         if(image.item === item.cartId){
                             imageToShow = image.currentImage;
                         }
@@ -170,7 +172,7 @@ class CartPage extends React.Component {
                                             <img 
                                             alt={item.name+' product'}
                                             onMouseMove={this.handleMouseMove}
-                                            style={(this.state.overId === item.cartId) ? this.state.style : null} 
+                                            style={(overId === item.cartId) ? style : null} 
                                             className='item-image' 
                                             src={item.gallery[imageToShow]} />
                                         </div>
@@ -187,7 +189,7 @@ class CartPage extends React.Component {
                                     alt={item.name+' product'} 
                                     className='item-image' 
                                     onMouseMove={this.handleMouseMove} 
-                                    style={(this.state.overId === item.cartId) ? this.state.style : null} 
+                                    style={(overId === item.cartId) ? style : null} 
                                     src={item.gallery[0]} />
                                 </div>} 
                             </div>

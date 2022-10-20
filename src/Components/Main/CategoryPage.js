@@ -90,7 +90,7 @@ class CategoryPage extends React.Component {
 
   render() {
 
-    const {categoryData} = this.state
+    const {categoryData, overId} = this.state
     const {choosenCurrency, currencyToShow, addInBag} = this.props;
     const categoryName = this.state.categoryName && this.state.categoryName[0].toUpperCase() + this.state.categoryName.slice(1);
       
@@ -105,7 +105,7 @@ class CategoryPage extends React.Component {
                   <div className='image-wrapper'>
                     <img className='item-image' src={item.gallery[0]} alt={item.name} />
                   </div>
-                  {(this.state.overId && this.state.overId === item.id) 
+                  {(overId && overId === item.id) 
                     ? item.inStock 
                       ? <div onClick={() => {addInBag({item: item})}}>
                           <img src={CartIcon} className='cart-icon' alt="Add to cart" />
