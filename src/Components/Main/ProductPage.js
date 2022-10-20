@@ -17,6 +17,7 @@ class ProductPage extends React.Component {
 
   async componentDidMount(){
 
+    window.scrollTo(0, 0);
     const categoriesData = this.props.categoriesData;
 
     if((categoriesData.length !== 0)){
@@ -59,8 +60,7 @@ class ProductPage extends React.Component {
                   ...this.state, 
                   productData: foundCategory[product]
                   })
-                this.props.generateDefaultAttributes(foundCategory[product])
-                this.props.updateStateFromChild({name: 'currentCategory', value: categoriesData[category].name})  
+                this.props.generateDefaultAttributes(foundCategory[product]) 
               }
             }
           }
@@ -119,9 +119,13 @@ class ProductPage extends React.Component {
               <span className='attribute-name'>Price:</span>
               <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
             </div>
-            <div onClick={() => this.props.addInBag({item: item})} className='wide-green-button'>
-              <span>Add to cart</span>
-            </div>
+            {item.inStock
+            ? <div onClick={() => this.props.addInBag({item: item})} className='wide-green-button'>
+                <span>Add to cart</span>
+              </div>
+            : <div className='wide-green-button out-of-stock'>
+                <span>Out of stock</span>
+              </div>}  
             <div dangerouslySetInnerHTML={{ __html: item.description}} className='description'></div>
           </div>
         </div>

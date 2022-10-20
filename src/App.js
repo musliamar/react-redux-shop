@@ -46,7 +46,7 @@ class App extends React.Component {
   }
 
   updateStateFromChild(props){
-    this.setState({...this.state, [props.name]: props.value});
+    this.setState({...this.state, [props.name]: props.value, choosenAttributes: []});
   }
 
   resetChoosenAttributes(){
@@ -120,7 +120,7 @@ class App extends React.Component {
         })
       }
     })
-    this.setState({...this.state, choosenAttributes: choosenAttributes})
+    this.setState({...this.state, choosenAttributes: choosenAttributes, currentCategory: props.category})
     return choosenAttributes;
   }
 
@@ -205,7 +205,7 @@ class App extends React.Component {
         if(item.quantity > 1){
           item.quantity = item.quantity - 1;
         }else{
-          items.splice(item, 1);
+          items.splice(items.indexOf(item), 1);
         }
       }
     })

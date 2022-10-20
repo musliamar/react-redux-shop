@@ -49,11 +49,11 @@ class CartPage extends React.Component {
                         array.push({ item: item, currentImage: hold + 1 })
                     }
                     this.setState({currentImages: array});
-                    array.splice(image, 1);
+                    array.splice(array.indexOf(image), 1);
                 }else{
                     array.push({ item: item, currentImage: 1 })
                     this.setState({currentImages: array});
-                    array.splice(image, 1);
+                    array.splice(array.indexOf(image), 1);
                 }
             })
         }
@@ -80,11 +80,11 @@ class CartPage extends React.Component {
                         array.push({ item: item, currentImage: hold - 1 })
                     }
                     this.setState({currentImages: array});
-                    array.splice(image, 1);
+                    array.splice(array.indexOf(image), 1);
                 }else{
                     array.push({ item: item, currentImage: gallery.length - 1 })
                     this.setState({currentImages: array});
-                    array.splice(image, 1);
+                    array.splice(array.indexOf(image), 1);
                 }
             })
         }

@@ -56,6 +56,11 @@
     width: 300px;
 }
 
+.product-page .out-of-stock{
+    background: #3d3d3d;
+    cursor: not-allowed;
+}
+
 .product-page .gallery{
     display: flex;
     flex-direction: row;

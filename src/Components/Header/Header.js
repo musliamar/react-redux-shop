@@ -4,7 +4,6 @@ import logo from '../../Images/logo.svg';
 import {Link} from 'react-router-dom';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import ArrowUp from '../../Images/arrow-up.svg';
-import ArrowDown from '../../Images/arrow-down.svg';
 
 class Header extends React.PureComponent {
 
@@ -42,7 +41,7 @@ class Header extends React.PureComponent {
                     </div>
                     <div className='gallery'>
                         <span>
-                            <img className='item-image' src={item.gallery && item.gallery[0]} />
+                            <img alt='Item preview' className='item-image' src={item.gallery && item.gallery[0]} />
                         </span>
                     </div>
                 </div>)})
@@ -94,7 +93,7 @@ class Header extends React.PureComponent {
                             <span>{choosenCurrency && choosenCurrency.symbol}</span>
                             {currentlyOpened === 'currency' 
                             ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
-                            : <img className='currency-arrow-icon' src={ArrowDown} alt='Currency switcher arrow down'/>}
+                            : <img className='currency-arrow-icon rotate' src={ArrowUp} alt='Currency switcher arrow down'/>}
                         </div>
                         <ul className={currentlyOpened === 'currency' ? 'box currency-box display-flex' : 'box display-none'}>
                         {currenciesList && currenciesList.map((currency) => (
