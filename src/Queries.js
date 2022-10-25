@@ -1,7 +1,6 @@
 import { client, Query, Field} from "@tilework/opus";
 
-const { REACT_APP_GRAPHQL_ENDPOINT } = process.env;
-client.setEndpoint(REACT_APP_GRAPHQL_ENDPOINT);
+client.setEndpoint('http://localhost:4000');
 
 const getCategoriesList = async () => {
 
