@@ -213,6 +213,7 @@ header .minicart-main .title {
     font-size: 16px;
     line-height: 160%;
     color: #1D1F22;
+    padding-bottom: 15px;
 }
 
 header .minicart-main .items {
@@ -221,7 +222,7 @@ header .minicart-main .items {
     width: 100%;
     gap: 0;
     padding-right: 15px;
-    max-height: 460px;
+    max-height: 450px;
     overflow: scroll;
     overflow-x: hidden;
 }
@@ -233,8 +234,7 @@ header .minicart-main span{
 header .minicart-main .items .single {
     display: flex;
     flex-direction: row;
-    padding-top: 30px;
-    padding-bottom:10px;
+    padding-bottom: 30px;
     justify-content: space-between;
     width: 100%;
 }
