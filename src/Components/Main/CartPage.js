@@ -106,6 +106,8 @@ class CartPage extends React.Component {
 
             const taxRaw = 0.21 * sumOfPrices;
             const tax = taxRaw.toFixed(2);
+            const sumRaw = parseFloat(sumOfPrices) + taxRaw;
+            const sum = sumRaw.toFixed(2);
 
       return (
         
@@ -206,7 +208,7 @@ class CartPage extends React.Component {
                     <div className='values'>
                         <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{tax}</span>
                         <span className='bold'>{numberOfItemsInBag}</span>
-                        <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{sumOfPrices}</span>
+                        <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{sum}</span>
                     </div>
                 </div>
                 <div className='wide-green-button'>
