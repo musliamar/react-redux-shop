@@ -104,7 +104,11 @@ li {
   font-size: 24px;
   line-height: 24px;
   color: #1D1F22;
+}
 
+.message .cart-icon{
+  width: 20px;
+  margin-right: 10px;
 }
 
 span.bold {

@@ -69,7 +69,7 @@ class App extends React.Component {
 
     const notification =
       <div key={notificationKey} className='message'>
-        <p><img src={SmallCartIcon} style={{width: '20px', marginRight: 10}} alt='Cart icon in notification' /> 
+        <p><img src={SmallCartIcon} className='cart-icon' alt='Cart icon in notification' /> 
         Product {brand} {name} has been added in bag.</p>
       </div>;
 
