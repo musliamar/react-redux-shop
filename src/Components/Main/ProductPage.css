@@ -43,11 +43,16 @@
 }
 
 .product-page .description,
+.product-page .description span,
 .product-page .description p, 
 .product-page .description h1, 
 .product-page .description h2, 
 .product-page .description h3{
     font-family: 'Roboto';
+}
+
+.product-page .description h1{
+    line-height: 35px;
 }
 
 .product-page .in-stock{
