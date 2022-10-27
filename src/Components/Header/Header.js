@@ -18,8 +18,8 @@ class Header extends React.PureComponent {
         const {symbol} = choosenCurrency;
 
          return props.map((item) => {
-                const {cartId, brand, name, prices, gallery, choosenAttributes, quantity, attributes: itemAttributes} = item;
-                const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'minicart'};
+                const {cartId, brand, name, prices, gallery, inStock, choosenAttributes, quantity, attributes: itemAttributes} = item;
+                const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'minicart', inStock: inStock};
 
                 return (<div key={cartId} className='single'>
                     <div className='attributes'>
@@ -28,7 +28,7 @@ class Header extends React.PureComponent {
                             <span>{name}</span>
                         </div>
                         <div className='price'>
-                           <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
+                            <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
                         </div>
                         {generateListOfAttributes(attributes)}  
                     </div>
@@ -89,15 +89,16 @@ class Header extends React.PureComponent {
                 {categoriesList.map((category) => {
                     const {name} = category;
                     return (
-                    <li key={name}>
-                    <Link 
-                    key={name} 
-                    to={name}
-                    className={(name === currentCategory) ? 'category-label selected' : 'category-label'}>  
-                        {name}
-                    </Link>
-                    </li>
-                )})} 
+                        <li key={name}>
+                            <Link 
+                            key={name} 
+                            to={name}
+                            className={(name === currentCategory) ? 'category-label selected' : 'category-label'}>  
+                                {name}
+                            </Link>
+                        </li>
+                    )}
+                )} 
                 </nav>
                 <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
                 <div className='actions'>
@@ -105,20 +106,20 @@ class Header extends React.PureComponent {
                         <span className="tooltip-text currency-tooltip">Change currency</span>
                         <div onClick={() => {openBox('currency')}} className='first-currency'>
                             <span>{choosenCurrencySymbol}</span>
-                            {currentlyOpened === 'currency' 
-                            ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
-                            : <img className='currency-arrow-icon rotate' src={ArrowUp} alt='Currency switcher arrow down'/>}
+                                {currentlyOpened === 'currency' 
+                                ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
+                                : <img className='currency-arrow-icon rotate' src={ArrowUp} alt='Currency switcher arrow down'/>}
                         </div>
                         <ul className={currentlyOpened === 'currency' ? 'box currency-box display-flex' : 'box display-none'}>
                         {currenciesList.map((currency) => {
                             const {label: currencyLabel, symbol: currencySymbol} = currency;
                             return (
-                            <li 
-                            className={choosenCurrencyLabel === currencyLabel ? 'selected': null}
-                            onClick={() => {changeCurrency(currency)}} 
-                            key={currencySymbol}>
-                                {currencySymbol} {currencyLabel}
-                            </li>
+                                <li 
+                                className={choosenCurrencyLabel === currencyLabel ? 'selected': null}
+                                onClick={() => {changeCurrency(currency)}} 
+                                key={currencySymbol}>
+                                    {currencySymbol} {currencyLabel}
+                                </li>
                         )})}
                         </ul>
                     </div>
@@ -128,37 +129,36 @@ class Header extends React.PureComponent {
                             {!(numberOfItemsInBag === 0) ? <span className="items-number">{numberOfItemsInBag}</span> : null}
                             <img className='small-cart-icon' src={SmallCartIcon} alt='Your bag' />
                         </div>
-                        <div 
-                            className={
-                            currentlyOpened === 'minicart' 
-                            ? !(length === 0) ? 'box cart-box display-flex' : 'box empty'
-                            : 'box display-none'}>
+                        <div className={
+                                currentlyOpened === 'minicart' 
+                                ? !(length === 0) ? 'box cart-box display-flex' : 'box empty'
+                                : 'box display-none'}>
                             {!(length === 0) 
                             ? <>
-                            <div className='minicart-main'>
+                                <div className='minicart-main'>
                                     <div className='title'>
-                                        <span style={{display: 'inline'}} className='bold'>My Bag,</span> {numberOfItemsInBag} items 
+                                        <span className='bold display-inline'>My Bag,</span> {numberOfItemsInBag} items 
                                     </div>
                                     <div className='items'>
                                         {this.generateListOfItems(itemsInBag)}
                                     </div>
-                            </div>
-                            <div className='total-price'>
+                                </div>
+                                <div className='total-price'>
                                     <span>Total</span>
                                     <span>{choosenCurrencySymbol}{sumOfPrices}</span>
-                            </div>
-                            <div className='minicart-buttons'>
+                                </div>
+                                <div className='minicart-buttons'>
                                     <Link onClick={closeBox} className='view-bag' to={'/cart'}>
                                         View Bag   
                                     </Link>
                                     <div className='checkout'>
-                                    <span>Check out</span>
+                                        <span>Check out</span>
                                     </div>
-                            </div>
+                                </div>
                             </>
                             : <div className='minicart-main'>
                                 <div className='title'>
-                                    <span style={{display: 'inline'}}>Your bag is currently empty.</span>
+                                    <span className='display-inline'>Your bag is currently empty.</span>
                                 </div>
                             </div>}
                         </div>
@@ -167,6 +167,7 @@ class Header extends React.PureComponent {
             </div>
         </header>
     );
-  }}
+  }
+}
 
-  export default Header;
+export default Header;

@@ -7,13 +7,13 @@ import {getProduct} from '../../Queries';
 class ProductPage extends React.Component {
 
   state = {
-      item: '',
-      overImage: '',
-      productData: ''
+    item: '',
+    overImage: '',
+    productData: ''
   }
 
   handleMouseClick = (props) => {
-      this.setState({...this.state, overImage: props })
+    this.setState({...this.state, overImage: props })
   }
 
   async componentDidMount(){
@@ -39,18 +39,39 @@ class ProductPage extends React.Component {
       })
     } 
   }
-}
+  }
 
   render() {
 
     const {choosenCurrency, currencyToShow, addInBag, generateListOfAttributes} = this.props;
     const {symbol} = choosenCurrency;
     const {overImage, productData: item} = this.state;
-    const {id, gallery, name, brand, attributes, prices, inStock, description} = item;
+    let id, gallery, name, brand, attributes, prices, inStock, description;
+
+    if(item !== null){
+      const {
+        id: itemId, 
+        gallery: itemGallery, 
+        name: itemName, 
+        brand: itemBrand, 
+        attributes: itemAttributes, 
+        prices: itemPrices, 
+        inStock: itemInStock, 
+        description: itemDesc} = item;
+
+      id = itemId
+      gallery = itemGallery
+      name = itemName
+      brand = itemBrand
+      attributes = itemAttributes
+      prices = itemPrices
+      inStock = itemInStock
+      description = itemDesc
+    }
 
     return (
 
-      !(item === null)
+      item !== null
         ? <div key={id} className='product-page'>
             <div className='gallery'>
             {gallery && gallery.length > 1
@@ -62,29 +83,34 @@ class ProductPage extends React.Component {
                     <img alt={name+' product gallery item'} className='item-image' src={image} />
                     </div>
                     : <div key={image} onClick={() => {this.handleMouseClick(image)}} className='small-image'>
-                    <img alt={name+' product gallery item'} style={{opacity: 0.5}} className='item-image' src={image} />
+                    <img alt={name+' product gallery item'} className='item-image opacity' src={image} />
                     </div>)}
               </div>
               </>
             : null}
               <div className='single-image'>
+                {!inStock
+                ? <div className='out-of-stock-text'>
+                    Out of stock
+                  </div>
+                : null}
                 <img 
                   alt={name+' product'} 
-                  className='item-image' 
+                  className={inStock ? 'item-image' : 'item-image opacity'}
                   src={!(overImage === '') ? overImage : (gallery && gallery[0])} />
               </div>
             </div> 
           <div className='summary' >
             <div className='brand-name'>
-              <span className='brand'>{brand}</span>
-              <span className='name'>{name}</span>
+              <span className={inStock ? 'brand' : 'brand bleached-text'}>{brand}</span>
+              <span className={inStock ? 'brand' : 'brand bleached-text'}>{name}</span>
             </div>
             <div className='attributes'>
-              {generateListOfAttributes({attributes: attributes, from: 'product-page', item: item})}
+              {generateListOfAttributes({attributes: attributes, from: 'product-page', inStock: inStock})}
             </div>
             <div className='attribute'>
-              <span className='attribute-name'>Price:</span>
-              <span className='price'>{symbol}{prices && prices[currencyToShow].amount.toFixed(2)}</span>
+              <span className={inStock ? 'attribute-name in-stock' : 'attribute-name bleached-text'}>Price:</span>
+              <span className={inStock ? 'price' : 'price bleached-text'}>{symbol}{prices && prices[currencyToShow].amount.toFixed(2)}</span>
             </div>
             {inStock
             ? <div onClick={() => addInBag({item: item})} className='add-to-cart'>
@@ -93,17 +119,18 @@ class ProductPage extends React.Component {
             : <div className='wide-green-button out-of-stock'>
                 <span>Out of stock</span>
               </div>}  
-            <div className='description'>{description && parse(description)}</div>
+            <div className={inStock ? 'description in-stock' : 'description bleached-text'}>{description && parse(description)}</div>
           </div>
         </div>
         : <div>Sorry, we can't find that product.</div>
     );
-  }}
+  }
+}
 
-  const Product = (props) => (
-    <ProductPage
-        {...props}
-        params={useParams()}
-    />)
+const Product = (props) => (
+  <ProductPage
+    {...props}
+    params={useParams()}
+  />)
 
-  export default Product;
+export default Product;

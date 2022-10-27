@@ -24,9 +24,16 @@
     background: #5ECE7B;
     color: #fff;
     cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .product-page .single-image{
+    position: relative;
     max-width: 600px;
 }
 
@@ -35,12 +42,19 @@
     line-height: 18px;
 }
 
-.product-page .description p, h1, h2, h3{
+.product-page .description,
+.product-page .description p, 
+.product-page .description h1, 
+.product-page .description h2, 
+.product-page .description h3{
     font-family: 'Roboto';
+}
+
+.product-page .in-stock{
     color: #1D1F22;
 }
 
-.product-page .description p{
+.product-page .description{
     font-weight: 400;
     font-size: 16px;
     line-height: 159.96%;
@@ -64,8 +78,33 @@
 }
 
 .product-page .out-of-stock{
-    background: #3d3d3d;
+    background: #8D8F9A;
+    border-color: #8D8F9A;
+    color: #fff;
     cursor: not-allowed;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.product-page .out-of-stock-text{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    padding-top: 45%;
+    padding-bottom: 30%;
+    margin: 0 auto;
+    position: absolute;
+    text-transform: uppercase;
+    font-family: 'Raleway';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 160%;
+    color: #8D8F9A;
 }
 
 .product-page .gallery{
@@ -103,4 +142,13 @@
     height: 100%;
     object-fit: scale-down;
     object-position: top;
+}
+
+.product-page .bleached-text{
+    color: #8D8F9A;
+  }
+
+.product-page .opacity{
+    background: #FFFFFF;
+    opacity: 0.5;
 }

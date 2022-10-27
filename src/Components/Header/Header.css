@@ -314,6 +314,10 @@ header .minicart-main span.plus-minus {
     user-select: none;
 }
 
+header .minicart-main .display-inline{
+    display: inline;
+}
+
 header .minicart-main .quantity {
     display: flex;
     width: 25px;

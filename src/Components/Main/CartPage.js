@@ -46,7 +46,7 @@ class CartPage extends React.Component {
             currentImages.forEach((image) => {
                 const {item: imageItem, currentImage} = image;
                 const array = currentImages;
-                    if(imageItem === item){
+                if(imageItem === item){
                     if((galleryLength - 1) === currentImage){
                         array.push({ item: item, currentImage: 0 })
                     }else{
@@ -110,139 +110,141 @@ class CartPage extends React.Component {
             increaseQuantityOfProduct,
             removeFromBag } = this.props;
 
-            const {length: itemsLength} = itemsInBag;
-            const {symbol} = choosenCurrency;
-            const {currentImages, overId, style} = this.state;
-            const {length: imagesLength} = currentImages;
-            const {previousImage, nextImage, setOverId, handleMouseLeave, handleMouseMove} = this;
+        const {length: itemsLength} = itemsInBag;
+        const {symbol} = choosenCurrency;
+        const {currentImages, overId, style} = this.state;
+        const {length: imagesLength} = currentImages;
+        const {previousImage, nextImage, setOverId, handleMouseLeave, handleMouseMove} = this;
 
-            const taxRaw = 0.21 * sumOfPrices;
-            const tax = taxRaw.toFixed(2);
-            const sumRaw = parseFloat(sumOfPrices) + taxRaw;
-            const sum = sumRaw.toFixed(2);
+        const taxRaw = 0.21 * sumOfPrices;
+        const tax = taxRaw.toFixed(2);
+        const sumRaw = parseFloat(sumOfPrices) + taxRaw;
+        const sum = sumRaw.toFixed(2);
 
-      return (
+        return (
         
-        <div className='cart-container'>
-            <h1 className='cart-title'>Cart</h1>
-            <div className='cart-page-items'>
-            {!(itemsLength === 0)
-            ? <>
-                {itemsInBag.map((item) => {
+            <div className='cart-container'>
+                <h1 className='cart-title'>Cart</h1>
+                <div className='cart-page-items'>
+                {!(itemsLength === 0)
+                ? <>
+                    {itemsInBag.map((item) => {
 
-                const {
-                    cartId, 
-                    category, 
-                    id, 
-                    brand, 
-                    name, 
-                    gallery, 
-                    prices,
-                    quantity,
-                    choosenAttributes, 
-                    attributes: itemAttributes} = item;
+                    const {
+                        cartId, 
+                        category, 
+                        id, 
+                        brand, 
+                        name, 
+                        gallery, 
+                        inStock,
+                        prices,
+                        quantity,
+                        choosenAttributes, 
+                        attributes: itemAttributes} = item;
 
-                const {length: galleryLength} = gallery;
-                const toCompare = {item: cartId, gallery: gallery};
-                let imageToShow = 0;
+                    const {length: galleryLength} = gallery;
+                    const toCompare = {item: cartId, gallery: gallery};
+                    let imageToShow = 0;
 
-                if(!(imagesLength === 0)){
-                    currentImages.forEach((image) => {
-                        const {item: imageItem, currentImage} = image;
-                        if(imageItem === cartId){
-                            imageToShow = currentImage;
-                        }
-                    })
-                }else{
-                    imageToShow = 0;
-                }
+                    if(!(imagesLength === 0)){
+                        currentImages.forEach((image) => {
+                            const {item: imageItem, currentImage} = image;
+                            if(imageItem === cartId){
+                                imageToShow = currentImage;
+                            }
+                        })
+                    }else{
+                        imageToShow = 0;
+                    }
                 
-                const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'cart'};
+                    const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'cart', inStock: inStock};
 
-                return (
-                    <div key={cartId}>
-                        <div className='divider'></div>
-                        <div className='single'>
-                            <div className='summary'>
-                                <div className='brand-name'>
-                                    <Link 
-                                    key={id} 
-                                    to={'/'+category+'/'+id}>
-                                        <span className='brand'>{brand}</span>
-                                        <span className='name'>{name}</span>
-                                    </Link>
+                    return (
+                        <div key={cartId}>
+                            <div className='divider'></div>
+                            <div className='single'>
+                                <div className='summary'>
+                                    <div className='brand-name'>
+                                        <Link 
+                                        key={id} 
+                                        to={'/'+category+'/'+id}>
+                                            <span className='brand'>{brand}</span>
+                                            <span className='name'>{name}</span>
+                                        </Link>
+                                    </div>
+                                    <div className='price'>
+                                        <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
+                                    </div>
+                                    <div className='attributes'>
+                                        {generateListOfAttributes(attributes)}  
+                                    </div>
                                 </div>
-                                <div className='price'>
-                                    <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
+                                <div className='quantity'>
+                                    <span onClick={() => {increaseQuantityOfProduct(cartId)}} className='attribute-option plus-minus'>
+                                    +
+                                    </span>
+                                    <span className='attribute-number'>
+                                        {quantity}
+                                    </span>
+                                    <span onClick={() => {removeFromBag(cartId)}} className='attribute-option plus-minus'>
+                                    -
+                                    </span>
                                 </div>
-                                <div className='attributes'>
-                                    {generateListOfAttributes(attributes)}  
-                                </div>
-                            </div>
-                            <div className='quantity'>
-                                <span onClick={() => {increaseQuantityOfProduct(cartId)}} className='attribute-option plus-minus'>
-                                +
-                                </span>
-                                <span className='attribute-number'>
-                                    {quantity}
-                                </span>
-                                <span onClick={() => {removeFromBag(cartId)}} className='attribute-option plus-minus'>
-                                -
-                                </span>
-                            </div>
-                            <div className='gallery'>
-                                {galleryLength > 1
-                                ? <>
-                                    <div onMouseEnter={() => {setOverId(cartId)}} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
-                                        <div>
-                                            <img 
-                                            alt={name+' product'}
-                                            onMouseMove={handleMouseMove}
-                                            style={(overId === cartId) ? style : null} 
-                                            className='item-image' 
-                                            src={gallery[imageToShow]} />
-                                        </div>
-                                        <div>
-                                            <div className='gallery-arrows'>
-                                                <img onClick={() => {previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
-                                                <img onClick={() => {nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
+                                <div className='gallery'>
+                                    {galleryLength > 1
+                                    ? <>
+                                        <div onMouseEnter={() => {setOverId(cartId)}} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
+                                            <div>
+                                                <img 
+                                                alt={name+' product'}
+                                                onMouseMove={handleMouseMove}
+                                                style={(overId === cartId) ? style : null} 
+                                                className='item-image' 
+                                                src={gallery[imageToShow]} />
+                                            </div>
+                                            <div>
+                                                <div className='gallery-arrows'>
+                                                    <img onClick={() => {previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
+                                                    <img onClick={() => {nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </>
-                                : <div onMouseEnter={() => setOverId(cartId)} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
-                                    <img 
-                                    alt={name+' product'} 
-                                    className='item-image' 
-                                    onMouseMove={handleMouseMove} 
-                                    style={(overId === cartId) ? style : null} 
-                                    src={gallery[0]} />
-                                </div>} 
+                                    </>
+                                    : <div onMouseEnter={() => setOverId(cartId)} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
+                                        <img 
+                                        alt={name+' product'} 
+                                        className='item-image' 
+                                        onMouseMove={handleMouseMove} 
+                                        style={(overId === cartId) ? style : null} 
+                                        src={gallery[0]} />
+                                    </div>} 
+                                </div>
                             </div>
                         </div>
+                    )})}
+                    <div className='divider'></div>
+                    <div className='price-summary'>
+                        <div className='labels'>
+                            <span>Tax 21%:</span>
+                            <span>Quantity:</span>
+                            <span>Total:</span>
+                        </div>
+                        <div className='values'>
+                            <span className='bold'>{symbol}{tax}</span>
+                            <span className='bold'>{numberOfItemsInBag}</span>
+                            <span className='bold'>{symbol}{sum}</span>
+                        </div>
                     </div>
-                )})}
-                <div className='divider'></div>
-                <div className='price-summary'>
-                    <div className='labels'>
-                        <span>Tax 21%:</span>
-                        <span>Quantity:</span>
-                        <span>Total:</span>
+                    <div className='wide-green-button'>
+                        <span>Order</span>
                     </div>
-                    <div className='values'>
-                        <span className='bold'>{symbol}{tax}</span>
-                        <span className='bold'>{numberOfItemsInBag}</span>
-                        <span className='bold'>{symbol}{sum}</span>
-                    </div>
+                </>
+                : <span>Your cart is currently empty.</span>}
                 </div>
-                <div className='wide-green-button'>
-                    <span>Order</span>
-                </div>
-            </>
-            : <span>Your cart is currently empty.</span>}
             </div>
-        </div>
-    );
-  }}
+        );
+    }
+}
 
-  export default CartPage;
+export default CartPage;

@@ -107,10 +107,11 @@
 
 .items-container .out-of-stock{
   position: absolute;
-  top: 50%;
-  left: 55%;
-  width: 62%;
-  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  padding-top: 45%;
+  padding-bottom: 30%;
+  margin: 0 auto;
   text-transform: uppercase;
   font-family: 'Raleway';
   font-style: normal;

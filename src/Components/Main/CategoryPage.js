@@ -22,9 +22,9 @@ class CategoryPage extends React.Component {
     if(paramsCategory && (categoryData === '')){
       const categoryResult = await getCategory(paramsCategory)
       const {category} = categoryResult;
-      const {products} = category;
 
       if(category !== null){
+        const {products} = category;
           this.setState({
             ...this.state, 
             categoryData: products, 
@@ -45,7 +45,7 @@ class CategoryPage extends React.Component {
         ...this.state, 
         categoryData: products, 
         categoryName: name})
-      this.props.updateStateFromChild({name: 'currentCategory', value: name})
+      updateStateFromChild({name: 'currentCategory', value: name})
     } 
   }
 
@@ -118,7 +118,7 @@ class CategoryPage extends React.Component {
 
     return (
         
-      !(categoryData === null)
+      categoryData !== null
         ? <div className='items-container'>
             <h1 className='category-title'>{categoryName}</h1>
             <div className='items'>
@@ -128,47 +128,48 @@ class CategoryPage extends React.Component {
 
                 return(
                 <div 
-                onMouseEnter={event => showAddToCart(event, id)}
-                onMouseLeave={showAddToCart}
-                key={id} 
-                className='single-item'>
-                  {inStock ?
-                    (overId && overId === id) 
-                    ? <div onClick={() => {addInBag({item: item})}}>
+                  onMouseEnter={event => showAddToCart(event, id)}
+                  onMouseLeave={showAddToCart}
+                  key={id} 
+                  className='single-item'>
+                    {inStock ?
+                      (overId && overId === id) 
+                      ? <div onClick={() => {addInBag({item: item})}}>
                           <img src={CartIcon} className='cart-icon' alt="Add to cart" />
                         </div> 
-                    : null 
-                  : null} 
-                <Link 
-                name={id} 
-                className='item' 
-                to={'/'+category+'/'+id}>
-                  <div className={inStock ? 'image-wrapper' : 'image-wrapper opacity'}>
-                  {!inStock 
-                    ? <div className='out-of-stock'>
-                        Out of stock
-                      </div>
-                    : null}
-                    <img className='item-image' src={gallery[0]} alt={name} />
-                  </div>
-      
-                  <div className='item-content'>
-                        <div className={inStock ? 'item-name' : 'item-name bleached-text'}>{brand} {name}</div>
-                      <div className={inStock ? 'item-price' : 'item-price bleached-text'}>{symbol}{prices[currencyToShow].amount.toFixed(2)}</div>
-                  </div>
-                </Link>
+                      : null 
+                    : null} 
+                    <Link 
+                      name={id} 
+                      className='item' 
+                      to={'/'+category+'/'+id}>
+                        <div className={inStock ? 'image-wrapper' : 'image-wrapper opacity'}>
+                          {!inStock 
+                          ? <div className='out-of-stock'>
+                              Out of stock
+                            </div>
+                          : null}
+                          <img className='item-image' src={gallery[0]} alt={name} />
+                        </div>
+                        <div className='item-content'>
+                          <div className={inStock ? 'item-name' : 'item-name bleached-text'}>{brand} {name}</div>
+                          <div className={inStock ? 'item-price' : 'item-price bleached-text'}>{symbol}{prices[currencyToShow].amount.toFixed(2)}</div>
+                        </div>
+                    </Link>
                 </div>
-              )})}
+                )}
+              )}
             </div>
           </div>
         : <div>Sorry, we can't find that category.</div>
     );
-  }}
+  }
+}
 
-  const Category = (props) => (
-    <CategoryPage
-      {...props}
-      params={useParams()}
-    />)
+const Category = (props) => (
+  <CategoryPage
+    {...props}
+    params={useParams()}
+  />)
 
-  export default Category;
+export default Category;

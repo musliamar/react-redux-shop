@@ -122,7 +122,6 @@ span.bold {
   font-weight: 700;
   font-size: 18px;
   line-height: 18px;
-  color: #1D1F22;
   text-transform: uppercase;
   padding-top: 10px;
 }
@@ -198,6 +197,12 @@ span.attribute-number {
   background: #5ECE7B;
   color: #fff;
   cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .brand{

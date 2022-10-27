@@ -16,7 +16,7 @@ class App extends React.Component {
 
     const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
 
-    this.state = !(localStorage === null) 
+    this.state = localStorage !== null 
     ? localStorage
     :  {   
       choosenCurrency: '',
@@ -199,7 +199,7 @@ class App extends React.Component {
 
   generateListOfAttributes(attributes) {
 
-    const {attributes: arrayOfAttributes, from, choosenAttributes: choosenAttributesArray} = attributes;
+    const {attributes: arrayOfAttributes, from, choosenAttributes: choosenAttributesArray, inStock} = attributes;
     
     return(arrayOfAttributes && arrayOfAttributes.map((attribute, index) => {
 
@@ -208,7 +208,7 @@ class App extends React.Component {
       const {choosenAttributes: attributesFromState} = this.state;
       let choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesArray;
 
-      if(from === 'product-page'){selectingEnabled = true;}
+      if(from === 'product-page'){inStock ? selectingEnabled = true : selectingEnabled = false}
 
       for(const choosenAttribute in choosenAttributes){
         const attributeToCompare = choosenAttributes[choosenAttribute];
@@ -222,18 +222,39 @@ class App extends React.Component {
       const {id: valueId} = selectedValue;
 
       return (<div key={attributeId} className='attribute'>
-                <span className='attribute-name'>{name}:</span>
+                <span className={inStock ? 'attribute-name' : 'attribute-name bleached-text'}>{name}:</span>
                 <div className='attribute-options'>
                   {items && items.map((item) => {
                     const {id: itemId, value} = item;
                     return (
                       type === 'swatch'
                       ? (selectedValue && itemId === valueId) 
-                        ? <span key={itemId} style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option swatch selected'></span>
-                        : <span key={itemId} style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option swatch'></span>
+                        ? <span 
+                            key={itemId} 
+                            style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} 
+                            onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} 
+                            className={inStock ? 'attribute-option swatch selected' : 'attribute-option swatch opacity'}>
+                          </span>
+                        : <span 
+                            key={itemId} 
+                            style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} 
+                            onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} 
+                            className={inStock ? 'attribute-option swatch' : 'attribute-option swatch opacity'}>
+                          </span>
                       : (selectedValue && itemId === valueId) 
-                        ? <span key={itemId} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option text selected'>{value}</span>
-                        : <span key={itemId} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option text'>{value}</span>
+                        ? <span 
+                            key={itemId} style={selectingEnabled? {cursor: 'pointer'} : null} 
+                            onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} 
+                            className={inStock ? 'attribute-option text selected' : 'attribute-option text out-of-stock'}>
+                              {value}
+                          </span>
+                        : <span 
+                            key={itemId} 
+                            style={selectingEnabled? {cursor: 'pointer'} : null} 
+                            onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} 
+                            className={inStock ? 'attribute-option text' : 'attribute-option text out-of-stock'}>
+                              {value}
+                          </span>
                     )})}
                 </div>
               </div>)
@@ -393,7 +414,7 @@ class App extends React.Component {
       choosenAttributes,
       defaultCategory,
       notificationArr: notifications} = this.state;
-      
+
     const {
       changeCurrency,
       openBox,
@@ -406,7 +427,7 @@ class App extends React.Component {
       addInBag} = this;
 
     return (
-    <div className='App'>
+      <div className='App'>
         <Header 
         currenciesList={currenciesList}
         categoriesList={categoriesList}
@@ -425,16 +446,16 @@ class App extends React.Component {
         choosenCurrency={choosenCurrency} />
         <main> 
         {currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
-        <Routes>
-          <Route path="/">
-            <Route index element={
-              <CategoryPage 
-                defaultCategory={defaultCategory}
-                updateStateFromChild={updateStateFromChild}
-                choosenCurrency={choosenCurrency} 
-                currencyToShow={currencyToShow}
-                addInBag={addInBag}/>
-            } />
+          <Routes>
+            <Route path="/">
+              <Route index element={
+                <CategoryPage 
+                  defaultCategory={defaultCategory}
+                  updateStateFromChild={updateStateFromChild}
+                  choosenCurrency={choosenCurrency} 
+                  currencyToShow={currencyToShow}
+                  addInBag={addInBag}/>
+              } />
               <Route path=":category">
                 <Route index element={
                   <CategoryPage 
@@ -467,9 +488,9 @@ class App extends React.Component {
                   currencyToShow={currencyToShow}
                   sumOfPrices={sumOfPrices}
                   numberOfItemsInBag={numberOfItemsInBag}/>
-            } />
+              } />
             </Route>
-        </Routes>
+          </Routes>
           <div className='notification'>
             <div className='container'>
               {notifications}
@@ -477,8 +498,9 @@ class App extends React.Component {
           </div>
         </main>
         <Footer />
-    </div>
-  );
-}}
+      </div>
+    );
+  }
+}
 
 export default App;
