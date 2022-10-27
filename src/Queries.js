@@ -2,7 +2,7 @@ import { client, Query, Field} from "@tilework/opus";
 
 client.setEndpoint('http://localhost:4000');
 
-const getCategoriesList = async () => {
+export const getCategoriesList = async () => {
 
     const queryCategoriesList = new Query("categories", true)    
     .addFieldList(["name"])    
@@ -10,7 +10,7 @@ const getCategoriesList = async () => {
     return await client.post(queryCategoriesList)
   }
 
-const getCurrenciesList = async () => {
+export const getCurrenciesList = async () => {
   
   const queryCurrencies = new Query("currencies", true)
     .addFieldList(['symbol', 'label']);
@@ -18,7 +18,7 @@ const getCurrenciesList = async () => {
   return await client.post(queryCurrencies)
 }
 
-const getCategory = async (category) => {
+export const getCategory = async (category) => {
   
   const queryCategory = new Query("category", true)
     .addArgument("input", "CategoryInput", { title : category})
@@ -27,7 +27,7 @@ const getCategory = async (category) => {
   return await client.post(queryCategory)
 }
 
-const getProduct = async (product) => {
+export const getProduct = async (product) => {
   
   const queryProduct = new Query("product", true)
     .addArgument("id", "String!", product) 
@@ -36,6 +36,4 @@ const getProduct = async (product) => {
   return await client.post(queryProduct)
 }
 
-const Queries = {getCategoriesList, getCurrenciesList, getCategory, getProduct};
-
-export default Queries;
+export default getProduct;

@@ -421,6 +421,10 @@ header nav .selected {
     border-bottom-width: medium;
 }
 
+header .actions .currency .selected{
+    background: #eee;
+}
+
 header .rotate {
     -webkit-transform:rotate(180deg);
     -moz-transform: rotate(180deg);

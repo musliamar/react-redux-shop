@@ -12,12 +12,12 @@ Based on feedback, these things **are fixed**:
 - Wrong font was used - **done**
 - Full product card should be clickable - **done**
 - Out of stock labels not implemented - partially **done**, still to do out-of-stock labels on PDP
+- Please use variable destructuring - **done**
 - Not possible to distinguish white color - I'm not sure
 
 **Still to fix**:
 
 - Out of stock products should have same labels on PDP as on PLP
-- Please use variable destructuring
 - Please don’t use style prop for static styles
 
 This is my project for scandiweb.

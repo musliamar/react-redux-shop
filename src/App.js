@@ -6,7 +6,7 @@ import Footer from './Components/Footer/Footer';
 import CategoryPage from './Components/Main/CategoryPage';
 import CartPage from './Components/Main/CartPage';
 import ProductPage from './Components/Main/ProductPage';
-import Queries from './Queries';
+import {getCategoriesList, getCurrenciesList, getCategory} from './Queries';
 import SmallCartIcon from './Images/small-cart-icon.svg';
 
 class App extends React.Component {
@@ -52,7 +52,8 @@ class App extends React.Component {
   }
 
   updateStateFromChild(props){
-    this.setState({...this.state, [props.name]: props.value, choosenAttributes: []});
+    const {value, name} = props;
+    this.setState({...this.state, [name]: value, choosenAttributes: []});
   }
 
   // notification will show only if new product is added in bag
@@ -61,36 +62,42 @@ class App extends React.Component {
   // if user add same product but with different attributes, notification will be shown
 
   addNotification(props) {
+    const {notificationKey, notificationArr} = this.state;
+    const {removeNotification} = this;
+    const {product, itemsInBag, numberOfItemsInBag} = props;
+    const {brand, name} = product;
+
     const notification =
-      <div key={this.state.notificationKey} className='message'>
+      <div key={notificationKey} className='message'>
         <p><img src={SmallCartIcon} style={{width: '20px', marginRight: 10}} alt='Cart icon in notification' /> 
-        Product {props.product.brand} {props.product.name} has been added in bag.</p>
+        Product {brand} {name} has been added in bag.</p>
       </div>;
 
     this.setState({
       ...this.state,
-      itemsInBag: props.itemsInBag,
-      numberOfItemsInBag: props.numberOfItemsInBag,   
-      notificationArr: this.state.notificationArr.concat(notification),
-      notificationKey: this.state.notificationKey + 1
+      itemsInBag: itemsInBag,
+      numberOfItemsInBag: numberOfItemsInBag,   
+      notificationArr: notificationArr.concat(notification),
+      notificationKey: notificationKey + 1
     });
-    setTimeout(this.removeNotification, 3000);
+    setTimeout(removeNotification, 3000);
   }
 
   removeNotification() {
-    const arr = this.state.notificationArr;
-    const arrLength = arr.length;
-    const newArr = arrLength ? arr.slice(0, arrLength - 1) : [];
+    const {notificationArr, notificationKey} = this.state;
+    const {length} = notificationArr;
+    const newArr = length ? notificationArr.slice(0, length - 1) : [];
 
    this.setState({
       ...this.state,
       notificationArr: newArr,
-      notificationKey: this.state.notificationKey - 1
+      notificationKey: notificationKey - 1
     });
   }
 
   openBox(props){
-    if(this.state.currentlyOpened === props){
+    const {currentlyOpened} = this.state;
+    if(currentlyOpened === props){
       this.setState({
         ...this.state,
         currentlyOpened: '',
@@ -111,10 +118,15 @@ class App extends React.Component {
   }
 
   changeCurrency(currency) {   
-    const {sampleProductPrice} = this.state.defaultCategory;
+    const {defaultCategory} = this.state;
+    const {sampleProductPrice} = defaultCategory;
+    const {label: currencyLabel} = currency;
     let currencyToShow;
     for(const priceLabel in sampleProductPrice){
-      if(currency.label === sampleProductPrice[priceLabel].currency.label){
+      const {currency} = sampleProductPrice[priceLabel];
+      const {label} = currency;
+
+      if(currencyLabel === label){
         currencyToShow = priceLabel;
       }
     }
@@ -127,11 +139,13 @@ class App extends React.Component {
   }
 
   selectAttribute(props){
-    const choosenAttributes = this.state.choosenAttributes;
+    const {choosenAttributes} = this.state;
+    const {id, item} = props;
     let newArray = [];
+
     choosenAttributes.forEach((key) =>
-        {if(Object.keys(key)[0] === props.id){
-          newArray.push({[props.id]: props.item})
+        {if(Object.keys(key)[0] === id){
+          newArray.push({[id]: item})
         }else{
           newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
         }}
@@ -140,37 +154,43 @@ class App extends React.Component {
   }
 
   generateDefaultAttributes(props){
+    const {category} = props;
     const choosenAttributes = [];
     Object.keys(props).forEach((item) => {
       if((item === 'attributes')){
         Object.values(props[item]).forEach((attribute) => {
-          const attributeToAdd = {[attribute.id]: attribute.items[0]}
+          const {id, items} = attribute;
+          const attributeToAdd = {[id]: items[0]}
           choosenAttributes.push(attributeToAdd)
         })
       }
     })
-    this.setState({...this.state, choosenAttributes: choosenAttributes, currentCategory: props.category})
+    this.setState({...this.state, choosenAttributes: choosenAttributes, currentCategory: category})
     return choosenAttributes;
   }
 
   generateCartIdOfItem(props){
-    const choosenAttributes = props.choosenAttributes
-    const generateIdForCart = props.id.split('-')
+    const {choosenAttributes, id} = props;
+    const generateIdForCart = id.split('-')
     let transformedAttribute;
 
     choosenAttributes.map((attribute) => 
-      {if(attribute.id){
-        transformedAttribute = {[attribute.id]: attribute.item}
+      {
+      const {id, item} = attribute;
+      if(id){
+        transformedAttribute = {[id]: item}
       }else{
         transformedAttribute = attribute;
       }
       const cartIdArray = Object.keys(transformedAttribute).map((key) =>
-      {if(transformedAttribute[key].id === 'Yes'){
+      {
+        const {id} = transformedAttribute[key];
+        if(id === 'Yes'){
           const splitted = key.split(' ');
           const joined = splitted.join('-');
           generateIdForCart.push(joined.toLowerCase())
-        }else if(!(transformedAttribute[key].id === 'No')){
-          generateIdForCart.push(transformedAttribute[key].id.toLowerCase())
+        }else if(!(id === 'No')){
+          generateIdForCart.push(id.toLowerCase())
         }
         return generateIdForCart})
       return cartIdArray})
@@ -178,33 +198,42 @@ class App extends React.Component {
   }
 
   generateListOfAttributes(attributes) {
-    return(attributes.attributes && attributes.attributes.map((attribute, index) => {
+
+    const {attributes: arrayOfAttributes, from, choosenAttributes: choosenAttributesArray} = attributes;
+    
+    return(arrayOfAttributes && arrayOfAttributes.map((attribute, index) => {
+
       let newAttribute = JSON.parse(JSON.stringify(attribute));
       let selectingEnabled = false;
       const {choosenAttributes: attributesFromState} = this.state;
-      let choosenAttributes = attributes.from === 'product-page' ? attributesFromState : attributes.choosenAttributes;
-      if(attributes.from === 'product-page'){selectingEnabled = true;}
+      let choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesArray;
+
+      if(from === 'product-page'){selectingEnabled = true;}
 
       for(const choosenAttribute in choosenAttributes){
         const attributeToCompare = choosenAttributes[choosenAttribute];
-        const id = attribute.id;
+        const {id} = attribute;
         if(attributeToCompare[id]){
           newAttribute.selectedValue = attributeToCompare[id];
         }
       }
-       return (<div key={attribute.id} className='attribute'>
-                <span className='attribute-name'>{attribute.name}:</span>
+
+      const {id: attributeId, name, items, type, selectedValue} = newAttribute;
+      const {id: valueId} = selectedValue;
+
+      return (<div key={attributeId} className='attribute'>
+                <span className='attribute-name'>{name}:</span>
                 <div className='attribute-options'>
-                  {attribute.items && attribute.items.map((item) => {
-                    const color = item.value;
+                  {items && items.map((item) => {
+                    const {id: itemId, value} = item;
                     return (
-                      attribute.type === 'swatch'
-                      ? (newAttribute.selectedValue && item.id === newAttribute.selectedValue.id) 
-                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch selected'></span>
-                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer', backgroundColor: color} : {backgroundColor: color}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option swatch'></span>
-                      : (newAttribute.selectedValue && item.id === newAttribute.selectedValue.id) 
-                        ? <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text selected'>{item.value}</span>
-                        : <span key={item.id} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attribute.id, item: item})} : null} className='attribute-option text'>{item.value}</span>
+                      type === 'swatch'
+                      ? (selectedValue && itemId === valueId) 
+                        ? <span key={itemId} style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option swatch selected'></span>
+                        : <span key={itemId} style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option swatch'></span>
+                      : (selectedValue && itemId === valueId) 
+                        ? <span key={itemId} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option text selected'>{value}</span>
+                        : <span key={itemId} style={selectingEnabled? {cursor: 'pointer'} : null} onClick={selectingEnabled ? () => {this.selectAttribute({id: attributeId, item: item})} : null} className='attribute-option text'>{value}</span>
                     )})}
                 </div>
               </div>)
@@ -212,25 +241,27 @@ class App extends React.Component {
   }
   
   increaseQuantityOfProduct(props){
-    const items = this.state.itemsInBag;
+    const {itemsInBag: items, numberOfItemsInBag} = this.state;
     items.forEach((item) => {
-      if(item.cartId === props){
-        item.quantity = item.quantity + 1;
+      let {cartId, quantity} = item;
+      if(cartId === props){
+        item.quantity = quantity + 1;
       }
     })
     this.setState({
       ...this.state,
       itemsInBag: items,
-      numberOfItemsInBag: this.state.numberOfItemsInBag + 1         
+      numberOfItemsInBag: numberOfItemsInBag + 1         
     })
   }
 
   removeFromBag(props){
-    const items = this.state.itemsInBag;
+    const {itemsInBag: items, numberOfItemsInBag} = this.state;
     items.forEach((item) => {
-      if(item.cartId === props){
-        if(item.quantity > 1){
-          item.quantity = item.quantity - 1;
+      let {cartId, quantity} = item;
+      if(cartId === props){
+        if(quantity > 1){
+          item.quantity = quantity - 1;
         }else{
           items.splice(items.indexOf(item), 1);
         }
@@ -239,57 +270,68 @@ class App extends React.Component {
     this.setState({
       ...this.state,
       itemsInBag: items,
-      numberOfItemsInBag: this.state.numberOfItemsInBag - 1         
+      numberOfItemsInBag: numberOfItemsInBag - 1         
     })
   }
 
   addInBag(props) {
-    const product = JSON.parse(JSON.stringify(props.item));;
-    product.choosenAttributes = this.state.choosenAttributes.length === 0 
-                                ? this.generateDefaultAttributes(props.item) 
-                                : this.state.choosenAttributes;
+    const {item} = props;
+    const product = JSON.parse(JSON.stringify(item));
+    const {id} = product;
+    const {choosenAttributes, itemsInBag, numberOfItemsInBag, itemsInBag: items} = this.state;
+    const {generateDefaultAttributes, increaseQuantityOfProduct, addNotification} = this;
 
-    product.cartId = this.generateCartIdOfItem({id: product.id, choosenAttributes: product.choosenAttributes})
-    const items = this.state.itemsInBag;
+    product.choosenAttributes = choosenAttributes.length === 0 
+                                ? generateDefaultAttributes(item) 
+                                : choosenAttributes;
+
+    product.cartId = this.generateCartIdOfItem({id: id, choosenAttributes: product.choosenAttributes})
+    const {cartId} = product;
 
     if(!(items.length === 0)){
       let found = false;
       items.forEach((item) => {
-        if(item.cartId === product.cartId){
+        const {cartId: itemCartId} = item;
+        if(itemCartId === cartId){
           found = true;
-          this.increaseQuantityOfProduct(item.cartId);
+          increaseQuantityOfProduct(itemCartId);
         }
       })
       if(!found){
         product.quantity = 1;
-        this.addNotification({
+        addNotification({
           product: product,
-          itemsInBag: [...this.state.itemsInBag, product],
-          numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
+          itemsInBag: [...itemsInBag, product],
+          numberOfItemsInBag: numberOfItemsInBag + product.quantity        
         })
       }
     }else{
       product.quantity = 1;
-      this.addNotification({
+      addNotification({
         product: product,
-        itemsInBag: [...this.state.itemsInBag, product],
-        numberOfItemsInBag: this.state.numberOfItemsInBag + product.quantity        
+        itemsInBag: [...itemsInBag, product],
+        numberOfItemsInBag: numberOfItemsInBag + product.quantity        
       })
     }
   }
 
   async runOnFirstVisitWithoutLocalStorage(){
-    const categories = await Queries.getCategoriesList();
-    const currencies = await Queries.getCurrenciesList();
-    const categoriesList = categories.categories;
-    const currenciesList = currencies.currencies;
-    const defaultCategoryResult = await Queries.getCategory(categoriesList[0].name)
+    const categories = await getCategoriesList();
+    const currencies = await getCurrenciesList();
+    const {categories: categoriesList} = categories;
+    const {currencies: currenciesList} = currencies;
+    const {name: defaultCategoryName} = categoriesList[0];
+    const defaultCategoryResult = await getCategory(defaultCategoryName)
     const {category: defaultCategory} = defaultCategoryResult;
-    const {prices: sampleProductPrice} = defaultCategory.products[0];
+    const {products: defaultCategoryProducts} = defaultCategory;
+    const {prices: sampleProductPrice} = defaultCategoryProducts[0];
+    const {label: defaultCurrencyLabel} = currenciesList[0];
     let currencyToShow;
 
     for(const priceLabel in sampleProductPrice){
-      if(currenciesList[0].label === sampleProductPrice[priceLabel].currency.label){
+      const {currency} = sampleProductPrice[priceLabel];
+      const {label} = currency;
+      if(defaultCurrencyLabel === label){
          currencyToShow = priceLabel;
       }
     }
@@ -298,7 +340,7 @@ class App extends React.Component {
       currenciesList: currenciesList,
       categoriesList: categoriesList,
       currencyToShow: currencyToShow,
-      defaultCategory: {name: categoriesList[0].name, sampleProductPrice: sampleProductPrice},
+      defaultCategory: {name: defaultCategoryName, sampleProductPrice: sampleProductPrice},
       choosenCurrency: currenciesList[0],
       numberOfItemsInBag: 0, 
       itemsInBag: [],
@@ -307,15 +349,17 @@ class App extends React.Component {
   }
  
   async componentDidMount() {
-   const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
-     if(!localStorage || (localStorage === null)){
-      this.runOnFirstVisitWithoutLocalStorage();
-     }
+    const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
+      if(!localStorage || (localStorage === null)){
+        this.runOnFirstVisitWithoutLocalStorage();
+      }
   }
 
   componentDidUpdate(){
     window.onmouseout = (event) => {
-      let target = event.relatedTarget || event.toElement;
+      const {relatedTarget, toElement} = event;
+      let target = relatedTarget || toElement;
+
       if (!target || target.nodeName === "HTML") {
         this.setState({
           ...this.state,
@@ -329,79 +373,100 @@ class App extends React.Component {
   render() {
 
     let sumOfAllPricesRaw = 0;
-    const {itemsInBag} = this.state;
+    const {itemsInBag, currencyToShow} = this.state;
 
     for(const item in itemsInBag){
-        itemsInBag[item].sumPriceOfItem = itemsInBag[item].prices[this.state.currencyToShow].amount * itemsInBag[item].quantity;
+        const {prices, quantity} = itemsInBag[item];
+        itemsInBag[item].sumPriceOfItem = prices[currencyToShow].amount * quantity;
         itemsInBag[item].sumPriceOfItemFixed = itemsInBag[item].sumPriceOfItem.toFixed(2);
         sumOfAllPricesRaw = sumOfAllPricesRaw + itemsInBag[item].sumPriceOfItem;
     }
 
     const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
-    const notifications = this.state.notificationArr;
+    const {
+      currenciesList,
+      categoriesList,
+      currentCategory,
+      currentlyOpened,
+      numberOfItemsInBag,
+      choosenCurrency,
+      choosenAttributes,
+      defaultCategory,
+      notificationArr: notifications} = this.state;
+      
+    const {
+      changeCurrency,
+      openBox,
+      closeBox,
+      increaseQuantityOfProduct,
+      removeFromBag,
+      generateListOfAttributes,
+      generateDefaultAttributes,
+      updateStateFromChild,
+      addInBag} = this;
 
     return (
     <div className='App'>
         <Header 
-        currenciesList={this.state.currenciesList}
-        categoriesList={this.state.categoriesList}
-        changeCurrency={this.changeCurrency} 
-        currentCategory={this.state.currentCategory}
-        currentlyOpened={this.state.currentlyOpened}
-        openBox={this.openBox}
-        numberOfItemsInBag={this.state.numberOfItemsInBag}
-        itemsInBag={this.state.itemsInBag}
-        currencyToShow={this.state.currencyToShow}
-        closeBox={this.closeBox}
-        increaseQuantityOfProduct={this.increaseQuantityOfProduct}
-        removeFromBag={this.removeFromBag}
+        currenciesList={currenciesList}
+        categoriesList={categoriesList}
+        changeCurrency={changeCurrency} 
+        currentCategory={currentCategory}
+        currentlyOpened={currentlyOpened}
+        openBox={openBox}
+        numberOfItemsInBag={numberOfItemsInBag}
+        itemsInBag={itemsInBag}
+        currencyToShow={currencyToShow}
+        closeBox={closeBox}
+        increaseQuantityOfProduct={increaseQuantityOfProduct}
+        removeFromBag={removeFromBag}
         sumOfPrices={sumOfPrices}
-        generateListOfAttributes={this.generateListOfAttributes}
-        choosenCurrency={this.state.choosenCurrency} />
+        generateListOfAttributes={generateListOfAttributes}
+        choosenCurrency={choosenCurrency} />
         <main> 
-        {this.state.currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
+        {currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
         <Routes>
           <Route path="/">
             <Route index element={
               <CategoryPage 
-                defaultCategory={this.state.defaultCategory}
-                updateStateFromChild={this.updateStateFromChild}
-                choosenCurrency={this.state.choosenCurrency} 
-                currencyToShow={this.state.currencyToShow}
-                addInBag={this.addInBag}/>
+                defaultCategory={defaultCategory}
+                updateStateFromChild={updateStateFromChild}
+                choosenCurrency={choosenCurrency} 
+                currencyToShow={currencyToShow}
+                addInBag={addInBag}/>
             } />
               <Route path=":category">
                 <Route index element={
                   <CategoryPage 
-                    choosenCurrency={this.state.choosenCurrency} 
-                    currencyToShow={this.state.currencyToShow}
-                    updateStateFromChild={this.updateStateFromChild}
-                    currentCategory={this.currentCategory}
-                    addInBag={this.addInBag}/>
+                    choosenCurrency={choosenCurrency} 
+                    currencyToShow={currencyToShow}
+                    updateStateFromChild={updateStateFromChild}
+                    currentCategory={currentCategory}
+                    addInBag={addInBag}/>
                 } />
                 <Route path=":product" element={
                   <ProductPage 
-                    choosenCurrency={this.state.choosenCurrency} 
-                    choosenAttributes={this.state.choosenAttributes}
-                    currencyToShow={this.state.currencyToShow}
-                    numberOfItemsInBag={this.state.numberOfItemsInBag}
-                    addInBag={this.addInBag}
-                    generateListOfAttributes={this.generateListOfAttributes}
-                    generateDefaultAttributes={this.generateDefaultAttributes}/>
+                    choosenCurrency={choosenCurrency} 
+                    choosenAttributes={choosenAttributes}
+                    currencyToShow={currencyToShow}
+                    numberOfItemsInBag={numberOfItemsInBag}
+                    addInBag={addInBag}
+                    generateListOfAttributes={generateListOfAttributes}
+                    generateDefaultAttributes={generateDefaultAttributes}/>
                 } />
               </Route>
               <Route 
               path='/cart'
               element={
                 <CartPage 
-                  choosenCurrency={this.state.choosenCurrency} 
-                  increaseQuantityOfProduct={this.increaseQuantityOfProduct}
-                  removeFromBag={this.removeFromBag}
-                  generateListOfAttributes={this.generateListOfAttributes}
-                  itemsInBag={this.state.itemsInBag}
-                  currencyToShow={this.state.currencyToShow}
+                  choosenCurrency={choosenCurrency} 
+                  increaseQuantityOfProduct={increaseQuantityOfProduct}
+                  removeFromBag={removeFromBag}
+                  generateListOfAttributes={generateListOfAttributes}
+                  itemsInBag={itemsInBag}
+                  currencyToShow={currencyToShow}
                   sumOfPrices={sumOfPrices}
-                  numberOfItemsInBag={this.state.numberOfItemsInBag}/>
+                  numberOfItemsInBag={numberOfItemsInBag}/>
             } />
             </Route>
         </Routes>

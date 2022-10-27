@@ -14,10 +14,12 @@ class CartPage extends React.Component {
 
 
     handleMouseMove = (event) => {
-        const { left, width, height } = event.target.getBoundingClientRect()
-        const top = event.target.getBoundingClientRect().top + window.scrollY;
-        const x = (event.pageX - left) / width * 100
-        const y = (event.pageY - top) / height * 100
+        const { left, width, height, top: targetTop } = event.target.getBoundingClientRect()
+        const {pageX, pageY} = event;
+        const {scrollY} = window;
+        const top = targetTop + scrollY;
+        const x = (pageX - left) / width * 100
+        const y = (pageY - top) / height * 100
         this.setState({style: {objectPosition: `${x}% ${y}%` }})
     }
 
@@ -32,20 +34,23 @@ class CartPage extends React.Component {
     nextImage = (props) => {
 
         const {currentImages} = this.state;
+        const {length: imagesLength} = currentImages;
         const {item, gallery} = props;
+        const {length: galleryLength} = gallery;
 
-        if(currentImages.length === 0){
+        if(imagesLength === 0){
             const array = [];
             array.push({ item: item, currentImage: 1 })
             this.setState({currentImages: array});
         }else{
             currentImages.forEach((image) => {
+                const {item: imageItem, currentImage} = image;
                 const array = currentImages;
-                    if(image.item === item){
-                    if((gallery.length - 1) === image.currentImage){
+                    if(imageItem === item){
+                    if((galleryLength - 1) === currentImage){
                         array.push({ item: item, currentImage: 0 })
                     }else{
-                        const hold = image.currentImage
+                        const hold = currentImage
                         array.push({ item: item, currentImage: hold + 1 })
                     }
                     this.setState({currentImages: array});
@@ -63,26 +68,29 @@ class CartPage extends React.Component {
     previousImage = (props) => {
 
         const {currentImages} = this.state;
+        const {length: imagesLength} = currentImages;
         const {item, gallery} = props;
+        const {length: galleryLength} = gallery;
 
-        if(currentImages.length === 0){
+        if(imagesLength === 0){
             const array = [];
-            array.push({ item: item, currentImage: gallery.length - 1 })
+            array.push({ item: item, currentImage: galleryLength - 1 })
             this.setState({currentImages: array});
         }else{
             currentImages.forEach((image) => {
+                const {item: imageItem, currentImage} = image;
                 const array = currentImages;
-                if(image.item === item){
-                    if(image.currentImage === 0){
-                        array.push({ item: item, currentImage: gallery.length - 1 })
+                if(imageItem === item){
+                    if(currentImage === 0){
+                        array.push({ item: item, currentImage: galleryLength - 1 })
                     }else{
-                        const hold = image.currentImage
+                        const hold = currentImage;
                         array.push({ item: item, currentImage: hold - 1 })
                     }
                     this.setState({currentImages: array});
                     array.splice(array.indexOf(image), 1);
                 }else{
-                    array.push({ item: item, currentImage: gallery.length - 1 })
+                    array.push({ item: item, currentImage: galleryLength - 1 })
                     this.setState({currentImages: array});
                     array.splice(array.indexOf(image), 1);
                 }
@@ -102,7 +110,11 @@ class CartPage extends React.Component {
             increaseQuantityOfProduct,
             removeFromBag } = this.props;
 
+            const {length: itemsLength} = itemsInBag;
+            const {symbol} = choosenCurrency;
             const {currentImages, overId, style} = this.state;
+            const {length: imagesLength} = currentImages;
+            const {previousImage, nextImage, setOverId, handleMouseLeave, handleMouseMove} = this;
 
             const taxRaw = 0.21 * sumOfPrices;
             const tax = taxRaw.toFixed(2);
@@ -114,84 +126,97 @@ class CartPage extends React.Component {
         <div className='cart-container'>
             <h1 className='cart-title'>Cart</h1>
             <div className='cart-page-items'>
-            {!(itemsInBag.length === 0)
+            {!(itemsLength === 0)
             ? <>
-                {itemsInBag && itemsInBag.map((item) => {
+                {itemsInBag.map((item) => {
 
-                const toCompare = {item: item.cartId, gallery: item.gallery};
+                const {
+                    cartId, 
+                    category, 
+                    id, 
+                    brand, 
+                    name, 
+                    gallery, 
+                    prices,
+                    quantity,
+                    choosenAttributes, 
+                    attributes: itemAttributes} = item;
 
+                const {length: galleryLength} = gallery;
+                const toCompare = {item: cartId, gallery: gallery};
                 let imageToShow = 0;
 
-                if(!(currentImages.length === 0)){
+                if(!(imagesLength === 0)){
                     currentImages.forEach((image) => {
-                        if(image.item === item.cartId){
-                            imageToShow = image.currentImage;
+                        const {item: imageItem, currentImage} = image;
+                        if(imageItem === cartId){
+                            imageToShow = currentImage;
                         }
                     })
                 }else{
                     imageToShow = 0;
                 }
                 
-                const attributes = {attributes: item.attributes, choosenAttributes: item.choosenAttributes, from: 'cart'};
+                const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'cart'};
 
                 return (
-                    <div key={item.cartId}>
+                    <div key={cartId}>
                         <div className='divider'></div>
                         <div className='single'>
                             <div className='summary'>
                                 <div className='brand-name'>
                                     <Link 
-                                    key={item.id} 
-                                    to={'/'+item.category+'/'+item.id}>
-                                        <span className='brand'>{item.brand}</span>
-                                        <span className='name'>{item.name}</span>
+                                    key={id} 
+                                    to={'/'+category+'/'+id}>
+                                        <span className='brand'>{brand}</span>
+                                        <span className='name'>{name}</span>
                                     </Link>
                                 </div>
                                 <div className='price'>
-                                    <span>{choosenCurrency && choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount.toFixed(2)}</span>
+                                    <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
                                 </div>
                                 <div className='attributes'>
                                     {generateListOfAttributes(attributes)}  
                                 </div>
                             </div>
                             <div className='quantity'>
-                                <span onClick={() => {increaseQuantityOfProduct(item.cartId)}} className='attribute-option plus-minus'>
+                                <span onClick={() => {increaseQuantityOfProduct(cartId)}} className='attribute-option plus-minus'>
                                 +
                                 </span>
                                 <span className='attribute-number'>
-                                    {item.quantity}
+                                    {quantity}
                                 </span>
-                                <span onClick={() => {removeFromBag(item.cartId)}} className='attribute-option plus-minus'>
+                                <span onClick={() => {removeFromBag(cartId)}} className='attribute-option plus-minus'>
                                 -
                                 </span>
                             </div>
                             <div className='gallery'>
-                                {item.gallery.length > 1
+                                {galleryLength > 1
                                 ? <>
-                                    <div onMouseEnter={() => {this.setOverId(item.cartId)}} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                                    <div onMouseEnter={() => {setOverId(cartId)}} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
                                         <div>
                                             <img 
-                                            alt={item.name+' product'}
-                                            onMouseMove={this.handleMouseMove}
-                                            style={(overId === item.cartId) ? style : null} 
+                                            alt={name+' product'}
+                                            onMouseMove={handleMouseMove}
+                                            style={(overId === cartId) ? style : null} 
                                             className='item-image' 
-                                            src={item.gallery[imageToShow]} />
+                                            src={gallery[imageToShow]} />
                                         </div>
                                         <div>
                                             <div className='gallery-arrows'>
-                                                <img onClick={() => {this.previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
-                                                <img onClick={() => {this.nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
+                                                <img onClick={() => {previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
+                                                <img onClick={() => {nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
                                             </div>
                                         </div>
                                     </div>
                                 </>
-                                : <div onMouseEnter={() => this.setOverId(item.cartId)} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                                : <div onMouseEnter={() => setOverId(cartId)} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
                                     <img 
-                                    alt={item.name+' product'} 
+                                    alt={name+' product'} 
                                     className='item-image' 
-                                    onMouseMove={this.handleMouseMove} 
-                                    style={(overId === item.cartId) ? style : null} 
-                                    src={item.gallery[0]} />
+                                    onMouseMove={handleMouseMove} 
+                                    style={(overId === cartId) ? style : null} 
+                                    src={gallery[0]} />
                                 </div>} 
                             </div>
                         </div>
@@ -205,9 +230,9 @@ class CartPage extends React.Component {
                         <span>Total:</span>
                     </div>
                     <div className='values'>
-                        <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{tax}</span>
+                        <span className='bold'>{symbol}{tax}</span>
                         <span className='bold'>{numberOfItemsInBag}</span>
-                        <span className='bold'>{choosenCurrency && choosenCurrency.symbol}{sum}</span>
+                        <span className='bold'>{symbol}{sum}</span>
                     </div>
                 </div>
                 <div className='wide-green-button'>
