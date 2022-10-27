@@ -83,7 +83,7 @@ class ProductPage extends React.Component {
               <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount.toFixed(2)}</span>
             </div>
             {item.inStock
-            ? <div onClick={() => addInBag({item: item})} className='wide-green-button'>
+            ? <div onClick={() => addInBag({item: item})} className='add-to-cart'>
                 <span>Add to cart</span>
               </div>
             : <div className='wide-green-button out-of-stock'>

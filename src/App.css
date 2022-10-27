@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
 * {
   font-family: 'Raleway';
 }
@@ -112,7 +117,7 @@ span.bold {
   gap: 8px;
 }
 
-span.attribute-name {
+.attribute span.attribute-name {
   font-family: 'Roboto Condensed';
   font-weight: 700;
   font-size: 18px;
@@ -122,7 +127,7 @@ span.attribute-name {
   padding-top: 10px;
 }
 
-.attribute-options {
+.attribute .attribute-options {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -137,16 +142,16 @@ span.attribute-option.text.selected {
   color: #fff;
 }
 
-span.attribute-option.swatch.selected {
+.attribute span.attribute-option.swatch.selected {
   border-color: #5ECE7B;
 }
 
-.attribute-option {
+.attribute .attribute-option {
   width: 24px;
   height: 24px;
 }
 
-.text {
+.attribute .text {
   min-width: 64px;
   min-height: 45px;
   border-style: solid;
@@ -162,7 +167,7 @@ span.attribute-option.swatch.selected {
   width: fit-content;
 }
 
-.swatch {
+.attribute .swatch {
   width: 32px;
   height: 32px;
   border-style: solid;
@@ -173,7 +178,7 @@ span.attribute-option.swatch.selected {
 }
 
 span.attribute-number {
-  text-align: right;
+  text-align: center;
   font-weight: 400;
   font-size: 16px;
   line-height: 160%;
@@ -182,6 +187,7 @@ span.attribute-number {
 .wide-green-button{
   height: 45px;
   width: 280px;
+  font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 120%;

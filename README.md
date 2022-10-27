@@ -9,14 +9,14 @@ Based on feedback, these things **are fixed**:
 - Selected currency is not highlighted - **done**
 - Price should always have 2 digits after dot - **done**, added .toFixed(2) on price display
 - On first page load is requested all data and is saved in local storage, that’s wrong approach. On category page should happen current category request and on product page current product request. to always get updated data - **done**, on first page load only necessary data is requested (lists of categories and currencies and their default values).
+- Wrong font was used - **done**
+- Full product card should be clickable - **done**
+- Out of stock labels not implemented - partially **done**, still to do out-of-stock labels on PDP
+- Not possible to distinguish white color - I'm not sure
 
 **Still to fix**:
 
-- Wrong font was used
-- Full product card should be clickable
-- Out of stock labels not implemented
 - Out of stock products should have same labels on PDP as on PLP
-- Not possible to distinguish white color
 - Please use variable destructuring
 - Please don’t use style prop for static styles
 

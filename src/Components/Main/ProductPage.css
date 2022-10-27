@@ -15,7 +15,7 @@
     height: 45px;
     width: 280px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 120%;
     text-transform: uppercase;
     display: flex;
@@ -35,10 +35,15 @@
     line-height: 18px;
 }
 
-.product-page .description{
+.product-page .description p, h1, h2, h3{
+    font-family: 'Roboto';
+    color: #1D1F22;
+}
+
+.product-page .description p{
     font-weight: 400;
     font-size: 16px;
-    color: #1D1F22;
+    line-height: 159.96%;
 }
 
 .product-page .attributes{
