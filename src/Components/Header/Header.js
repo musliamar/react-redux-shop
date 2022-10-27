@@ -23,8 +23,7 @@ class Header extends React.PureComponent {
                             <span>{item.name}</span>
                         </div>
                         <div className='price'>
-                            <span style={{fontWeight: 'normal', fontSize: 14}}>per unit {this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.prices[this.props.currencyToShow] && item.prices[this.props.currencyToShow].amount}</span>
-                            <span>{this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
+                           <span>{this.props.choosenCurrency && this.props.choosenCurrency.symbol}{item.prices[this.props.currencyToShow] && item.prices[this.props.currencyToShow].amount.toFixed(2)}</span>
                         </div>
                         {this.props.generateListOfAttributes(attributes)}  
                     </div>
@@ -58,7 +57,7 @@ class Header extends React.PureComponent {
     render() {
 
         const {
-            categoriesData,
+            categoriesList,
             currenciesList,
             choosenCurrency, 
             sumOfPrices,
@@ -75,7 +74,7 @@ class Header extends React.PureComponent {
         <header>
             <div className='container'>
                 <nav className='categories'>
-                {categoriesData && categoriesData.map((category) => (
+                {categoriesList && categoriesList.map((category) => (
                     <li key={category.name}>
                     <Link 
                     key={category.name} 
@@ -98,7 +97,12 @@ class Header extends React.PureComponent {
                         </div>
                         <ul className={currentlyOpened === 'currency' ? 'box currency-box display-flex' : 'box display-none'}>
                         {currenciesList && currenciesList.map((currency) => (
-                            <li onClick={() => {changeCurrency(currency)}} key={currency.symbol}>{currency.symbol} {currency.label}</li>
+                            <li 
+                            className={choosenCurrency && (choosenCurrency.label === currency.label) ? 'selected': null}
+                            onClick={() => {changeCurrency(currency)}} 
+                            key={currency.symbol}>
+                                {currency.symbol} {currency.label}
+                            </li>
                         ))}
                         </ul>
                     </div>

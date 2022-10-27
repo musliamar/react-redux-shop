@@ -10,16 +10,7 @@ const getCategoriesList = async () => {
     return await client.post(queryCategoriesList)
   }
 
-const getCategory = async (category) => {
-  
-    const queryCategory = new Query("category", true)
-      .addArgument("input", "CategoryInput", { title : category})
-      .addField(new Field("products", true).addFieldList(["id", "name", "brand", "description", "category", "attributes{id, name, type, items{displayValue, value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]));    
-  
-    return await client.post(queryCategory)
-}
-
-const getAllCurrencies = async () => {
+const getCurrenciesList = async () => {
   
   const queryCurrencies = new Query("currencies", true)
     .addFieldList(['symbol', 'label']);
@@ -27,6 +18,24 @@ const getAllCurrencies = async () => {
   return await client.post(queryCurrencies)
 }
 
-const Queries = {getCategoriesList, getCategory, getAllCurrencies};
+const getCategory = async (category) => {
+  
+  const queryCategory = new Query("category", true)
+    .addArgument("input", "CategoryInput", { title : category})
+    .addField(new Field("products", true).addFieldList(["id", "name", "brand", "description", "category", "attributes{id, name, type, items{displayValue, value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]));    
+
+  return await client.post(queryCategory)
+}
+
+const getProduct = async (product) => {
+  
+  const queryProduct = new Query("product", true)
+    .addArgument("id", "String!", product) 
+    .addFieldList(["id", "name", "brand", "description", "category", "attributes{id, name, type, items{displayValue, value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]);    
+
+  return await client.post(queryProduct)
+}
+
+const Queries = {getCategoriesList, getCurrenciesList, getCategory, getProduct};
 
 export default Queries;

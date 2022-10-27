@@ -131,6 +131,10 @@ header .box li:hover{
 	background: #eee;
 }
 
+header .box .selected{
+	background: #eee;
+}
+
 header .first-currency{
     display: flex;
     flex-direction: row;

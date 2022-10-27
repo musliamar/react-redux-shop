@@ -148,8 +148,7 @@ class CartPage extends React.Component {
                                     </Link>
                                 </div>
                                 <div className='price'>
-                                    <span style={{fontWeight: 'normal', fontSize: 14}}>per unit {choosenCurrency && choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount}</span>
-                                    <span>{choosenCurrency && choosenCurrency.symbol}{item.sumPriceOfItemFixed}</span>
+                                    <span>{choosenCurrency && choosenCurrency.symbol}{item.prices[currencyToShow] && item.prices[currencyToShow].amount.toFixed(2)}</span>
                                 </div>
                                 <div className='attributes'>
                                     {generateListOfAttributes(attributes)}  

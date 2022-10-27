@@ -23,12 +23,13 @@ class App extends React.Component {
       currencyToShow: 0,
       itemsInBag: [],
       currentlyOpened: '',
-      categoriesData: [],
+      categoriesList: [],
       currenciesList: [],
       currentCategory: '',
+      defaultCategory: '',
       numberOfItemsInBag: 0,
-      choosenAttributes: [],
       notificationArr: [],
+      choosenAttributes: [],
       notificationKey: 0
     } 
     
@@ -110,7 +111,7 @@ class App extends React.Component {
   }
 
   changeCurrency(currency) {   
-    const sampleProductPrice = this.state.categoriesData[0] && this.state.categoriesData[0].products[0].prices;
+    const {sampleProductPrice} = this.state.defaultCategory;
     let currencyToShow;
     for(const priceLabel in sampleProductPrice){
       if(currency.label === sampleProductPrice[priceLabel].currency.label){
@@ -180,11 +181,10 @@ class App extends React.Component {
     return(attributes.attributes && attributes.attributes.map((attribute, index) => {
       let newAttribute = JSON.parse(JSON.stringify(attribute));
       let selectingEnabled = false;
-      const attributesFromState = this.state.choosenAttributes;
+      const {choosenAttributes: attributesFromState} = this.state;
       let choosenAttributes = attributes.from === 'product-page' ? attributesFromState : attributes.choosenAttributes;
-      if(attributes.from === 'product-page'){
-        selectingEnabled = true;
-      }
+      if(attributes.from === 'product-page'){selectingEnabled = true;}
+
       for(const choosenAttribute in choosenAttributes){
         const attributeToCompare = choosenAttributes[choosenAttribute];
         const id = attribute.id;
@@ -280,18 +280,12 @@ class App extends React.Component {
 
   async runOnFirstVisitWithoutLocalStorage(){
     const categories = await Queries.getCategoriesList();
-    const currencies = await Queries.getAllCurrencies();
+    const currencies = await Queries.getCurrenciesList();
     const categoriesList = categories.categories;
     const currenciesList = currencies.currencies;
-
-    let categoriesData = [];
-
-    for(let category in categoriesList){
-      const products = await Queries.getCategory(categoriesList[category].name)
-      categoriesData.push({name: categoriesList[category].name, products: products.category.products});
-    }
-
-    const sampleProductPrice = categoriesData[0].products[0].prices;
+    const defaultCategoryResult = await Queries.getCategory(categoriesList[0].name)
+    const {category: defaultCategory} = defaultCategoryResult;
+    const {prices: sampleProductPrice} = defaultCategory.products[0];
     let currencyToShow;
 
     for(const priceLabel in sampleProductPrice){
@@ -301,14 +295,14 @@ class App extends React.Component {
     }
 
     this.setState({
-      categoriesData: categoriesData, 
       currenciesList: currenciesList,
+      categoriesList: categoriesList,
       currencyToShow: currencyToShow,
+      defaultCategory: {name: categoriesList[0].name, sampleProductPrice: sampleProductPrice},
       choosenCurrency: currenciesList[0],
       numberOfItemsInBag: 0, 
       itemsInBag: [],
-      currentlyOpened: '',
-      choosenAttributes: []             
+      currentlyOpened: ''          
     })
   }
  
@@ -350,7 +344,7 @@ class App extends React.Component {
     <div className='App'>
         <Header 
         currenciesList={this.state.currenciesList}
-        categoriesData={this.state.categoriesData}
+        categoriesList={this.state.categoriesList}
         changeCurrency={this.changeCurrency} 
         currentCategory={this.state.currentCategory}
         currentlyOpened={this.state.currentlyOpened}
@@ -370,7 +364,7 @@ class App extends React.Component {
           <Route path="/">
             <Route index element={
               <CategoryPage 
-                categoriesData={this.state.categoriesData}
+                defaultCategory={this.state.defaultCategory}
                 updateStateFromChild={this.updateStateFromChild}
                 choosenCurrency={this.state.choosenCurrency} 
                 currencyToShow={this.state.currencyToShow}
@@ -380,7 +374,6 @@ class App extends React.Component {
                 <Route index element={
                   <CategoryPage 
                     choosenCurrency={this.state.choosenCurrency} 
-                    categoriesData={this.state.categoriesData}
                     currencyToShow={this.state.currencyToShow}
                     updateStateFromChild={this.updateStateFromChild}
                     currentCategory={this.currentCategory}
@@ -392,8 +385,6 @@ class App extends React.Component {
                     choosenAttributes={this.state.choosenAttributes}
                     currencyToShow={this.state.currencyToShow}
                     numberOfItemsInBag={this.state.numberOfItemsInBag}
-                    categoriesData={this.state.categoriesData}
-                    updateStateFromChild={this.updateStateFromChild}
                     addInBag={this.addInBag}
                     generateListOfAttributes={this.generateListOfAttributes}
                     generateDefaultAttributes={this.generateDefaultAttributes}/>

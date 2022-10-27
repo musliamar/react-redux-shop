@@ -1,13 +1,14 @@
 import React from 'react';
 import './ProductPage.css';
 import {  useParams } from "react-router-dom";
+import parse from 'html-react-parser';
+import Queries from '../../Queries';
 
 class ProductPage extends React.Component {
 
   state = {
       item: '',
       overImage: '',
-      reload: false,
       productData: ''
   }
 
@@ -18,73 +19,34 @@ class ProductPage extends React.Component {
   async componentDidMount(){
 
     window.scrollTo(0, 0);
-    const categoriesData = this.props.categoriesData;
 
-    if((categoriesData.length !== 0)){
-        let found = false;
-        for(const category in categoriesData){
-          if(categoriesData[category].name === this.props.params.category){
-            const foundCategory = categoriesData[category].products;
-            for(const product in foundCategory){
-              if(foundCategory[product].id === this.props.params.product){
-                found = true;
-                this.setState({
-                  ...this.state, 
-                  productData: foundCategory[product]
-                  })
-                this.props.generateDefaultAttributes(foundCategory[product])
-              }
-            }
-          }
-        }
-        if(!found){
+    if(this.props.params.product){
+      const productResult = await Queries.getProduct(this.props.params.product)
+      const {product} = productResult;
+
+      if(product !== null){
+        this.setState({
+          ...this.state, 
+          productData: product
+        })
+        this.props.generateDefaultAttributes(product)
+      }else{
           this.setState({
             ...this.state, 
             productData: null
-            })
-        }
-    }
+      })
+    } 
   }
-
-  async componentDidUpdate(prevProps, prevState){
-    if((this.props.categoriesData !== prevProps.categoriesData)){
-      const categoriesData = this.props.categoriesData;
-      let found = false;
-        for(const category in categoriesData){
-          if(categoriesData[category].name === this.props.params.category){
-            const foundCategory = categoriesData[category].products;
-            for(const product in foundCategory){
-              if(foundCategory[product].id === this.props.params.product){
-                found = true;
-                this.setState({
-                  ...this.state, 
-                  productData: foundCategory[product]
-                  })
-                this.props.generateDefaultAttributes(foundCategory[product]) 
-              }
-            }
-          }
-        }
-       if(!found){
-          this.setState({
-            ...this.state, 
-            productData: null
-            })
-        }
-    }
-  }
+}
 
   render() {
 
-    const {choosenCurrency, currencyToShow, message, addInBag, generateListOfAttributes} = this.props;
-    const item = this.state.productData;
-    const {overImage} = this.state;
+    const {choosenCurrency, currencyToShow, addInBag, generateListOfAttributes} = this.props;
+    const {overImage, productData: item} = this.state;
 
     return (
 
-      message
-      ? <div>{message}</div>
-      : !(item === null)
+      !(item === null)
         ? <div key={item.id} className='product-page'>
             <div className='gallery'>
             {item.gallery && item.gallery.length > 1
@@ -118,7 +80,7 @@ class ProductPage extends React.Component {
             </div>
             <div className='attribute'>
               <span className='attribute-name'>Price:</span>
-              <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount}</span>
+              <span className='price'>{choosenCurrency && choosenCurrency.symbol}{item.prices && item.prices[currencyToShow].amount.toFixed(2)}</span>
             </div>
             {item.inStock
             ? <div onClick={() => addInBag({item: item})} className='wide-green-button'>
@@ -127,7 +89,7 @@ class ProductPage extends React.Component {
             : <div className='wide-green-button out-of-stock'>
                 <span>Out of stock</span>
               </div>}  
-            <div dangerouslySetInnerHTML={{ __html: item.description}} className='description'></div>
+            <div className='description'>{item.description && parse(item.description)}</div>
           </div>
         </div>
         : <div>Sorry, we can't find that product.</div>
