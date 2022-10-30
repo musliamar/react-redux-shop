@@ -103,7 +103,7 @@ class ProductPage extends React.Component {
           <div className='summary' >
             <div className='brand-name'>
               <span className={inStock ? 'brand' : 'brand bleached-text'}>{brand}</span>
-              <span className={inStock ? 'brand' : 'brand bleached-text'}>{name}</span>
+              <span className={inStock ? 'name' : 'name bleached-text'}>{name}</span>
             </div>
             <div className='attributes'>
               {generateListOfAttributes({attributes: attributes, from: 'product-page', inStock: inStock})}

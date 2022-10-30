@@ -45,7 +45,7 @@ header .actions{
 
 header .currency {
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 600;
 	position: relative;
     width: 40px;
     border-bottom-style: solid;
@@ -55,14 +55,14 @@ header .currency {
 }
 
 header .total-price{
+    font-family: 'Roboto';
     margin-top: 30px;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
-    font-weight: 500;
+    font-weight: 700;
     font-size: 16px;
-    line-height: 18px;
 }
 
 header .tooltip-text {
@@ -126,7 +126,7 @@ header .box li {
     padding-top: 10px;
     padding-bottom: 10px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 18px;
     line-height: 160%;
     color: #1D1F22;
@@ -257,10 +257,11 @@ header .minicart-main .attributes {
 header .minicart-main .brand-name {
     font-weight: 300;
     font-size: 16px;
+    line-height: 160%;
 }
 
 header .minicart-main .price {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 16px;
     line-height: 160%;
 }
@@ -288,6 +289,8 @@ header .minicart-main span.attribute-name {
     padding-top: 0px;
     text-transform: none;
     color: #1D1F22;
+    font-family: 'Raleway';
+    font-style: normal;
 }
 
 header .minicart-main span.plus-minus {
