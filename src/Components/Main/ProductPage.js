@@ -46,33 +46,19 @@ class ProductPage extends React.Component {
     const {choosenCurrency, currencyToShow, addInBag, generateListOfAttributes} = this.props;
     const {symbol} = choosenCurrency;
     const {overImage, productData: item} = this.state;
-    let id, gallery, name, brand, attributes, prices, inStock, description;
 
     if(item !== null){
       const {
-        id: itemId, 
-        gallery: itemGallery, 
-        name: itemName, 
-        brand: itemBrand, 
-        attributes: itemAttributes, 
-        prices: itemPrices, 
-        inStock: itemInStock, 
-        description: itemDesc} = item;
+        id, 
+        gallery, 
+        name, 
+        brand, 
+        attributes, 
+        prices, 
+        inStock, 
+        description} = item;
 
-      id = itemId
-      gallery = itemGallery
-      name = itemName
-      brand = itemBrand
-      attributes = itemAttributes
-      prices = itemPrices
-      inStock = itemInStock
-      description = itemDesc
-    }
-
-    return (
-
-      item !== null
-        ? <div key={id} className='product-page'>
+      return (<div key={id} className='product-page'>
             <div className='gallery'>
             {gallery && gallery.length > 1
             ? <>
@@ -121,9 +107,10 @@ class ProductPage extends React.Component {
               </div>}  
             <div className={inStock ? 'description in-stock' : 'description bleached-text'}>{description && parse(description)}</div>
           </div>
-        </div>
-        : <div>Sorry, we can't find that product.</div>
-    );
+        </div>)
+    }else{
+      return(<div>Sorry, we can't find that product.</div>)
+    }
   }
 }
 

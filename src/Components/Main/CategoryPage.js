@@ -116,10 +116,8 @@ class CategoryPage extends React.Component {
     const categoryName = this.state.categoryName && this.state.categoryName[0].toUpperCase() + this.state.categoryName.slice(1)
     const {showAddToCart} = this;
 
-    return (
-        
-      categoryData !== null
-        ? <div className='items-container'>
+    if(categoryData !== null){
+      return (<div className='items-container'>
             <h1 className='category-title'>{categoryName}</h1>
             <div className='items'>
               {categoryData && categoryData.map((item) => {
@@ -160,9 +158,10 @@ class CategoryPage extends React.Component {
                 )}
               )}
             </div>
-          </div>
-        : <div>Sorry, we can't find that category.</div>
-    );
+          </div>)
+    }else{
+      return (<div>Sorry, we can't find that category.</div>)
+    }
   }
 }
 
