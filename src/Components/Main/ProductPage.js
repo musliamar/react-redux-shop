@@ -3,6 +3,7 @@ import './ProductPage.css';
 import {  useParams } from "react-router-dom";
 import parse from 'html-react-parser';
 import {getProduct} from '../../Queries';
+import { connect } from "react-redux";
 
 class ProductPage extends React.Component {
 
@@ -43,6 +44,8 @@ class ProductPage extends React.Component {
 
   render() {
 
+    console.log(this.props)
+    
     const {choosenCurrency, currencyToShow, addInBag, generateListOfAttributes} = this.props;
     const {symbol} = choosenCurrency;
     const {overImage, productData: item} = this.state;
@@ -120,4 +123,8 @@ const Product = (props) => (
     params={useParams()}
   />)
 
-export default Product;
+const mapStateToProps = (state) => {
+    return (state)
+}
+
+export default connect(mapStateToProps)(Product);
