@@ -4,6 +4,7 @@ import CartIcon from '../../Images/cart-icon.svg';
 import {Link} from 'react-router-dom';
 import {useParams} from "react-router-dom";
 import {getCategory} from '../../Queries';
+import { connect } from "react-redux";
 
 class CategoryPage extends React.Component {
 
@@ -15,6 +16,7 @@ class CategoryPage extends React.Component {
   };
 
   async componentDidMount(){
+    
     const {params, updateStateFromChild, defaultCategory} = this.props;
     const {categoryData} = this.state;
     const {category: paramsCategory} = params;
@@ -171,4 +173,8 @@ const Category = (props) => (
     params={useParams()}
   />)
 
-export default Category;
+const mapStateToProps = (state) => {
+    return (state)
+}
+
+export default connect(mapStateToProps)(Category);

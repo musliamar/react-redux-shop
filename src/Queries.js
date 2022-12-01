@@ -28,7 +28,7 @@ export const getCategory = async (category) => {
 }
 
 export const getProduct = async (product) => {
-  
+  console.log(product)
   const queryProduct = new Query("product", true)
     .addArgument("id", "String!", product) 
     .addFieldList(["id", "name", "brand", "description", "category", "attributes{id, name, type, items{displayValue, value, id}}", "inStock", "gallery", "prices{amount, currency{label}}"]);    

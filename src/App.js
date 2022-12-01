@@ -14,7 +14,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
+    const localStorage = JSON.parse(window.localStorage.getItem('redux-graphql-store'));
 
     this.state = localStorage !== null 
     ? localStorage
@@ -47,7 +47,7 @@ class App extends React.Component {
   }
 
   setState(state) {
-    window.localStorage.setItem('scandiwebAmarMusliStoreState', JSON.stringify(state));
+    window.localStorage.setItem('redux-graphql-store', JSON.stringify(state));
     super.setState(state);
   }
 
@@ -370,7 +370,7 @@ class App extends React.Component {
   }
  
   async componentDidMount() {
-    const localStorage = JSON.parse(window.localStorage.getItem('scandiwebAmarMusliStoreState'));
+    const localStorage = JSON.parse(window.localStorage.getItem('redux-graphql-store'));
       if(!localStorage || (localStorage === null)){
         this.runOnFirstVisitWithoutLocalStorage();
       }

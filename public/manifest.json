@@ -1,6 +1,6 @@
 {
-  "short_name": "Entry test for scandiweb - Amar Musli",
-  "name": "My React app for scandiweb",
+  "short_name": "React GraphQL Redux app",
+  "name": "React GraphQL Redux app",
   "icons": [
     {
       "src": "favicon.ico",

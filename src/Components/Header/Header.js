@@ -3,7 +3,8 @@ import './Header.css'
 import logo from '../../Images/logo.svg';
 import {Link} from 'react-router-dom';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
-import ArrowUp from '../../Images/arrow-up.svg';
+import MinicartItems from './MinicartItems'
+import MinicartActions from './MinicartActions'
 
 class Header extends React.PureComponent {
 
@@ -11,44 +12,6 @@ class Header extends React.PureComponent {
         super(props);
         this.currencyRef = React.createRef();
         this.minicartRef = React.createRef();
-    }
-
-    generateListOfItems(props){
-        const {choosenCurrency, increaseQuantityOfProduct, removeFromBag, currencyToShow, generateListOfAttributes} = this.props;
-        const {symbol} = choosenCurrency;
-
-         return props.map((item) => {
-                const {cartId, brand, name, prices, gallery, inStock, choosenAttributes, quantity, attributes: itemAttributes} = item;
-                const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'minicart', inStock: inStock};
-
-                return (<div key={cartId} className='single'>
-                    <div className='attributes'>
-                        <div className='brand-name'>
-                            <span>{brand}</span>
-                            <span>{name}</span>
-                        </div>
-                        <div className='price'>
-                            <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
-                        </div>
-                        {generateListOfAttributes(attributes)}  
-                    </div>
-                    <div className='quantity'>
-                        <span onClick={() => {increaseQuantityOfProduct(cartId)}} className='attribute-option text plus-minus'>
-                            +
-                        </span>
-                        <span className='attribute-number'>
-                            {quantity}
-                        </span>
-                        <span onClick={() => {removeFromBag(cartId)}} className='attribute-option text plus-minus'>
-                            -
-                        </span>
-                    </div>
-                    <div className='gallery'>
-                        <span>
-                            <img alt='Item preview' className='item-image' src={gallery[0]} />
-                        </span>
-                    </div>
-                </div>)})
     }
 
     componentDidUpdate(){
@@ -72,6 +35,10 @@ class Header extends React.PureComponent {
             openBox,
             currentCategory,
             itemsInBag,
+            increaseQuantityOfProduct,
+            removeFromBag,
+            currencyToShow,
+            generateListOfAttributes,
             closeBox,
             currentlyOpened,
             numberOfItemsInBag,
@@ -79,8 +46,8 @@ class Header extends React.PureComponent {
             } = this.props;
         
         const {length} = itemsInBag;
-        const {label: choosenCurrencyLabel, symbol: choosenCurrencySymbol} = choosenCurrency;
-        const {currencyRef, minicartRef} = this;
+        const {symbol: choosenCurrencySymbol} = choosenCurrency;
+        const { minicartRef, currencyRef } = this;
 
       return (
         <header>
@@ -103,25 +70,13 @@ class Header extends React.PureComponent {
                 <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
                 <div className='actions'>
                     <div ref={currencyRef} className='currency'>
-                        <span className="tooltip-text currency-tooltip">Change currency</span>
-                        <div onClick={() => {openBox('currency')}} className='first-currency'>
-                            <span>{choosenCurrencySymbol}</span>
-                                {currentlyOpened === 'currency' 
-                                ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
-                                : <img className='currency-arrow-icon rotate' src={ArrowUp} alt='Currency switcher arrow down'/>}
-                        </div>
-                        <ul className={currentlyOpened === 'currency' ? 'box currency-box display-flex' : 'box display-none'}>
-                        {currenciesList.map((currency) => {
-                            const {label: currencyLabel, symbol: currencySymbol} = currency;
-                            return (
-                                <li 
-                                className={choosenCurrencyLabel === currencyLabel ? 'selected': null}
-                                onClick={() => {changeCurrency(currency)}} 
-                                key={currencySymbol}>
-                                    {currencySymbol} {currencyLabel}
-                                </li>
-                        )})}
-                        </ul>
+                    <MinicartActions 
+                        currenciesList = { currenciesList }
+                        choosenCurrency = { choosenCurrency }
+                        openBox = { openBox }
+                        currentlyOpened = { currentlyOpened }
+                        changeCurrency = { changeCurrency } 
+                    />
                     </div>
                     <div ref={minicartRef} className='cart'>
                         <span className="tooltip-text cart-tooltip">My Bag</span>
@@ -140,7 +95,13 @@ class Header extends React.PureComponent {
                                         <span className='bold display-inline'>My Bag,</span> {numberOfItemsInBag} items 
                                     </div>
                                     <div className='items'>
-                                        {this.generateListOfItems(itemsInBag)}
+                                        <MinicartItems 
+                                            choosenCurrency = { choosenCurrency }
+                                            increaseQuantityOfProduct = { increaseQuantityOfProduct }
+                                            generateListOfAttributes = { generateListOfAttributes }
+                                            removeFromBag = { removeFromBag }
+                                            currencyToShow = { currencyToShow }
+                                            itemsInBag = { itemsInBag } />
                                     </div>
                                 </div>
                                 <div className='total-price'>
