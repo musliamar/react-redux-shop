@@ -1,6 +1,7 @@
 import React from 'react';
 import './CartPage.css';
 import CartItem from './CartSingleItem'
+import { connect } from 'react-redux'
 
 class CartPage extends React.Component {
       
@@ -34,8 +35,6 @@ class CartPage extends React.Component {
                             key={item.cartId}
                             item = { item }
                             generateListOfAttributes = {generateListOfAttributes}
-                            currencyToShow = { currencyToShow }
-                            choosenCurrency = { choosenCurrency }
                             increaseQuantityOfProduct = { increaseQuantityOfProduct }
                             removeFromBag = { removeFromBag } />)
                     })}
@@ -63,4 +62,9 @@ class CartPage extends React.Component {
     }
 }
 
-export default CartPage;
+const mapStateToProps = (state) => {
+    return (state)
+  }
+  
+export default connect(mapStateToProps)(CartPage);
+  

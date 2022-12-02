@@ -6,34 +6,21 @@ import Footer from './Components/Footer/Footer';
 import CategoryPage from './Components/Main/CategoryPage';
 import CartPage from './Components/Main/CartPage';
 import ProductPage from './Components/Main/ProductPage';
-import {getCategoriesList, getCurrenciesList, getCategory} from './Queries';
+import { getCategoriesList, getCurrenciesList, getCategory } from './Queries';
 import SmallCartIcon from './Images/small-cart-icon.svg';
+import { connect } from "react-redux";
+import { update, increaseNumberOfItemsInBag, decreaseNumberOfItemsInBag } from './Store';
 
 class App extends React.Component {
 
   constructor(props) {
     super(props);
 
-    const localStorage = JSON.parse(window.localStorage.getItem('redux-graphql-store'));
-
-    this.state = localStorage !== null 
-    ? localStorage
-    :  {   
-      choosenCurrency: '',
-      currencyToShow: 0,
-      itemsInBag: [],
-      currentlyOpened: '',
-      categoriesList: [],
-      currenciesList: [],
-      currentCategory: '',
-      defaultCategory: '',
-      numberOfItemsInBag: 0,
+    this.state = {   
       notificationArr: [],
-      choosenAttributes: [],
       notificationKey: 0
     } 
     
-    this.updateStateFromChild = this.updateStateFromChild.bind(this);
     this.changeCurrency = this.changeCurrency.bind(this);
     this.openBox = this.openBox.bind(this);
     this.closeBox = this.closeBox.bind(this);
@@ -42,26 +29,22 @@ class App extends React.Component {
     this.increaseQuantityOfProduct = this.increaseQuantityOfProduct.bind(this);
     this.generateListOfAttributes = this.generateListOfAttributes.bind(this);
     this.generateDefaultAttributes = this.generateDefaultAttributes.bind(this);
-    this.addNotification = this.addNotification.bind(this);
+    this.addNotification = this.showNotificationAndUpdateCart.bind(this);
     this.removeNotification = this.removeNotification.bind(this);
   }
 
-  setState(state) {
+ /* setState(state) {
     window.localStorage.setItem('redux-graphql-store', JSON.stringify(state));
     super.setState(state);
-  }
-
-  updateStateFromChild(props){
-    const {value, name} = props;
-    this.setState({...this.state, [name]: value, choosenAttributes: []});
-  }
+  } */
 
   // notification will show only if new product is added in bag
   // if choosen product is already in bag, addInBag function will only increase its quantity
   // and notification will not be shown 
   // if user add same product but with different attributes, notification will be shown
 
-  addNotification(props) {
+  showNotificationAndUpdateCart(props) {
+    const { dispatch } = props;
     const {notificationKey, notificationArr} = this.state;
     const {removeNotification} = this;
     const {product, itemsInBag, numberOfItemsInBag} = props;
@@ -74,12 +57,13 @@ class App extends React.Component {
       </div>;
 
     this.setState({
-      ...this.state,
-      itemsInBag: itemsInBag,
-      numberOfItemsInBag: numberOfItemsInBag,   
+      ...this.state, 
       notificationArr: notificationArr.concat(notification),
       notificationKey: notificationKey + 1
     });
+
+    dispatch(update({name: 'itemsInBag', value: itemsInBag}))
+    dispatch(update({name: 'numberOfItemsInBag', value: numberOfItemsInBag}))
     setTimeout(removeNotification, 3000);
   }
 
@@ -96,29 +80,21 @@ class App extends React.Component {
   }
 
   openBox(props){
-    const {currentlyOpened} = this.state;
-    if(currentlyOpened === props){
-      this.setState({
-        ...this.state,
-        currentlyOpened: '',
-        });
+    const { currentlyOpen, dispatch } = this.props;
+    if(currentlyOpen === props){
+      dispatch(update({name: 'currentlyOpen', value: ''}))
     }else{
-      this.setState({
-        ...this.state,
-        currentlyOpened: props,
-        });
+      dispatch(update({name: 'currentlyOpen', value: props}))
     }
   }
 
   closeBox(){
-    this.setState({
-      ...this.state,
-      currentlyOpened: '',
-    });
+    const { dispatch } = this.props;
+    dispatch(update({name: 'currentlyOpen', value: ''}))
   }
 
   changeCurrency(currency) {   
-    const {defaultCategory} = this.state;
+    const { defaultCategory, dispatch } = this.props;
     const {sampleProductPrice} = defaultCategory;
     const {label: currencyLabel} = currency;
     let currencyToShow;
@@ -130,16 +106,14 @@ class App extends React.Component {
         currencyToShow = priceLabel;
       }
     }
-    this.setState({
-      ...this.state,
-      choosenCurrency: currency,
-      currentlyOpened: '',
-      currencyToShow: currencyToShow
-    });
+
+    dispatch(update({name: 'choosenCurrency', value: currency}))
+    dispatch(update({name: 'currentlyOpen', value: ''}))
+    dispatch(update({name: 'currencyToShow', value: currencyToShow}))
   }
 
   selectAttribute(props){
-    const {choosenAttributes} = this.state;
+    const { choosenAttributes, dispatch } = this.props;
     const {id, item} = props;
     let newArray = [];
 
@@ -150,10 +124,12 @@ class App extends React.Component {
           newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
         }}
     )
-    this.setState({...this.state, choosenAttributes: newArray}); 
+
+    dispatch(update({name: 'choosenAttributes', value: newArray}))
   }
 
   generateDefaultAttributes(props){
+    const { dispatch } = this.props
     const {category} = props;
     const choosenAttributes = [];
     Object.keys(props).forEach((item) => {
@@ -165,7 +141,10 @@ class App extends React.Component {
         })
       }
     })
-    this.setState({...this.state, choosenAttributes: choosenAttributes, currentCategory: category})
+
+    dispatch(update({name: 'choosenAttributes', value: choosenAttributes}))
+    dispatch(update({name: 'currentCategory', value: category}))
+    
     return choosenAttributes;
   }
 
@@ -205,7 +184,7 @@ class App extends React.Component {
 
       let newAttribute = JSON.parse(JSON.stringify(attribute));
       let selectingEnabled = false;
-      const {choosenAttributes: attributesFromState} = this.state;
+      const {choosenAttributes: attributesFromState} = this.props;
       let choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesArray;
 
       if(from === 'product-page'){inStock ? selectingEnabled = true : selectingEnabled = false}
@@ -262,22 +241,20 @@ class App extends React.Component {
   }
   
   increaseQuantityOfProduct(props){
-    const {itemsInBag: items, numberOfItemsInBag} = this.state;
+    const {itemsInBag: items, dispatch} = this.props;
     items.forEach((item) => {
       let {cartId, quantity} = item;
       if(cartId === props){
         item.quantity = quantity + 1;
       }
     })
-    this.setState({
-      ...this.state,
-      itemsInBag: items,
-      numberOfItemsInBag: numberOfItemsInBag + 1         
-    })
+    
+    dispatch(update({name: 'itemsInBag', value: items}))
+    dispatch(increaseNumberOfItemsInBag())
   }
 
   removeFromBag(props){
-    const {itemsInBag: items, numberOfItemsInBag} = this.state;
+    const {itemsInBag: items, dispatch} = this.props;
     items.forEach((item) => {
       let {cartId, quantity} = item;
       if(cartId === props){
@@ -288,19 +265,17 @@ class App extends React.Component {
         }
       }
     })
-    this.setState({
-      ...this.state,
-      itemsInBag: items,
-      numberOfItemsInBag: numberOfItemsInBag - 1         
-    })
+
+    dispatch(update({name: 'itemsInBag', value: items}))
+    dispatch(decreaseNumberOfItemsInBag())
   }
 
   addInBag(props) {
     const {item} = props;
     const product = JSON.parse(JSON.stringify(item));
     const {id} = product;
-    const {choosenAttributes, itemsInBag, numberOfItemsInBag, itemsInBag: items} = this.state;
-    const {generateDefaultAttributes, increaseQuantityOfProduct, addNotification} = this;
+    const {choosenAttributes, itemsInBag, numberOfItemsInBag, itemsInBag: items} = this.props;
+    const {generateDefaultAttributes, increaseQuantityOfProduct, showNotificationAndUpdateCart} = this;
 
     product.choosenAttributes = choosenAttributes.length === 0 
                                 ? generateDefaultAttributes(item) 
@@ -320,7 +295,7 @@ class App extends React.Component {
       })
       if(!found){
         product.quantity = 1;
-        addNotification({
+        showNotificationAndUpdateCart({
           product: product,
           itemsInBag: [...itemsInBag, product],
           numberOfItemsInBag: numberOfItemsInBag + product.quantity        
@@ -328,7 +303,7 @@ class App extends React.Component {
       }
     }else{
       product.quantity = 1;
-      addNotification({
+      showNotificationAndUpdateCart({
         product: product,
         itemsInBag: [...itemsInBag, product],
         numberOfItemsInBag: numberOfItemsInBag + product.quantity        
@@ -337,6 +312,7 @@ class App extends React.Component {
   }
 
   async runOnFirstVisitWithoutLocalStorage(){
+    const { dispatch } = this.props
     const categories = await getCategoriesList();
     const currencies = await getCurrenciesList();
     const {categories: categoriesList} = categories;
@@ -357,21 +333,17 @@ class App extends React.Component {
       }
     }
 
-    this.setState({
-      currenciesList: currenciesList,
-      categoriesList: categoriesList,
-      currencyToShow: currencyToShow,
-      defaultCategory: {name: defaultCategoryName, sampleProductPrice: sampleProductPrice},
-      choosenCurrency: currenciesList[0],
-      numberOfItemsInBag: 0, 
-      itemsInBag: [],
-      currentlyOpened: ''          
-    })
+    dispatch(update({name: 'categoriesList', value: categoriesList}))
+    dispatch(update({name: 'currenciesList', value: currenciesList}))
+    dispatch(update({name: 'currencyToShow', value: currencyToShow}))
+    dispatch(update({name: 'choosenCurrency', value: currenciesList[0]}))
+    dispatch(update({name: 'defaultCategory', value: {name: defaultCategoryName, sampleProductPrice: sampleProductPrice}}))
   }
  
   async componentDidMount() {
-    const localStorage = JSON.parse(window.localStorage.getItem('redux-graphql-store'));
-      if(!localStorage || (localStorage === null)){
+    const { currenciesList, categoriesList } = this.props
+
+      if(currenciesList.length === 0 && categoriesList.length === 0){
         this.runOnFirstVisitWithoutLocalStorage();
       }
   }
@@ -393,8 +365,15 @@ class App extends React.Component {
 
   render() {
 
+    const {
+      itemsInBag, 
+      currencyToShow,
+      currentlyOpened,
+    } = this.props;
+    
+    const { notificationArr: notifications } = this.state
+
     let sumOfAllPricesRaw = 0;
-    const {itemsInBag, currencyToShow} = this.state;
 
     for(const item in itemsInBag){
         const {prices, quantity} = itemsInBag[item];
@@ -404,16 +383,6 @@ class App extends React.Component {
     }
 
     const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
-    const {
-      currenciesList,
-      categoriesList,
-      currentCategory,
-      currentlyOpened,
-      numberOfItemsInBag,
-      choosenCurrency,
-      choosenAttributes,
-      defaultCategory,
-      notificationArr: notifications} = this.state;
 
     const {
       changeCurrency,
@@ -423,54 +392,34 @@ class App extends React.Component {
       removeFromBag,
       generateListOfAttributes,
       generateDefaultAttributes,
-      updateStateFromChild,
       addInBag} = this;
 
     return (
       <div className='App'>
         <Header 
-        currenciesList={currenciesList}
-        categoriesList={categoriesList}
         changeCurrency={changeCurrency} 
-        currentCategory={currentCategory}
-        currentlyOpened={currentlyOpened}
         openBox={openBox}
-        numberOfItemsInBag={numberOfItemsInBag}
-        itemsInBag={itemsInBag}
-        currencyToShow={currencyToShow}
         closeBox={closeBox}
         increaseQuantityOfProduct={increaseQuantityOfProduct}
         removeFromBag={removeFromBag}
         sumOfPrices={sumOfPrices}
         generateListOfAttributes={generateListOfAttributes}
-        choosenCurrency={choosenCurrency} />
+         />
         <main> 
         {currentlyOpened === 'minicart' ? <div id="overlay"></div> : null} 
           <Routes>
             <Route path="/">
               <Route index element={
                 <CategoryPage 
-                  defaultCategory={defaultCategory}
-                  updateStateFromChild={updateStateFromChild}
-                  choosenCurrency={choosenCurrency} 
-                  currencyToShow={currencyToShow}
                   addInBag={addInBag}/>
               } />
               <Route path=":category">
                 <Route index element={
                   <CategoryPage 
-                    choosenCurrency={choosenCurrency} 
-                    currencyToShow={currencyToShow}
-                    updateStateFromChild={updateStateFromChild}
-                    currentCategory={currentCategory}
                     addInBag={addInBag}/>
                 } />
                 <Route path=":product" element={
                   <ProductPage 
-                    choosenCurrency={choosenCurrency} 
-                    choosenAttributes={choosenAttributes}
-                    currencyToShow={currencyToShow}
-                    numberOfItemsInBag={numberOfItemsInBag}
                     addInBag={addInBag}
                     generateListOfAttributes={generateListOfAttributes}
                     generateDefaultAttributes={generateDefaultAttributes}/>
@@ -480,14 +429,11 @@ class App extends React.Component {
               path='/cart'
               element={
                 <CartPage 
-                  choosenCurrency={choosenCurrency} 
                   increaseQuantityOfProduct={increaseQuantityOfProduct}
                   removeFromBag={removeFromBag}
                   generateListOfAttributes={generateListOfAttributes}
-                  itemsInBag={itemsInBag}
-                  currencyToShow={currencyToShow}
                   sumOfPrices={sumOfPrices}
-                  numberOfItemsInBag={numberOfItemsInBag}/>
+                  />
               } />
             </Route>
           </Routes>
@@ -503,4 +449,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return (state)
+}
+
+export default connect(mapStateToProps)(App);

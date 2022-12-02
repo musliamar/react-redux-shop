@@ -2,6 +2,7 @@ import { Component } from 'react'
 import ArrowLeft from '../../Images/arrow-left.svg';
 import ArrowRight from '../../Images/arrow-right.svg';
 import {Link} from 'react-router-dom';
+import { connect } from 'react-redux'
 
 class Item extends Component {
 
@@ -208,4 +209,9 @@ class Item extends Component {
     }
 }
 
-export default Item
+const mapStateToProps = (state) => {
+    return (state)
+  }
+  
+export default connect(mapStateToProps)(Item);
+  

@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import {useParams} from "react-router-dom";
 import {getCategory} from '../../Queries';
 import { connect } from "react-redux";
+import { update } from '../../Store';
 
 class CategoryPage extends React.Component {
 
@@ -17,7 +18,7 @@ class CategoryPage extends React.Component {
 
   async componentDidMount(){
     
-    const {params, updateStateFromChild, defaultCategory} = this.props;
+    const {params, dispatch, defaultCategory} = this.props;
     const {categoryData} = this.state;
     const {category: paramsCategory} = params;
 
@@ -31,7 +32,8 @@ class CategoryPage extends React.Component {
             ...this.state, 
             categoryData: products, 
             categoryName: paramsCategory})
-          updateStateFromChild({name: 'currentCategory', value: paramsCategory})
+          dispatch(update({name: 'currentCategory', value: paramsCategory}))
+          dispatch(update({name: 'choosenAttributes', value: []}))
       }else{
         this.setState({
           ...this.state, 
@@ -47,12 +49,13 @@ class CategoryPage extends React.Component {
         ...this.state, 
         categoryData: products, 
         categoryName: name})
-      updateStateFromChild({name: 'currentCategory', value: name})
+      dispatch(update({name: 'currentCategory', value: name}))
+      dispatch(update({name: 'choosenAttributes', value: []}))
     } 
   }
 
   async componentDidUpdate(prevProps, prevState){
-    const {params, updateStateFromChild, defaultCategory} = this.props;
+    const {params, dispatch, defaultCategory} = this.props;
     const {categoryData} = this.state;
     const {category: paramsCategory} = params;
 
@@ -66,7 +69,8 @@ class CategoryPage extends React.Component {
             ...this.state, 
             categoryData: products, 
             categoryName: paramsCategory})
-          updateStateFromChild({name: 'currentCategory', value: paramsCategory})
+          dispatch(update({name: 'currentCategory', value: paramsCategory}))
+          dispatch(update({name: 'choosenAttributes', value: []}))
       }else{
         this.setState({
           ...this.state, 
@@ -84,7 +88,8 @@ class CategoryPage extends React.Component {
         ...this.state, 
         categoryData: products, 
         categoryName: name})
-      this.props.updateStateFromChild({name: 'currentCategory', value: name})
+      dispatch(update({name: 'currentCategory', value: name}))
+      dispatch(update({name: 'choosenAttributes', value: []}))
     }
 
     if(paramsCategory !== prevProps.params.category){
@@ -96,7 +101,8 @@ class CategoryPage extends React.Component {
             ...this.state, 
             categoryData: products, 
             categoryName: paramsCategory})
-          updateStateFromChild({name: 'currentCategory', value: paramsCategory})
+          dispatch(update({name: 'currentCategory', value: paramsCategory}))
+          dispatch(update({name: 'choosenAttributes', value: []}))
       }else{
         this.setState({
           ...this.state, 
@@ -173,8 +179,9 @@ const Category = (props) => (
     params={useParams()}
   />)
 
-const mapStateToProps = (state) => {
+  const mapStateToProps = (state) => {
     return (state)
-}
-
+  }
+  
 export default connect(mapStateToProps)(Category);
+  

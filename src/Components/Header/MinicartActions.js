@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import ArrowUp from '../../Images/arrow-up.svg';
+import { connect } from 'react-redux'
 
 class Actions extends Component {
 
@@ -14,7 +15,6 @@ class Actions extends Component {
             } = this.props;
         
         const {label: choosenCurrencyLabel, symbol: choosenCurrencySymbol} = choosenCurrency;
-        const {currencyRef} = this;
 
         return(
             <>
@@ -42,4 +42,9 @@ class Actions extends Component {
             )}
 }
 
-export default Actions
+const mapStateToProps = (state) => {
+    return (state)
+  }
+  
+export default connect(mapStateToProps)(Actions);
+  

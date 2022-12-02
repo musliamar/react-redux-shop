@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import MinicartItems from './MinicartItems'
 import MinicartActions from './MinicartActions'
+import { connect } from 'react-redux'
 
 class Header extends React.PureComponent {
 
@@ -71,10 +72,7 @@ class Header extends React.PureComponent {
                 <div className='actions'>
                     <div ref={currencyRef} className='currency'>
                     <MinicartActions 
-                        currenciesList = { currenciesList }
-                        choosenCurrency = { choosenCurrency }
                         openBox = { openBox }
-                        currentlyOpened = { currentlyOpened }
                         changeCurrency = { changeCurrency } 
                     />
                     </div>
@@ -96,12 +94,9 @@ class Header extends React.PureComponent {
                                     </div>
                                     <div className='items'>
                                         <MinicartItems 
-                                            choosenCurrency = { choosenCurrency }
                                             increaseQuantityOfProduct = { increaseQuantityOfProduct }
                                             generateListOfAttributes = { generateListOfAttributes }
-                                            removeFromBag = { removeFromBag }
-                                            currencyToShow = { currencyToShow }
-                                            itemsInBag = { itemsInBag } />
+                                            removeFromBag = { removeFromBag } />
                                     </div>
                                 </div>
                                 <div className='total-price'>
@@ -131,4 +126,9 @@ class Header extends React.PureComponent {
   }
 }
 
-export default Header;
+const mapStateToProps = (state) => {
+    return (state)
+  }
+  
+export default connect(mapStateToProps)(Header);
+  
