@@ -9,12 +9,8 @@ class CartPage extends React.Component {
         const {
             itemsInBag, 
             choosenCurrency,
-            currencyToShow,
             sumOfPrices,
-            numberOfItemsInBag,
-            generateListOfAttributes,
-            increaseQuantityOfProduct,
-            removeFromBag } = this.props;
+            numberOfItemsInBag } = this.props;
 
         const {length: itemsLength} = itemsInBag;
         const {symbol} = choosenCurrency;
@@ -33,10 +29,7 @@ class CartPage extends React.Component {
                     {itemsInBag.map((item) => {
                         return(<CartItem
                             key={item.cartId}
-                            item = { item }
-                            generateListOfAttributes = {generateListOfAttributes}
-                            increaseQuantityOfProduct = { increaseQuantityOfProduct }
-                            removeFromBag = { removeFromBag } />)
+                            item = { item } />)
                     })}
                     <div className='divider'></div>
                     <div className='price-summary'>
@@ -62,9 +55,11 @@ class CartPage extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return (state)
-  }
+const mapStateToProps = (state) => ({
+    itemsInBag: state.itemsInBag,
+    choosenCurrency: state.choosenCurrency,
+    numberOfItemsInBag: state.numberOfItemsInBag
+  })
   
 export default connect(mapStateToProps)(CartPage);
   

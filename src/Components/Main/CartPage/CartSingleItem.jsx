@@ -1,8 +1,10 @@
 import { Component } from 'react'
-import ArrowLeft from '../../Images/arrow-left.svg';
-import ArrowRight from '../../Images/arrow-right.svg';
+import ArrowLeft from '../../../Images/arrow-left.svg';
+import ArrowRight from '../../../Images/arrow-right.svg';
 import {Link} from 'react-router-dom';
 import { connect } from 'react-redux'
+import Attributes from '../Attributes';
+import { increaseQuantityOfProduct, removeFromBag } from '../../../Utils'
 
 class Item extends Component {
 
@@ -104,10 +106,9 @@ class Item extends Component {
         const { 
             item,
             choosenCurrency,
-            currencyToShow,
-            increaseQuantityOfProduct,
-            removeFromBag,
-            generateListOfAttributes} = this.props;
+            itemsInBag,
+            dispatch,
+            currencyToShow } = this.props;
 
         const { cartId, 
             category, 
@@ -128,7 +129,6 @@ class Item extends Component {
 
         const {currentImages, overId, style} = this.state;
         const {length: imagesLength} = currentImages;
-        const {previousImage, nextImage, setOverId, handleMouseLeave, handleMouseMove} = this;
         
         if(!(imagesLength === 0)){
             currentImages.forEach((image) => {
@@ -140,8 +140,6 @@ class Item extends Component {
         }else{
             imageToShow = 0;
         }
-        
-        const attributes = {attributes: itemAttributes, choosenAttributes: choosenAttributes, from: 'cart', inStock: inStock};
         
         return (
             <>
@@ -160,46 +158,50 @@ class Item extends Component {
                             <span>{symbol}{prices[currencyToShow].amount.toFixed(2)}</span>
                         </div>
                         <div className='attributes'>
-                        {generateListOfAttributes(attributes)}
+                        <Attributes 
+                            attributes = {itemAttributes} 
+                            choosenAttributesFromCart = { choosenAttributes }
+                            from = { 'cart' } 
+                            inStock = { inStock } />
                         </div>
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => {increaseQuantityOfProduct(cartId)}} className='attribute-option plus-minus'>
+                        <span onClick={() => increaseQuantityOfProduct({cartId: cartId, itemsInBag: itemsInBag, dispatch: dispatch})} className='attribute-option plus-minus'>
                         +
                         </span>
                         <span className='attribute-number'>
                             {quantity}
                         </span>
-                        <span onClick={() => {removeFromBag(cartId)}} className='attribute-option plus-minus'>
+                        <span onClick={() => removeFromBag({cartId: cartId, itemsInBag: itemsInBag, dispatch: dispatch})} className='attribute-option plus-minus'>
                         -
                         </span>
                     </div>
                     <div className='gallery'>
                         {galleryLength > 1
                         ? <>
-                            <div onMouseEnter={() => {setOverId(cartId)}} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
+                            <div onMouseEnter={() => {this.setOverId(cartId)}} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
                                 <div>
                                     <img 
                                     alt={name+' product'}
-                                    onMouseMove={handleMouseMove}
-                                    style={(overId === cartId) ? style : null} 
+                                    onMouseMove={this.handleMouseMove}
+                                    style={(overId === cartId) && style} 
                                     className='item-image' 
                                     src={gallery[imageToShow]} />
                                 </div>
                                 <div>
                                     <div className='gallery-arrows'>
-                                        <img onClick={() => {previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
-                                        <img onClick={() => {nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
+                                        <img onClick={() => {this.previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
+                                        <img onClick={() => {this.nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
                                     </div>
                                 </div>
                             </div>
                         </>
-                        : <div onMouseEnter={() => setOverId(cartId)} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
+                        : <div onMouseEnter={() => this.setOverId(cartId)} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
                             <img 
                             alt={name+' product'} 
                             className='item-image' 
-                            onMouseMove={handleMouseMove} 
-                            style={(overId === cartId) ? style : null} 
+                            onMouseMove={this.handleMouseMove} 
+                            style={(overId === cartId) && style} 
                             src={gallery[0]} />
                         </div>} 
                     </div>
@@ -209,9 +211,11 @@ class Item extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return (state)
-  }
+const mapStateToProps = (state) => ({
+    choosenCurrency: state.choosenCurrency,
+    itemsInBag: state.itemsInBag,
+    currencyToShow: state.currencyToShow
+})
   
 export default connect(mapStateToProps)(Item);
   

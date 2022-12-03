@@ -1,3 +1,3 @@
-### React Redux GraphQL app
+### React Redux app
 
-by Amar Musli (amar@amarmusli.ch)
+App works with this GraphQL endpoint: https://github.com/scandiweb/junior-react-endpoint

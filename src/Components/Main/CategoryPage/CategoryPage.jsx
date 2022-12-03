@@ -1,11 +1,11 @@
 import React from 'react';
 import './CategoryPage.css';
-import CartIcon from '../../Images/cart-icon.svg';
+import CartIcon from '../../../Images/cart-icon.svg';
 import {Link} from 'react-router-dom';
 import {useParams} from "react-router-dom";
-import {getCategory} from '../../Queries';
+import {getCategory} from '../../../Queries';
 import { connect } from "react-redux";
-import { update } from '../../Store';
+import { update } from '../../../Store';
 
 class CategoryPage extends React.Component {
 
@@ -18,7 +18,7 @@ class CategoryPage extends React.Component {
 
   async componentDidMount(){
     
-    const {params, dispatch, defaultCategory} = this.props;
+    const {params, defaultCategory, update} = this.props;
     const {categoryData} = this.state;
     const {category: paramsCategory} = params;
 
@@ -32,8 +32,8 @@ class CategoryPage extends React.Component {
             ...this.state, 
             categoryData: products, 
             categoryName: paramsCategory})
-          dispatch(update({name: 'currentCategory', value: paramsCategory}))
-          dispatch(update({name: 'choosenAttributes', value: []}))
+          update({name: 'currentCategory', value: paramsCategory})
+          update({name: 'choosenAttributes', value: []})
       }else{
         this.setState({
           ...this.state, 
@@ -49,13 +49,13 @@ class CategoryPage extends React.Component {
         ...this.state, 
         categoryData: products, 
         categoryName: name})
-      dispatch(update({name: 'currentCategory', value: name}))
-      dispatch(update({name: 'choosenAttributes', value: []}))
+      update({name: 'currentCategory', value: name})
+      update({name: 'choosenAttributes', value: []})
     } 
   }
 
   async componentDidUpdate(prevProps, prevState){
-    const {params, dispatch, defaultCategory} = this.props;
+    const {params, defaultCategory, update} = this.props;
     const {categoryData} = this.state;
     const {category: paramsCategory} = params;
 
@@ -69,8 +69,8 @@ class CategoryPage extends React.Component {
             ...this.state, 
             categoryData: products, 
             categoryName: paramsCategory})
-          dispatch(update({name: 'currentCategory', value: paramsCategory}))
-          dispatch(update({name: 'choosenAttributes', value: []}))
+          update({name: 'currentCategory', value: paramsCategory})
+          update({name: 'choosenAttributes', value: []})
       }else{
         this.setState({
           ...this.state, 
@@ -88,8 +88,8 @@ class CategoryPage extends React.Component {
         ...this.state, 
         categoryData: products, 
         categoryName: name})
-      dispatch(update({name: 'currentCategory', value: name}))
-      dispatch(update({name: 'choosenAttributes', value: []}))
+      update({name: 'currentCategory', value: name})
+      update({name: 'choosenAttributes', value: []})
     }
 
     if(paramsCategory !== prevProps.params.category){
@@ -101,8 +101,8 @@ class CategoryPage extends React.Component {
             ...this.state, 
             categoryData: products, 
             categoryName: paramsCategory})
-          dispatch(update({name: 'currentCategory', value: paramsCategory}))
-          dispatch(update({name: 'choosenAttributes', value: []}))
+          update({name: 'currentCategory', value: paramsCategory})
+          update({name: 'choosenAttributes', value: []})
       }else{
         this.setState({
           ...this.state, 
@@ -122,8 +122,7 @@ class CategoryPage extends React.Component {
     const {choosenCurrency, currencyToShow, addInBag} = this.props;
     const {symbol} = choosenCurrency;
     const categoryName = this.state.categoryName && this.state.categoryName[0].toUpperCase() + this.state.categoryName.slice(1)
-    const {showAddToCart} = this;
-
+    
     if(categoryData !== null){
       return (<div className='items-container'>
             <h1 className='category-title'>{categoryName}</h1>
@@ -134,27 +133,24 @@ class CategoryPage extends React.Component {
 
                 return(
                 <div 
-                  onMouseEnter={event => showAddToCart(event, id)}
-                  onMouseLeave={showAddToCart}
+                  onMouseEnter={event => this.showAddToCart(event, id)}
+                  onMouseLeave={this.showAddToCart}
                   key={id} 
                   className='single-item'>
-                    {inStock ?
+                    {inStock &&
                       (overId && overId === id) 
-                      ? <div onClick={() => {addInBag({item: item})}}>
+                      && <div onClick={() => {addInBag({item: item})}}>
                           <img src={CartIcon} className='cart-icon' alt="Add to cart" />
-                        </div> 
-                      : null 
-                    : null} 
+                        </div>} 
                     <Link 
                       name={id} 
                       className='item' 
                       to={'/'+category+'/'+id}>
                         <div className={inStock ? 'image-wrapper' : 'image-wrapper opacity'}>
                           {!inStock 
-                          ? <div className='out-of-stock'>
+                          && <div className='out-of-stock'>
                               Out of stock
-                            </div>
-                          : null}
+                            </div>}
                           <img className='item-image' src={gallery[0]} alt={name} />
                         </div>
                         <div className='item-content'>
@@ -179,9 +175,14 @@ const Category = (props) => (
     params={useParams()}
   />)
 
-  const mapStateToProps = (state) => {
-    return (state)
-  }
+  const mapStateToProps = (state) => ({
+    defaultCategory: state.defaultCategory,
+    choosenCurrency: state.choosenCurrency,
+    currencyToShow: state.currencyToShow
+  })
   
-export default connect(mapStateToProps)(Category);
+  const mapDispatchToProps = () => ({ 
+    update
+  });
   
+  export default connect(mapStateToProps, mapDispatchToProps())(Category);

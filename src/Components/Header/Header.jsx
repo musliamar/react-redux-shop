@@ -6,6 +6,7 @@ import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import MinicartItems from './MinicartItems'
 import MinicartActions from './MinicartActions'
 import { connect } from 'react-redux'
+import { openBox, closeBox } from '../../Utils'
 
 class Header extends React.PureComponent {
 
@@ -16,12 +17,9 @@ class Header extends React.PureComponent {
     }
 
     componentDidUpdate(){
-        const {currencyRef, minicartRef} = this;
-        const {closeBox} = this.props;
-
         window.onclick = (event) => {
-            if(!event.path.includes(currencyRef.current)
-            && !event.path.includes(minicartRef.current))
+            if(!event.path.includes(this.currencyRef.current)
+            && !event.path.includes(this.minicartRef.current))
             closeBox()
         }
     }
@@ -30,25 +28,16 @@ class Header extends React.PureComponent {
 
         const {
             categoriesList,
-            currenciesList,
             choosenCurrency, 
             sumOfPrices,
-            openBox,
             currentCategory,
             itemsInBag,
-            increaseQuantityOfProduct,
-            removeFromBag,
-            currencyToShow,
-            generateListOfAttributes,
-            closeBox,
-            currentlyOpened,
-            numberOfItemsInBag,
-            changeCurrency
+            currentlyOpen,
+            numberOfItemsInBag
             } = this.props;
         
         const {length} = itemsInBag;
         const {symbol: choosenCurrencySymbol} = choosenCurrency;
-        const { minicartRef, currencyRef } = this;
 
       return (
         <header>
@@ -70,20 +59,17 @@ class Header extends React.PureComponent {
                 </nav>
                 <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
                 <div className='actions'>
-                    <div ref={currencyRef} className='currency'>
-                    <MinicartActions 
-                        openBox = { openBox }
-                        changeCurrency = { changeCurrency } 
-                    />
+                    <div ref={this.currencyRef} className='currency'>
+                    <MinicartActions />
                     </div>
-                    <div ref={minicartRef} className='cart'>
+                    <div ref={this.minicartRef} className='cart'>
                         <span className="tooltip-text cart-tooltip">My Bag</span>
                         <div onClick={() => {openBox('minicart')}}>
-                            {!(numberOfItemsInBag === 0) ? <span className="items-number">{numberOfItemsInBag}</span> : null}
+                            {!(numberOfItemsInBag === 0) && <span className="items-number">{numberOfItemsInBag}</span>}
                             <img className='small-cart-icon' src={SmallCartIcon} alt='Your bag' />
                         </div>
                         <div className={
-                                currentlyOpened === 'minicart' 
+                                currentlyOpen === 'minicart' 
                                 ? !(length === 0) ? 'box cart-box display-flex' : 'box empty'
                                 : 'box display-none'}>
                             {!(length === 0) 
@@ -93,10 +79,7 @@ class Header extends React.PureComponent {
                                         <span className='bold display-inline'>My Bag,</span> {numberOfItemsInBag} items 
                                     </div>
                                     <div className='items'>
-                                        <MinicartItems 
-                                            increaseQuantityOfProduct = { increaseQuantityOfProduct }
-                                            generateListOfAttributes = { generateListOfAttributes }
-                                            removeFromBag = { removeFromBag } />
+                                        <MinicartItems />
                                     </div>
                                 </div>
                                 <div className='total-price'>
@@ -104,7 +87,7 @@ class Header extends React.PureComponent {
                                     <span>{choosenCurrencySymbol}{sumOfPrices}</span>
                                 </div>
                                 <div className='minicart-buttons'>
-                                    <Link onClick={closeBox} className='view-bag' to={'/cart'}>
+                                    <Link onClick={closeBox()} className='view-bag' to={'/cart'}>
                                         View Bag   
                                     </Link>
                                     <div className='checkout'>
@@ -126,9 +109,14 @@ class Header extends React.PureComponent {
   }
 }
 
-const mapStateToProps = (state) => {
-    return (state)
-  }
+const mapStateToProps = (state) => ({
+    categoriesList: state.categoriesList,
+    choosenCurrency: state.choosenCurrency,
+    currentCategory: state.currentCategory,
+    itemsInBag: state.itemsInBag,
+    currentlyOpen: state.currentlyOpen,
+    numberOfItemsInBag: state.numberOfItemsInBag
+  })
   
 export default connect(mapStateToProps)(Header);
   

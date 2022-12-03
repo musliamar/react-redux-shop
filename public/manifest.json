@@ -1,6 +1,6 @@
 {
-  "short_name": "React GraphQL Redux app",
-  "name": "React GraphQL Redux app",
+  "short_name": "React Redux app",
+  "name": "React Redux app",
   "icons": [
     {
       "src": "favicon.ico",

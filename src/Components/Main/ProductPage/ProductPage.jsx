@@ -2,8 +2,10 @@ import React from 'react';
 import './ProductPage.css';
 import {  useParams } from "react-router-dom";
 import parse from 'html-react-parser';
-import {getProduct} from '../../Queries';
+import { getProduct } from '../../../Queries';
 import { connect } from "react-redux";
+import Attributes from '../Attributes';
+import { generateDefaultAttributes } from '../../../Utils'
 
 class ProductPage extends React.Component {
 
@@ -20,7 +22,7 @@ class ProductPage extends React.Component {
   async componentDidMount(){
 
     window.scrollTo(0, 0);
-    const {params, generateDefaultAttributes} = this.props;
+    const {params} = this.props;
     const {product: paramsProduct} = params;
 
     if(paramsProduct){
@@ -43,10 +45,8 @@ class ProductPage extends React.Component {
   }
 
   render() {
-
-    console.log(this.props)
     
-    const {choosenCurrency, currencyToShow, addInBag, generateListOfAttributes} = this.props;
+    const { choosenCurrency, currencyToShow, addInBag } = this.props;
     const {symbol} = choosenCurrency;
     const {overImage, productData: item} = this.state;
 
@@ -64,7 +64,7 @@ class ProductPage extends React.Component {
       return (<div key={id} className='product-page'>
             <div className='gallery'>
             {gallery && gallery.length > 1
-            ? <>
+            && <>
               <div className='all-images'>
                 {gallery.map((image) => 
                     image === overImage || (overImage === '' && image === gallery[0])
@@ -75,14 +75,12 @@ class ProductPage extends React.Component {
                     <img alt={name+' product gallery item'} className='item-image opacity' src={image} />
                     </div>)}
               </div>
-              </>
-            : null}
+              </>}
               <div className='single-image'>
                 {!inStock
-                ? <div className='out-of-stock-text'>
+                && <div className='out-of-stock-text'>
                     Out of stock
-                  </div>
-                : null}
+                  </div>}
                 <img 
                   alt={name+' product'} 
                   className={inStock ? 'item-image' : 'item-image opacity'}
@@ -95,7 +93,10 @@ class ProductPage extends React.Component {
               <span className={inStock ? 'name' : 'name bleached-text'}>{name}</span>
             </div>
             <div className='attributes'>
-              {generateListOfAttributes({attributes: attributes, from: 'product-page', inStock: inStock})}
+            <Attributes 
+                attributes = {attributes} 
+                from = { 'product-page' } 
+                inStock = { inStock } />
             </div>
             <div className='attribute'>
               <span className={inStock ? 'attribute-name in-stock' : 'attribute-name bleached-text'}>Price:</span>
@@ -123,8 +124,9 @@ const Product = (props) => (
     params={useParams()}
   />)
 
-const mapStateToProps = (state) => {
-    return (state)
-}
+const mapStateToProps = (state) => ({
+    choosenCurrency: state.choosenCurrency,
+    currencyToShow: state.currencyToShow
+})
 
 export default connect(mapStateToProps)(Product);
