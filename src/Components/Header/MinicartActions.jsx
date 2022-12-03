@@ -19,7 +19,6 @@ class Actions extends Component {
             currencyToShow = priceLabel;
           }
         }
-    
         update({name: 'choosenCurrency', value: currency})
         update({name: 'currentlyOpen', value: ''})
         update({name: 'currencyToShow', value: currencyToShow})
@@ -30,6 +29,7 @@ class Actions extends Component {
         const {
             currenciesList,
             choosenCurrency, 
+            update,
             currentlyOpen,
             } = this.props;
         
@@ -38,7 +38,7 @@ class Actions extends Component {
         return(
             <>
                 <span className="tooltip-text currency-tooltip">Change currency</span>
-                <div onClick={() => {openBox('currency')}} className='first-currency'>
+                <div onClick={() => openBox({toOpen: 'currency', update: update, currentlyOpen: currentlyOpen})} className='first-currency'>
                     <span>{choosenCurrencySymbol}</span>
                     {currentlyOpen === 'currency' 
                     ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
@@ -49,8 +49,8 @@ class Actions extends Component {
                     const {label: currencyLabel, symbol: currencySymbol} = currency;
                     return (
                         <li 
-                        className={choosenCurrencyLabel === currencyLabel && 'selected'}
-                        onClick={() => {this.changeCurrency(currency)}} 
+                        className={choosenCurrencyLabel === currencyLabel ? 'selected' : null}
+                        onClick={() => this.changeCurrency(currency)} 
                         key={currencySymbol}>
                             {currencySymbol} {currencyLabel}
                         </li>
@@ -70,6 +70,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = () => ({ 
     update
-});
+  });
   
 export default connect(mapStateToProps, mapDispatchToProps())(Actions);

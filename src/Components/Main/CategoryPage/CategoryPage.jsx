@@ -5,7 +5,8 @@ import {Link} from 'react-router-dom';
 import {useParams} from "react-router-dom";
 import {getCategory} from '../../../Queries';
 import { connect } from "react-redux";
-import { update } from '../../../Store';
+import { update, increaseNumberOfItemsInBag } from '../../../Store';
+import { addInBag } from '../../../Utils'
 
 class CategoryPage extends React.Component {
 
@@ -119,7 +120,16 @@ class CategoryPage extends React.Component {
   render() {
 
     const {categoryData, overId} = this.state
-    const {choosenCurrency, currencyToShow, addInBag} = this.props;
+    const {
+      choosenCurrency, 
+      currencyToShow, 
+      itemsInBag,
+      numberOfItemsInBag,
+      choosenAttributes,
+      notificationArr,
+      notificationKey,
+      increaseNumberOfItemsInBag, 
+      update } = this.props;
     const {symbol} = choosenCurrency;
     const categoryName = this.state.categoryName && this.state.categoryName[0].toUpperCase() + this.state.categoryName.slice(1)
     
@@ -139,7 +149,17 @@ class CategoryPage extends React.Component {
                   className='single-item'>
                     {inStock &&
                       (overId && overId === id) 
-                      && <div onClick={() => {addInBag({item: item})}}>
+                      && <div onClick={
+                        () => {addInBag({
+                          item: item,
+                          choosenAttributes: choosenAttributes, 
+                          itemsInBag: itemsInBag, 
+                          numberOfItemsInBag: numberOfItemsInBag, 
+                          increaseNumberOfItemsInBag: increaseNumberOfItemsInBag, 
+                          notificationArr: notificationArr,
+                          notificationKey: notificationKey,
+                          update: update
+                        })}}>
                           <img src={CartIcon} className='cart-icon' alt="Add to cart" />
                         </div>} 
                     <Link 
@@ -178,11 +198,17 @@ const Category = (props) => (
   const mapStateToProps = (state) => ({
     defaultCategory: state.defaultCategory,
     choosenCurrency: state.choosenCurrency,
-    currencyToShow: state.currencyToShow
+    currencyToShow: state.currencyToShow,
+    itemsInBag: state.itemsInBag,
+    numberOfItemsInBag: state.numberOfItemsInBag,
+    choosenAttributes: state.choosenAttributes,
+    notificationArr: state.notificationArr,
+    notificationKey: state.notificationKey
   })
   
   const mapDispatchToProps = () => ({ 
-    update
+    update,
+    increaseNumberOfItemsInBag
   });
   
   export default connect(mapStateToProps, mapDispatchToProps())(Category);

@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import { connect } from 'react-redux'
 import Attributes from '../Attributes';
 import { increaseQuantityOfProduct, removeFromBag } from '../../../Utils'
+import { decreaseNumberOfItemsInBag, increaseNumberOfItemsInBag, update } from '../../../Store'
 
 class Item extends Component {
 
@@ -29,15 +30,14 @@ class Item extends Component {
         this.setState({overId: '', style: {objectPosition: '0% 0%' }})
     }
 
-    setOverId = (props) => {
-        this.setState({overId: props})
+    setOverId = ({overId}) => {
+        this.setState({overId: overId})
     }
 
-    nextImage = (props) => {
+    nextImage = ({item, gallery}) => {
 
         const {currentImages} = this.state;
         const {length: imagesLength} = currentImages;
-        const {item, gallery} = props;
         const {length: galleryLength} = gallery;
 
         if(imagesLength === 0){
@@ -67,11 +67,10 @@ class Item extends Component {
         this.setState({style: {objectPosition: '0% 0%' }})
     }
 
-    previousImage = (props) => {
+    previousImage = ({item, gallery}) => {
 
         const {currentImages} = this.state;
         const {length: imagesLength} = currentImages;
-        const {item, gallery} = props;
         const {length: galleryLength} = gallery;
 
         if(imagesLength === 0){
@@ -107,7 +106,6 @@ class Item extends Component {
             item,
             choosenCurrency,
             itemsInBag,
-            dispatch,
             currencyToShow } = this.props;
 
         const { cartId, 
@@ -130,7 +128,7 @@ class Item extends Component {
         const {currentImages, overId, style} = this.state;
         const {length: imagesLength} = currentImages;
         
-        if(!(imagesLength === 0)){
+        if((imagesLength !== 0)){
             currentImages.forEach((image) => {
                 const {item: imageItem, currentImage} = image;
                 if(imageItem === cartId){
@@ -166,13 +164,23 @@ class Item extends Component {
                         </div>
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => increaseQuantityOfProduct({cartId: cartId, itemsInBag: itemsInBag, dispatch: dispatch})} className='attribute-option plus-minus'>
+                        <span onClick={() => {increaseQuantityOfProduct({
+                                cartId: cartId, 
+                                itemsInBag: itemsInBag, 
+                                update: update, 
+                                increaseNumberOfItemsInBag: increaseNumberOfItemsInBag})}
+                            } className='attribute-option plus-minus'>
                         +
                         </span>
                         <span className='attribute-number'>
                             {quantity}
                         </span>
-                        <span onClick={() => removeFromBag({cartId: cartId, itemsInBag: itemsInBag, dispatch: dispatch})} className='attribute-option plus-minus'>
+                        <span onClick={() => {removeFromBag({
+                                cartId: cartId, 
+                                itemsInBag: itemsInBag, 
+                                update: update,
+                                decreaseNumberOfItemsInBag: decreaseNumberOfItemsInBag})}
+                            } className='attribute-option plus-minus'>
                         -
                         </span>
                     </div>
@@ -184,7 +192,7 @@ class Item extends Component {
                                     <img 
                                     alt={name+' product'}
                                     onMouseMove={this.handleMouseMove}
-                                    style={(overId === cartId) && style} 
+                                    $style={(overId === cartId) && style} 
                                     className='item-image' 
                                     src={gallery[imageToShow]} />
                                 </div>
@@ -201,7 +209,7 @@ class Item extends Component {
                             alt={name+' product'} 
                             className='item-image' 
                             onMouseMove={this.handleMouseMove} 
-                            style={(overId === cartId) && style} 
+                            $style={(overId === cartId) && style} 
                             src={gallery[0]} />
                         </div>} 
                     </div>
@@ -216,6 +224,12 @@ const mapStateToProps = (state) => ({
     itemsInBag: state.itemsInBag,
     currencyToShow: state.currencyToShow
 })
+
+const mapDispatchToProps = () => ({ 
+    update,
+    increaseNumberOfItemsInBag,
+    decreaseNumberOfItemsInBag
+});
   
-export default connect(mapStateToProps)(Item);
+export default connect(mapStateToProps, mapDispatchToProps())(Item);
   

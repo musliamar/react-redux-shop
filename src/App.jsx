@@ -9,26 +9,9 @@ import ProductPage from './Components/Main/ProductPage/ProductPage';
 import { connect } from "react-redux";
 import { update } from './Store';
 import { getCategoriesList, getCurrenciesList, getCategory } from './Queries'
+import parse from 'html-react-parser';
 
 class App extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {   
-      notificationArr: [],
-      notificationKey: 0
-    } 
-  }
-
- /* setState(state) {
-    window.localStorage.setItem('redux-store', JSON.stringify(state));
-    super.setState(state);
-  } */
-
-  // notification will show only if new product is added in bag
-  // if choosen product is already in bag, addInBag function will only increase its quantity
-  // and notification will not be shown 
-  // if user add same product but with different attributes, notification will be shown
 
   async runOnFirstVisitWithoutLocalStorage(){
     const { update } = this.props
@@ -83,28 +66,12 @@ class App extends React.Component {
 
   render() {
 
-    const {
-      itemsInBag, 
-      currencyToShow,
-      currentlyOpen,
-    } = this.props;
-    
-    const { notificationArr: notifications } = this.state
-
-    let sumOfAllPricesRaw = 0;
-
-    for(const item in itemsInBag){
-        const {prices, quantity} = itemsInBag[item];
-        itemsInBag[item].sumPriceOfItem = prices[currencyToShow].amount * quantity;
-        itemsInBag[item].sumPriceOfItemFixed = itemsInBag[item].sumPriceOfItem.toFixed(2);
-        sumOfAllPricesRaw = sumOfAllPricesRaw + itemsInBag[item].sumPriceOfItem;
-    }
-
-    const sumOfPrices = sumOfAllPricesRaw.toFixed(2);
+    const { currentlyOpen, notificationArr: notifications } = this.props;
+    const parsedNotifications = notifications.map((n) => parse(n))
 
     return (
       <div className='App'>
-        <Header sumOfPrices={sumOfPrices} />
+        <Header />
         <main> 
         {currentlyOpen === 'minicart' && <div id="overlay"></div>} 
           <Routes>
@@ -114,12 +81,12 @@ class App extends React.Component {
                 <Route index element={ <CategoryPage /> } />
                 <Route path=":product" element={ <ProductPage /> } />
               </Route>
-              <Route path='/cart' element={ <CartPage sumOfPrices={sumOfPrices} /> } />
+              <Route path='/cart' element={ <CartPage /> } />
             </Route>
           </Routes>
           <div className='notification'>
             <div className='container'>
-              {notifications}
+              {parsedNotifications}
             </div>
           </div>
         </main>
@@ -132,9 +99,8 @@ class App extends React.Component {
 const mapStateToProps = (state) => ({
   currenciesList: state.currenciesList,
   categoriesList: state.categoriesList,
-  itemsInBag: state.itemsInBag,
-  currencyToShow: state.currencyToShow,
-  currentlyOpen: state.currentlyOpen
+  currentlyOpen: state.currentlyOpen,
+  notificationArr: state.notificationArr
 })
 
 const mapDispatchToProps = () => ({ 

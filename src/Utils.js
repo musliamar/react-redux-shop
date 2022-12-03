@@ -1,41 +1,64 @@
-import { decreaseNumberOfItemsInBag, increaseNumberOfItemsInBag, update } from './Store';
 import SmallCartIcon from './Images/small-cart-icon.svg';
 
-export const increaseQuantityOfProduct = (props) => {
-    const {cartId: passedCartId, itemsInBag: items} = props;
-    items.forEach((item) => {
-      let {cartId, quantity} = item;
-      if(cartId === passedCartId){
-        item.quantity = quantity + 1;
-      }
-    })
-    update({name: 'itemsInBag', value: items})
-    increaseNumberOfItemsInBag()
-  }
+export const calculateSumOfAllPrices = ({itemsInBag, currencyToShow, update}) => {
+  let items = [...itemsInBag]
+  let sumOfAllPricesRaw = 0;
 
-export const removeFromBag = (props) => {
-    const {cartId: passedCartId, itemsInBag: items} = props;
-    items.forEach((item) => {
-      let {cartId, quantity} = item;
+    for(const item in items){
+        const {prices, quantity} = items[item];
+        items[item].sumPriceOfItem = prices[currencyToShow].amount * quantity;
+        items[item].sumPriceOfItemFixed = items[item].sumPriceOfItem.toFixed(2);
+        sumOfAllPricesRaw = sumOfAllPricesRaw + items[item].sumPriceOfItem;
+    }
+
+    update({name: 'sumOfPrices', value: sumOfAllPricesRaw.toFixed(2)})
+}
+
+export const increaseQuantityOfProduct = ({cartId: passedCartId, itemsInBag, update, increaseNumberOfItemsInBag}) => {
+    let items = [...itemsInBag]
+    const newItems = items.map((item) => {
+      let itemCopy = JSON.parse(JSON.stringify(item))
+      let {cartId} = itemCopy;
+      if(cartId === passedCartId){
+        itemCopy.quantity += 1;
+      }
+      return itemCopy
+    })
+    update({name: 'itemsInBag', value: newItems})
+    increaseNumberOfItemsInBag()
+}
+
+export const removeFromBag = ({cartId: passedCartId, itemsInBag, update, decreaseNumberOfItemsInBag}) => {
+
+    let items = [...itemsInBag]
+    let last = {isLast: false, found: false, index: 0};
+
+    let newItems = items.map((item) => {
+      let itemCopy = JSON.parse(JSON.stringify(item))
+      let {cartId, quantity} = itemCopy;
       if(cartId === passedCartId){
         if(quantity > 1){
-          item.quantity = quantity - 1;
+          itemCopy.quantity -= 1;
         }else{
-          items.splice(items.indexOf(item), 1);
+          last = {isLast: true, index: items.indexOf(item)};
         }
       }
+      return itemCopy;
     })
-    update({name: 'itemsInBag', value: items})
+
+    if(last.isLast){
+      newItems.splice(items.indexOf(last.index), 1);
+    }
+    update({name: 'itemsInBag', value: newItems})
     decreaseNumberOfItemsInBag()
 }
 
-export const generateDefaultAttributes = (props) => {
-    console.log(this.props)
-    const { category } = props;
+export const generateDefaultAttributes = ({ product, update }) => {
+    const { category } = product;
     const choosenAttributes = [];
-    Object.keys(props).forEach((item) => {
+    Object.keys(product).forEach((item) => {
       if((item === 'attributes')){
-        Object.values(props[item]).forEach((attribute) => {
+        Object.values(product[item]).forEach((attribute) => {
           const {id, items} = attribute;
           const attributeToAdd = {[id]: items[0]}
           choosenAttributes.push(attributeToAdd)
@@ -45,53 +68,68 @@ export const generateDefaultAttributes = (props) => {
     update({name: 'choosenAttributes', value: choosenAttributes})
     update({name: 'currentCategory', value: category})
     return choosenAttributes;
-  }
+}
 
-  export const addInBag = (props) => {
-    const {item} = props;
+export const addInBag = ({ 
+  item, 
+  choosenAttributes, 
+  itemsInBag, 
+  notificationArr,
+  notificationKey,
+  numberOfItemsInBag, 
+  increaseNumberOfItemsInBag, 
+  update }) => {
+
     const product = JSON.parse(JSON.stringify(item));
+    let items = [...itemsInBag]
     const {id} = product;
-    const {choosenAttributes, itemsInBag, numberOfItemsInBag, itemsInBag: items} = this.props;
 
     product.choosenAttributes = choosenAttributes.length === 0 
-                                ? generateDefaultAttributes(item) 
+                                ? generateDefaultAttributes({product: item, update: update}) 
                                 : choosenAttributes;
 
     product.cartId = generateCartIdOfItem({id: id, choosenAttributes: product.choosenAttributes})
     const {cartId} = product;
 
-    if(!(items.length === 0)){
+    if(items.length !== 0){
       let found = false;
       items.forEach((item) => {
         const {cartId: itemCartId} = item;
         if(itemCartId === cartId){
           found = true;
-          increaseQuantityOfProduct(itemCartId);
+          increaseQuantityOfProduct({cartId: itemCartId, itemsInBag: items, update, increaseNumberOfItemsInBag});
         }
       })
       if(!found){
         product.quantity = 1;
         showNotificationAndUpdateCart({
           product: product,
-          itemsInBag: [...itemsInBag, product],
-          numberOfItemsInBag: numberOfItemsInBag + product.quantity        
+          notificationArr: notificationArr,
+          notificationKey: notificationKey,
+          itemsInBag: [...items, product],
+          numberOfItemsInBag: numberOfItemsInBag + product.quantity,
+          update        
         })
       }
     }else{
       product.quantity = 1;
       showNotificationAndUpdateCart({
         product: product,
-        itemsInBag: [...itemsInBag, product],
-        numberOfItemsInBag: numberOfItemsInBag + product.quantity        
+        itemsInBag: [...items, product],
+        notificationArr: notificationArr,
+        notificationKey: notificationKey,
+        numberOfItemsInBag: numberOfItemsInBag + product.quantity,
+        update        
       })
     }
 }
 
 export const generateCartIdOfItem = ({choosenAttributes, id}) => {
     const generateIdForCart = id.split('-')
+    let attributes = [...choosenAttributes]
     let transformedAttribute;
 
-    choosenAttributes.map((attribute) => 
+    attributes.forEach((attribute) => 
       {
       const {id, item} = attribute;
       if(id){
@@ -99,64 +137,64 @@ export const generateCartIdOfItem = ({choosenAttributes, id}) => {
       }else{
         transformedAttribute = attribute;
       }
-      const cartIdArray = Object.keys(transformedAttribute).map((key) =>
+      
+      Object.keys(transformedAttribute).forEach((key) =>
       {
         const {id} = transformedAttribute[key];
         if(id === 'Yes'){
           const splitted = key.split(' ');
           const joined = splitted.join('-');
           generateIdForCart.push(joined.toLowerCase())
-        }else if(!(id === 'No')){
+        }else if(id !== 'No'){
           generateIdForCart.push(id.toLowerCase())
         }
-        return generateIdForCart})
-      return cartIdArray})
+       })
+      })
     return generateIdForCart.join('-'); 
-  }
+}
 
-  export const showNotificationAndUpdateCart = ({ product, itemsInBag, numberOfItemsInBag }) => {
-    const {notificationKey, notificationArr} = this.state;
+export const showNotificationAndUpdateCart = ({ 
+  product, 
+  notificationArr, 
+  notificationKey, 
+  itemsInBag, 
+  numberOfItemsInBag, 
+  update }) => {
+
     const {brand, name} = product;
 
     const notification =
-      <div key={notificationKey} className='message'>
-        <p><img src={SmallCartIcon} className='cart-icon' alt='Cart icon in notification' /> 
-        Product {brand} {name} has been added in bag.</p>
-      </div>;
+      `<div key='${notificationKey}' className='message'>
+        <p><img src='${SmallCartIcon}' className='cart-icon' alt='Cart icon in notification' /> 
+        Product ${brand} ${name} has been added in bag.</p>
+      </div>`;
 
-    this.setState({
-      ...this.state, 
-      notificationArr: notificationArr.concat(notification),
-      notificationKey: notificationKey + 1
-    });
+    const notificationToSend = notificationArr.concat(notification)
 
+    update({name: 'notificationArr', value: notificationToSend})
+    update({name: 'notificationKey', value: notificationKey + 1})
     update({name: 'itemsInBag', value: itemsInBag})
     update({name: 'numberOfItemsInBag', value: numberOfItemsInBag})
-    setTimeout(this.removeNotification, 3000);
-  }
+    setTimeout(removeNotification({notificationArr: notificationArr, notificationKey: notificationKey, update: update}), 3000);
+}
 
-  export const removeNotification = () => {
-    const {notificationArr, notificationKey} = this.state;
-    const {length} = notificationArr;
+export const removeNotification = ({notificationArr, notificationKey, update}) => {
+   
+    const { length } = notificationArr;
     const newArr = length ? notificationArr.slice(0, length - 1) : [];
 
-   this.setState({
-      ...this.state,
-      notificationArr: newArr,
-      notificationKey: notificationKey - 1
-    });
-  }
+    update({name: 'notificationArr', value: newArr})
+    update({name: 'notificationKey', value: notificationKey - 1})
+}
 
-  export const openBox = (props) => {
-    console.log(this.props)
-    const { currentlyOpen } = this.props;
-    if(currentlyOpen === props){
-      update({name: 'currentlyOpen', value: ''})
-    }else{
-      update({name: 'currentlyOpen', value: props})
-    }
-  }
-
-  export const closeBox = () => {
+export const openBox = ({toOpen, update, currentlyOpen}) => {
+  if(currentlyOpen === toOpen){
     update({name: 'currentlyOpen', value: ''})
+  }else{
+    update({name: 'currentlyOpen', value: toOpen})
   }
+}
+
+export const closeBox = ({ update }) => {
+  update({name: 'currentlyOpen', value: ''})
+}

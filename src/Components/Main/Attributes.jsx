@@ -20,17 +20,21 @@ class Attributes extends Component {
 
     render() {
 
-        const {attributes: arrayOfAttributes, from, choosenAttributesFromCart: choosenAttributesArray, inStock} = this.props;
-    
+        const {
+          attributes: arrayOfAttributes, 
+          from, 
+          choosenAttributes: attributesFromState, 
+          choosenAttributesFromCart, 
+          inStock} = this.props;
+
         return(arrayOfAttributes && arrayOfAttributes.map((attribute, index) => {
     
           let newAttribute = JSON.parse(JSON.stringify(attribute));
           let selectingEnabled = false;
-          const {choosenAttributes: attributesFromState} = this.props;
-          let choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesArray;
-    
+          let choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesFromCart;
+
           if(from === 'product-page'){inStock ? selectingEnabled = true : selectingEnabled = false}
-    
+
           for(const choosenAttribute in choosenAttributes){
             const attributeToCompare = choosenAttributes[choosenAttribute];
             const {id} = attribute;
@@ -53,26 +57,27 @@ class Attributes extends Component {
                             ? <span 
                                 key={itemId} 
                                 style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} 
-                                onClick={selectingEnabled && (() => {this.selectAttribute({id: attributeId, item: item})})} 
+                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
                                 className={inStock ? 'attribute-option swatch selected' : 'attribute-option swatch opacity'}>
                               </span>
                             : <span 
                                 key={itemId} 
                                 style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} 
-                                onClick={selectingEnabled && (() => {this.selectAttribute({id: attributeId, item: item})})} 
+                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
                                 className={inStock ? 'attribute-option swatch' : 'attribute-option swatch opacity'}>
                               </span>
                           : (selectedValue && itemId === valueId) 
                             ? <span 
-                                key={itemId} style={selectingEnabled && {cursor: 'pointer'}} 
-                                onClick={selectingEnabled && (() => {this.selectAttribute({id: attributeId, item: item})})} 
+                                key={itemId} 
+                                style={selectingEnabled ? {cursor: 'pointer'} : null} 
+                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
                                 className={inStock ? 'attribute-option text selected' : 'attribute-option text out-of-stock'}>
                                   {value}
                               </span>
                             : <span 
                                 key={itemId} 
-                                style={selectingEnabled && {cursor: 'pointer'}} 
-                                onClick={selectingEnabled && (() => {this.selectAttribute({id: attributeId, item: item})})} 
+                                style={selectingEnabled ? {cursor: 'pointer'} : null} 
+                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
                                 className={inStock ? 'attribute-option text' : 'attribute-option text out-of-stock'}>
                                   {value}
                               </span>

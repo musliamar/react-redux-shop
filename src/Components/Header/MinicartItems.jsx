@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 import { increaseQuantityOfProduct, removeFromBag } from '../../Utils'
 import Attributes from '../Main/Attributes';
+import { update, increaseNumberOfItemsInBag, decreaseNumberOfItemsInBag } from '../../Store'
 
 class Items extends Component {
 
@@ -10,8 +11,9 @@ class Items extends Component {
         const {
             choosenCurrency, 
             itemsInBag, 
-            dispatch,
+            update,
             currencyToShow } = this.props;
+
         const {symbol} = choosenCurrency;
 
          return itemsInBag?.map((item) => {
@@ -33,13 +35,25 @@ class Items extends Component {
                             inStock = { inStock } />
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => {increaseQuantityOfProduct({cartId: cartId, itemsInBag: itemsInBag, dispatch: dispatch})}} className='attribute-option text plus-minus'>
+                        <span onClick={
+                            () => {increaseQuantityOfProduct({
+                                cartId: cartId, 
+                                itemsInBag: itemsInBag, 
+                                update: update, 
+                                increaseNumberOfItemsInBag: increaseNumberOfItemsInBag})}
+                            } className='attribute-option text plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {quantity}
                         </span>
-                        <span onClick={() => {removeFromBag({cartId: cartId, itemsInBag: itemsInBag, dispatch: dispatch})}} className='attribute-option text plus-minus'>
+                        <span onClick={
+                            () => {removeFromBag({
+                                cartId: cartId, 
+                                itemsInBag: itemsInBag, 
+                                update: update,
+                                decreaseNumberOfItemsInBag: decreaseNumberOfItemsInBag})}
+                            } className='attribute-option text plus-minus'>
                             -
                         </span>
                     </div>
@@ -55,7 +69,14 @@ const mapStateToProps = (state) => ({
     choosenCurrency: state.choosenCurrency,
     itemsInBag: state.itemsInBag,
     currencyToShow: state.currencyToShow
-  })
+})
+
+const mapDispatchToProps = () => ({ 
+    update,
+    increaseNumberOfItemsInBag,
+    decreaseNumberOfItemsInBag
+});
   
-export default connect(mapStateToProps)(Items);
+  
+export default connect(mapStateToProps, mapDispatchToProps())(Items);
   

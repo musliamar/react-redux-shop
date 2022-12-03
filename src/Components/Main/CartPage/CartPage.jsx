@@ -24,7 +24,7 @@ class CartPage extends React.Component {
             <div className='cart-container'>
                 <h1 className='cart-title'>Cart</h1>
                 <div className='cart-page-items'>
-                {!(itemsLength === 0)
+                {(itemsLength !== 0)
                 ? <>
                     {itemsInBag.map((item) => {
                         return(<CartItem

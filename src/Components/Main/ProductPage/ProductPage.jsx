@@ -5,7 +5,8 @@ import parse from 'html-react-parser';
 import { getProduct } from '../../../Queries';
 import { connect } from "react-redux";
 import Attributes from '../Attributes';
-import { generateDefaultAttributes } from '../../../Utils'
+import { generateDefaultAttributes, addInBag } from '../../../Utils'
+import { update, increaseNumberOfItemsInBag } from '../../../Store'
 
 class ProductPage extends React.Component {
 
@@ -22,7 +23,7 @@ class ProductPage extends React.Component {
   async componentDidMount(){
 
     window.scrollTo(0, 0);
-    const {params} = this.props;
+    const {params, update} = this.props;
     const {product: paramsProduct} = params;
 
     if(paramsProduct){
@@ -34,7 +35,7 @@ class ProductPage extends React.Component {
           ...this.state, 
           productData: product
         })
-        generateDefaultAttributes(product)
+        generateDefaultAttributes({product: product, update: update})
       }else{
           this.setState({
             ...this.state, 
@@ -46,7 +47,14 @@ class ProductPage extends React.Component {
 
   render() {
     
-    const { choosenCurrency, currencyToShow, addInBag } = this.props;
+    const { 
+      choosenCurrency, 
+      currencyToShow, 
+      itemsInBag, 
+      notificationArr,
+      notificationKey,
+      numberOfItemsInBag, 
+      choosenAttributes } = this.props;
     const {symbol} = choosenCurrency;
     const {overImage, productData: item} = this.state;
 
@@ -84,7 +92,7 @@ class ProductPage extends React.Component {
                 <img 
                   alt={name+' product'} 
                   className={inStock ? 'item-image' : 'item-image opacity'}
-                  src={!(overImage === '') ? overImage : (gallery && gallery[0])} />
+                  src={(overImage !== '') ? overImage : (gallery && gallery[0])} />
               </div>
             </div> 
           <div className='summary' >
@@ -103,7 +111,16 @@ class ProductPage extends React.Component {
               <span className={inStock ? 'price' : 'price bleached-text'}>{symbol}{prices && prices[currencyToShow].amount.toFixed(2)}</span>
             </div>
             {inStock
-            ? <div onClick={() => addInBag({item: item})} className='add-to-cart'>
+            ? <div onClick={() => addInBag({
+              item: item,
+              choosenAttributes: choosenAttributes, 
+              itemsInBag: itemsInBag, 
+              numberOfItemsInBag: numberOfItemsInBag, 
+              increaseNumberOfItemsInBag: increaseNumberOfItemsInBag, 
+              notificationArr: notificationArr,
+              notificationKey: notificationKey,
+              update: update
+            })} className='add-to-cart'>
                 <span>Add to cart</span>
               </div>
             : <div className='wide-green-button out-of-stock'>
@@ -126,7 +143,17 @@ const Product = (props) => (
 
 const mapStateToProps = (state) => ({
     choosenCurrency: state.choosenCurrency,
-    currencyToShow: state.currencyToShow
+    currencyToShow: state.currencyToShow,
+    itemsInBag: state.itemsInBag,
+    numberOfItemsInBag: state.numberOfItemsInBag,
+    choosenAttributes: state.choosenAttributes,
+    notificationArr: state.notificationArr,
+    notificationKey: state.notificationKey,
 })
 
-export default connect(mapStateToProps)(Product);
+const mapDispatchToProps = () => ({ 
+  update,
+  increaseNumberOfItemsInBag
+});
+
+export default connect(mapStateToProps, mapDispatchToProps())(Product);

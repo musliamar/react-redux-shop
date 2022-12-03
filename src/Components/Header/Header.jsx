@@ -7,6 +7,7 @@ import MinicartItems from './MinicartItems'
 import MinicartActions from './MinicartActions'
 import { connect } from 'react-redux'
 import { openBox, closeBox } from '../../Utils'
+import { update } from '../../Store';
 
 class Header extends React.PureComponent {
 
@@ -20,7 +21,7 @@ class Header extends React.PureComponent {
         window.onclick = (event) => {
             if(!event.path.includes(this.currencyRef.current)
             && !event.path.includes(this.minicartRef.current))
-            closeBox()
+            closeBox({update: this.props.update})
         }
     }
 
@@ -32,6 +33,7 @@ class Header extends React.PureComponent {
             sumOfPrices,
             currentCategory,
             itemsInBag,
+            update,
             currentlyOpen,
             numberOfItemsInBag
             } = this.props;
@@ -64,15 +66,15 @@ class Header extends React.PureComponent {
                     </div>
                     <div ref={this.minicartRef} className='cart'>
                         <span className="tooltip-text cart-tooltip">My Bag</span>
-                        <div onClick={() => {openBox('minicart')}}>
-                            {!(numberOfItemsInBag === 0) && <span className="items-number">{numberOfItemsInBag}</span>}
+                        <div onClick={() => openBox({toOpen: 'minicart', update: update, currentlyOpen: currentlyOpen})}>
+                            {(numberOfItemsInBag !== 0) && <span className="items-number">{numberOfItemsInBag}</span>}
                             <img className='small-cart-icon' src={SmallCartIcon} alt='Your bag' />
                         </div>
                         <div className={
                                 currentlyOpen === 'minicart' 
-                                ? !(length === 0) ? 'box cart-box display-flex' : 'box empty'
+                                ? (length !== 0) ? 'box cart-box display-flex' : 'box empty'
                                 : 'box display-none'}>
-                            {!(length === 0) 
+                            {(length !== 0) 
                             ? <>
                                 <div className='minicart-main'>
                                     <div className='title'>
@@ -87,7 +89,7 @@ class Header extends React.PureComponent {
                                     <span>{choosenCurrencySymbol}{sumOfPrices}</span>
                                 </div>
                                 <div className='minicart-buttons'>
-                                    <Link onClick={closeBox()} className='view-bag' to={'/cart'}>
+                                    <Link onClick={() => closeBox({update: update})} className='view-bag' to={'/cart'}>
                                         View Bag   
                                     </Link>
                                     <div className='checkout'>
@@ -109,14 +111,13 @@ class Header extends React.PureComponent {
   }
 }
 
-const mapStateToProps = (state) => ({
-    categoriesList: state.categoriesList,
-    choosenCurrency: state.choosenCurrency,
-    currentCategory: state.currentCategory,
-    itemsInBag: state.itemsInBag,
-    currentlyOpen: state.currentlyOpen,
-    numberOfItemsInBag: state.numberOfItemsInBag
-  })
+const mapStateToProps = (state) => {
+    return (state)
+}
+
+const mapDispatchToProps = () => ({ 
+    update
+});
   
-export default connect(mapStateToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps())(Header);
   

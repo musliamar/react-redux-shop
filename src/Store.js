@@ -10,8 +10,11 @@ const initialState = {
   currentCategory: '',
   defaultCategory: '',
   numberOfItemsInBag: 0,
-  choosenAttributes: []
-  }
+  sumOfPrices: 0,
+  choosenAttributes: [],
+  notificationArr: [],
+  notificationKey: 0
+}
 
 export const slice = createSlice({
   name: 'store',
