@@ -1,20 +1,26 @@
 import './App.css';
-import React from 'react';
-import {Routes, Route} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import CategoryPage from './Components/Main/CategoryPage/CategoryPage';
 import CartPage from './Components/Main/CartPage/CartPage';
 import ProductPage from './Components/Main/ProductPage/ProductPage';
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { update } from './Store';
 import { getCategoriesList, getCurrenciesList, getCategory } from './Queries'
 import parse from 'html-react-parser';
 
-class App extends React.Component {
+function App() {
 
-  async runOnFirstVisitWithoutLocalStorage(){
-    const { update } = this.props
+  const dispatch = useDispatch();
+  const categoriesList = useSelector((state) => state.categoriesList)
+  const currenciesList = useSelector((state) => state.currenciesList)
+  const currentlyOpen = useSelector((state) => state.currentlyOpen)
+  const notificationArr = useSelector((state) => state.notificationArr)
+  const [notificationsArray, setNotificationsArray] = useState({});
+  
+  const runOnFirstVisitWithoutLocalStorage = async () => {
     const categories = await getCategoriesList();
     const currencies = await getCurrenciesList();
     const {categories: categoriesList} = categories;
@@ -35,39 +41,34 @@ class App extends React.Component {
       }
     }
 
-    update({name: 'categoriesList', value: categoriesList})
-    update({name: 'currenciesList', value: currenciesList})
-    update({name: 'currencyToShow', value: currencyToShow})
-    update({name: 'choosenCurrency', value: currenciesList[0]})
-    update({name: 'defaultCategory', value: {name: defaultCategoryName, sampleProductPrice: sampleProductPrice}})
+    dispatch(update({name: 'categoriesList', value: categoriesList}))
+    dispatch(update({name: 'currenciesList', value: currenciesList}))
+    dispatch(update({name: 'currencyToShow', value: currencyToShow}))
+    dispatch(update({name: 'choosenCurrency', value: currenciesList[0]}))
+    dispatch(update({name: 'defaultCategory', value: {name: defaultCategoryName, sampleProductPrice: sampleProductPrice}}))
   }
  
-  async componentDidMount() {
-    const { currenciesList, categoriesList } = this.props
+  useEffect(() => {
       if(currenciesList.length === 0 && categoriesList.length === 0){
-        this.runOnFirstVisitWithoutLocalStorage();
+        runOnFirstVisitWithoutLocalStorage();
       }
-  }
 
-  componentDidUpdate(){
-    window.onmouseout = (event) => {
-      const {relatedTarget, toElement} = event;
-      let target = relatedTarget || toElement;
-
-      if (!target || target.nodeName === "HTML") {
-        this.setState({
-          ...this.state,
-          notificationArr: [],
-          notificationKey: 0
-        })
+      window.onmouseout = (event) => {
+        const {relatedTarget, toElement} = event;
+        let target = relatedTarget || toElement;
+  
+        if (!target || target.nodeName === "HTML") {
+          setNotificationsArray({
+            ...notificationsArray,
+            notificationArr: [],
+            notificationKey: 0
+          })
+        }
       }
-    }
-  }
 
-  render() {
+  })
 
-    const { currentlyOpen, notificationArr: notifications } = this.props;
-    const parsedNotifications = notifications.map((n) => parse(n))
+    const parsedNotifications = notificationArr.map((n) => parse(n))
 
     return (
       <div className='App'>
@@ -94,17 +95,5 @@ class App extends React.Component {
       </div>
     );
   }
-}
 
-const mapStateToProps = (state) => ({
-  currenciesList: state.currenciesList,
-  categoriesList: state.categoriesList,
-  currentlyOpen: state.currentlyOpen,
-  notificationArr: state.notificationArr
-})
-
-const mapDispatchToProps = () => ({ 
-  update
-});
-
-export default connect(mapStateToProps, mapDispatchToProps())(App);
+export default App;

@@ -186,15 +186,3 @@ export const removeNotification = ({notificationArr, notificationKey, update}) =
     update({name: 'notificationArr', value: newArr})
     update({name: 'notificationKey', value: notificationKey - 1})
 }
-
-export const openBox = ({toOpen, update, currentlyOpen}) => {
-  if(currentlyOpen === toOpen){
-    update({name: 'currentlyOpen', value: ''})
-  }else{
-    update({name: 'currentlyOpen', value: toOpen})
-  }
-}
-
-export const closeBox = ({ update }) => {
-  update({name: 'currentlyOpen', value: ''})
-}

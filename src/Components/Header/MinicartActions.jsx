@@ -1,13 +1,17 @@
-import { Component } from 'react'
+import React from 'react';
 import ArrowUp from '../../Images/arrow-up.svg';
-import { connect } from 'react-redux'
 import { update } from '../../Store';
-import { openBox } from '../../Utils'
+import { useSelector, useDispatch } from "react-redux";
 
-class Actions extends Component {
+function Actions({ openBox }) {
 
-    changeCurrency(currency) { 
-        const { defaultCategory, update } = this.props;
+    const dispatch = useDispatch();
+    const defaultCategory = useSelector((state) => state.defaultCategory)
+    const currenciesList = useSelector((state) => state.currenciesList)
+    const choosenCurrency = useSelector((state) => state.choosenCurrency)
+    const currentlyOpen = useSelector((state) => state.currentlyOpen)
+
+    const changeCurrency = ({ currency }) => { 
         const {sampleProductPrice} = defaultCategory;
         const {label: currencyLabel} = currency;
         let currencyToShow;
@@ -19,26 +23,17 @@ class Actions extends Component {
             currencyToShow = priceLabel;
           }
         }
-        update({name: 'choosenCurrency', value: currency})
-        update({name: 'currentlyOpen', value: ''})
-        update({name: 'currencyToShow', value: currencyToShow})
+        dispatch(update({name: 'choosenCurrency', value: currency}))
+        dispatch(update({name: 'currentlyOpen', value: ''}))
+        dispatch(update({name: 'currencyToShow', value: currencyToShow}))
     }
-
-    render() {
-
-        const {
-            currenciesList,
-            choosenCurrency, 
-            update,
-            currentlyOpen,
-            } = this.props;
         
-        const {label: choosenCurrencyLabel, symbol: choosenCurrencySymbol} = choosenCurrency;
+    const {label: choosenCurrencyLabel, symbol: choosenCurrencySymbol} = choosenCurrency;
 
         return(
             <>
                 <span className="tooltip-text currency-tooltip">Change currency</span>
-                <div onClick={() => openBox({toOpen: 'currency', update: update, currentlyOpen: currentlyOpen})} className='first-currency'>
+                <div onClick={() => openBox({toOpen: 'currency'})} className='first-currency'>
                     <span>{choosenCurrencySymbol}</span>
                     {currentlyOpen === 'currency' 
                     ? <img className='currency-arrow-icon' src={ArrowUp} alt='Currency switcher arrow up'/>
@@ -50,7 +45,7 @@ class Actions extends Component {
                     return (
                         <li 
                         className={choosenCurrencyLabel === currencyLabel ? 'selected' : null}
-                        onClick={() => this.changeCurrency(currency)} 
+                        onClick={() => changeCurrency({ currency: currency })} 
                         key={currencySymbol}>
                             {currencySymbol} {currencyLabel}
                         </li>
@@ -59,17 +54,5 @@ class Actions extends Component {
                 </ul>
                 </>
             )}
-}
-
-const mapStateToProps = (state) => ({
-    defaultCategory: state.defaultCategory,
-    currenciesList: state.currenciesList,
-    choosenCurrency: state.choosenCurrency,
-    currentlyOpen: state.currentlyOpen
-})
-
-const mapDispatchToProps = () => ({ 
-    update
-  });
   
-export default connect(mapStateToProps, mapDispatchToProps())(Actions);
+export default Actions;

@@ -1,42 +1,42 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './Header.css'
 import logo from '../../Images/logo.svg';
 import {Link} from 'react-router-dom';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import MinicartItems from './MinicartItems'
 import MinicartActions from './MinicartActions'
-import { connect } from 'react-redux'
-import { openBox, closeBox } from '../../Utils'
+import { useSelector, useDispatch } from "react-redux";
 import { update } from '../../Store';
 
-class Header extends React.PureComponent {
+function Header() {
 
-    constructor(props) {
-        super(props);
-        this.currencyRef = React.createRef();
-        this.minicartRef = React.createRef();
-    }
+    const currencyRef = useRef(null);
+    const minicartRef = useRef(null);
+    const dispatch = useDispatch();
+    const categoriesList = useSelector((state) => state.categoriesList)
+    const choosenCurrency = useSelector((state) => state.choosenCurrency)
+    const sumOfPrices = useSelector((state) => state.sumOfPrices)
+    const currentCategory = useSelector((state) => state.currentCategory)
+    const itemsInBag = useSelector((state) => state.itemsInBag)
+    const currentlyOpen = useSelector((state) => state.currentlyOpen)
+    const numberOfItemsInBag = useSelector((state) => state.numberOfItemsInBag)
+    const closeBox = () => dispatch(update({name: 'currentlyOpen', value: ''}))
 
-    componentDidUpdate(){
-        window.onclick = (event) => {
-            if(!event.path.includes(this.currencyRef.current)
-            && !event.path.includes(this.minicartRef.current))
-            closeBox({update: this.props.update})
+    const openBox = ({toOpen}) => {
+        if(currentlyOpen === toOpen){
+            dispatch(update({name: 'currentlyOpen', value: ''}))
+        }else{
+            dispatch(update({name: 'currentlyOpen', value: toOpen}))
         }
     }
 
-    render() {
-
-        const {
-            categoriesList,
-            choosenCurrency, 
-            sumOfPrices,
-            currentCategory,
-            itemsInBag,
-            update,
-            currentlyOpen,
-            numberOfItemsInBag
-            } = this.props;
+    useEffect(() => {
+        window.onclick = (event) => {
+            if(!event.path.includes(currencyRef.current)
+            && !event.path.includes(minicartRef.current))
+            closeBox()
+        }
+    })
         
         const {length} = itemsInBag;
         const {symbol: choosenCurrencySymbol} = choosenCurrency;
@@ -61,12 +61,12 @@ class Header extends React.PureComponent {
                 </nav>
                 <div className='logo'><img src={logo} className='logo-icon' alt="logo" /></div>
                 <div className='actions'>
-                    <div ref={this.currencyRef} className='currency'>
-                    <MinicartActions />
+                    <div ref={currencyRef} className='currency'>
+                    <MinicartActions openBox={ openBox } />
                     </div>
-                    <div ref={this.minicartRef} className='cart'>
+                    <div ref={minicartRef} className='cart'>
                         <span className="tooltip-text cart-tooltip">My Bag</span>
-                        <div onClick={() => openBox({toOpen: 'minicart', update: update, currentlyOpen: currentlyOpen})}>
+                        <div onClick={() => openBox({toOpen: 'minicart'})}>
                             {(numberOfItemsInBag !== 0) && <span className="items-number">{numberOfItemsInBag}</span>}
                             <img className='small-cart-icon' src={SmallCartIcon} alt='Your bag' />
                         </div>
@@ -89,7 +89,7 @@ class Header extends React.PureComponent {
                                     <span>{choosenCurrencySymbol}{sumOfPrices}</span>
                                 </div>
                                 <div className='minicart-buttons'>
-                                    <Link onClick={() => closeBox({update: update})} className='view-bag' to={'/cart'}>
+                                    <Link onClick={() => closeBox()} className='view-bag' to={'/cart'}>
                                         View Bag   
                                     </Link>
                                     <div className='checkout'>
@@ -109,15 +109,6 @@ class Header extends React.PureComponent {
         </header>
     );
   }
-}
-
-const mapStateToProps = (state) => {
-    return (state)
-}
-
-const mapDispatchToProps = () => ({ 
-    update
-});
-  
-export default connect(mapStateToProps, mapDispatchToProps())(Header);
+ 
+export default Header;
   

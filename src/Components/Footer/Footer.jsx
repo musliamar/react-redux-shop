@@ -1,17 +1,14 @@
 import React from 'react';
 import './Footer.css'
 
-class Footer extends React.Component {
+function Footer() {
+  return (
+    <footer>
+      <div className='container'>
+        <span>Copyleft by Amar Musli (amar@amarmusli.ch)</span>
+      </div>
+    </footer>
+  );
+}
 
-    render() {
-
-      return (
-        <footer>
-            <div className='container'>
-              <span>Copyleft by Amar Musli (amar@amarmusli.ch)</span>
-            </div>
-        </footer>
-    );
-  }}
-
-  export default Footer;
+export default Footer;
