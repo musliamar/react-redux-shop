@@ -1,16 +1,14 @@
 import React from 'react';
 import './CartPage.css';
 import CartItem from './CartSingleItem'
-import { connect } from 'react-redux'
+import { useSelector } from "react-redux";
 
-class CartPage extends React.Component {
-      
-    render() {
-        const {
-            itemsInBag, 
-            choosenCurrency,
-            sumOfPrices,
-            numberOfItemsInBag } = this.props;
+function CartPage() {
+
+        const itemsInBag = useSelector((state) => state.itemsInBag)
+        const choosenCurrency = useSelector((state) => state.choosenCurrency)
+        const sumOfPrices = useSelector((state) => state.sumOfPrices)
+        const numberOfItemsInBag = useSelector((state) => state.numberOfItemsInBag)
 
         const {length: itemsLength} = itemsInBag;
         const {symbol} = choosenCurrency;
@@ -53,13 +51,6 @@ class CartPage extends React.Component {
             </div>
         );
     }
-}
-
-const mapStateToProps = (state) => ({
-    itemsInBag: state.itemsInBag,
-    choosenCurrency: state.choosenCurrency,
-    numberOfItemsInBag: state.numberOfItemsInBag
-  })
   
-export default connect(mapStateToProps)(CartPage);
+export default CartPage;
   

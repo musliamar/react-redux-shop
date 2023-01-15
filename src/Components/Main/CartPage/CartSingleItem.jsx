@@ -1,49 +1,48 @@
-import { Component } from 'react'
+
+import { useState } from 'react'
 import ArrowLeft from '../../../Images/arrow-left.svg';
 import ArrowRight from '../../../Images/arrow-right.svg';
-import {Link} from 'react-router-dom';
-import { connect } from 'react-redux'
+import { Link } from 'react-router-dom';
 import Attributes from '../Attributes';
-import { increaseQuantityOfProduct, removeFromBag } from '../../../Utils'
-import { decreaseNumberOfItemsInBag, increaseNumberOfItemsInBag, update } from '../../../Store'
+import { increaseQuantityOfProduct, removeFromBag } from '../../../Store'
+import { useSelector, useDispatch } from "react-redux";
 
-class Item extends Component {
+function Item({ item }) {
 
-    state = {
-        currentImages: [],
-        style: {objectPosition: '0% 0%'},
-        overId: ''
-      };
+    const dispatch = useDispatch()
+    const [currentImages, setCurrentImages] = useState([])
+    const [style, setStyle] = useState({objectPosition: '0% 0%'})
+    const [overId, setOverId] = useState('')
+    const choosenCurrency = useSelector((state) => state.choosenCurrency)
+    const currencyToShow = useSelector((state) => state.currencyToShow)
 
-
-    handleMouseMove = (event) => {
+    const handleMouseMove = (event) => {
         const { left, width, height, top: targetTop } = event.target.getBoundingClientRect()
         const {pageX, pageY} = event;
         const {scrollY} = window;
         const top = targetTop + scrollY;
         const x = (pageX - left) / width * 100
         const y = (pageY - top) / height * 100
-        this.setState({style: {objectPosition: `${x}% ${y}%` }})
+        setStyle({objectPosition: `${x}% ${y}%` })
     }
 
-    handleMouseLeave = () => {
-        this.setState({overId: '', style: {objectPosition: '0% 0%' }})
+    const handleMouseLeave = () => {
+        setOverId('')
+        setStyle({objectPosition: '0% 0%' })
     }
 
-    setOverId = ({overId}) => {
-        this.setState({overId: overId})
+    const handleOver = (cartId) => {
+        setOverId(cartId)
     }
 
-    nextImage = ({item, gallery}) => {
-
-        const {currentImages} = this.state;
+    const nextImage = ({item, gallery}) => {
         const {length: imagesLength} = currentImages;
         const {length: galleryLength} = gallery;
 
         if(imagesLength === 0){
             const array = [];
             array.push({ item: item, currentImage: 1 })
-            this.setState({currentImages: array});
+            setCurrentImages(array);
         }else{
             currentImages.forEach((image) => {
                 const {item: imageItem, currentImage} = image;
@@ -55,28 +54,26 @@ class Item extends Component {
                         const hold = currentImage
                         array.push({ item: item, currentImage: hold + 1 })
                     }
-                    this.setState({currentImages: array});
+                    setCurrentImages(array);
                     array.splice(array.indexOf(image), 1);
                 }else{
                     array.push({ item: item, currentImage: 1 })
-                    this.setState({currentImages: array});
+                    setCurrentImages(array);
                     array.splice(array.indexOf(image), 1);
                 }
             })
         }
-        this.setState({style: {objectPosition: '0% 0%' }})
+        setStyle({objectPosition: '0% 0%' })
     }
 
-    previousImage = ({item, gallery}) => {
-
-        const {currentImages} = this.state;
+    const previousImage = ({item, gallery}) => {
         const {length: imagesLength} = currentImages;
         const {length: galleryLength} = gallery;
 
         if(imagesLength === 0){
             const array = [];
             array.push({ item: item, currentImage: galleryLength - 1 })
-            this.setState({currentImages: array});
+            setCurrentImages(array);
         }else{
             currentImages.forEach((image) => {
                 const {item: imageItem, currentImage} = image;
@@ -88,25 +85,17 @@ class Item extends Component {
                         const hold = currentImage;
                         array.push({ item: item, currentImage: hold - 1 })
                     }
-                    this.setState({currentImages: array});
+                    setCurrentImages(array);
                     array.splice(array.indexOf(image), 1);
                 }else{
                     array.push({ item: item, currentImage: galleryLength - 1 })
-                    this.setState({currentImages: array});
+                    setCurrentImages(array);
                     array.splice(array.indexOf(image), 1);
                 }
             })
         }
-        this.setState({style: {objectPosition: '0% 0%' }})
+        setStyle({objectPosition: '0% 0%' })
     } 
-
-    render(){
-
-        const { 
-            item,
-            choosenCurrency,
-            itemsInBag,
-            currencyToShow } = this.props;
 
         const { cartId, 
             category, 
@@ -124,8 +113,6 @@ class Item extends Component {
         const toCompare = {item: cartId, gallery: gallery};
         let imageToShow = 0;
         const {symbol} = choosenCurrency;
-
-        const {currentImages, overId, style} = this.state;
         const {length: imagesLength} = currentImages;
         
         if((imagesLength !== 0)){
@@ -164,52 +151,46 @@ class Item extends Component {
                         </div>
                     </div>
                     <div className='quantity'>
-                        <span onClick={() => {increaseQuantityOfProduct({
-                                cartId: cartId, 
-                                itemsInBag: itemsInBag, 
-                                update: update, 
-                                increaseNumberOfItemsInBag: increaseNumberOfItemsInBag})}
-                            } className='attribute-option plus-minus'>
+                        <span 
+                            onClick={() => dispatch(increaseQuantityOfProduct({ cartId: cartId }))} 
+                            className='attribute-option plus-minus'>
                         +
                         </span>
                         <span className='attribute-number'>
                             {quantity}
                         </span>
-                        <span onClick={() => {removeFromBag({
-                                cartId: cartId, 
-                                itemsInBag: itemsInBag, 
-                                update: update,
-                                decreaseNumberOfItemsInBag: decreaseNumberOfItemsInBag})}
-                            } className='attribute-option plus-minus'>
+                        <span 
+                            onClick={() => dispatch(removeFromBag({ cartId: cartId }))} 
+                            className='attribute-option plus-minus'>
                         -
                         </span>
                     </div>
                     <div className='gallery'>
                         {galleryLength > 1
                         ? <>
-                            <div onMouseEnter={() => {this.setOverId(cartId)}} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                            <div onMouseEnter={() => handleOver(cartId)} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
                                 <div>
                                     <img 
                                     alt={name+' product'}
-                                    onMouseMove={this.handleMouseMove}
-                                    $style={(overId === cartId) && style} 
+                                    onMouseMove={handleMouseMove}
+                                    style={(overId === cartId) ? style : undefined} 
                                     className='item-image' 
                                     src={gallery[imageToShow]} />
                                 </div>
                                 <div>
                                     <div className='gallery-arrows'>
-                                        <img onClick={() => {this.previousImage(toCompare)}} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
-                                        <img onClick={() => {this.nextImage(toCompare)}} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
+                                        <img onClick={() => previousImage(toCompare)} className='gallery-arrow-icon' src={ArrowLeft} alt='Previous'/>
+                                        <img onClick={() => nextImage(toCompare)} className='gallery-arrow-icon' src={ArrowRight} alt='Next'/>
                                     </div>
                                 </div>
                             </div>
                         </>
-                        : <div onMouseEnter={() => this.setOverId(cartId)} onMouseLeave={this.handleMouseLeave} className='item-image-wrapper'>
+                        : <div onMouseEnter={() => handleOver(cartId)} onMouseLeave={handleMouseLeave} className='item-image-wrapper'>
                             <img 
                             alt={name+' product'} 
                             className='item-image' 
-                            onMouseMove={this.handleMouseMove} 
-                            $style={(overId === cartId) && style} 
+                            onMouseMove={handleMouseMove} 
+                            style={(overId === cartId) ? style : undefined} 
                             src={gallery[0]} />
                         </div>} 
                     </div>
@@ -217,19 +198,6 @@ class Item extends Component {
             </>
         )
     }
-}
-
-const mapStateToProps = (state) => ({
-    choosenCurrency: state.choosenCurrency,
-    itemsInBag: state.itemsInBag,
-    currencyToShow: state.currencyToShow
-})
-
-const mapDispatchToProps = () => ({ 
-    update,
-    increaseNumberOfItemsInBag,
-    decreaseNumberOfItemsInBag
-});
   
-export default connect(mapStateToProps, mapDispatchToProps())(Item);
+export default Item;
   

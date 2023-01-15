@@ -1,23 +1,28 @@
-import { Component } from 'react'
-import { connect } from 'react-redux'
-import { increaseQuantityOfProduct, removeFromBag } from '../../Utils'
 import Attributes from '../Main/Attributes';
-import { update, increaseNumberOfItemsInBag, decreaseNumberOfItemsInBag } from '../../Store'
+import { increaseQuantityOfProduct, removeFromBag } from '../../Store'
+import { useSelector, useDispatch } from "react-redux";
 
-class Items extends Component {
+function Items() {
 
-    render() {
-
-        const {
-            choosenCurrency, 
-            itemsInBag, 
-            update,
-            currencyToShow } = this.props;
+        const dispatch = useDispatch()
+        const choosenCurrency = useSelector((state) => state.choosenCurrency)
+        const itemsInBag = useSelector((state) => state.itemsInBag)
+        const currencyToShow = useSelector((state) => state.currencyToShow)
 
         const {symbol} = choosenCurrency;
 
          return itemsInBag?.map((item) => {
-                const {cartId, brand, name, prices, gallery, inStock, choosenAttributes, quantity, attributes: itemAttributes} = item;
+
+                const {
+                    cartId, 
+                    brand, 
+                    name, 
+                    prices, 
+                    gallery, 
+                    inStock, 
+                    choosenAttributes, 
+                    quantity, 
+                    attributes: itemAttributes} = item;
                 
                 return (<div key={cartId} className='single'>
                     <div className='attributes'>
@@ -35,25 +40,17 @@ class Items extends Component {
                             inStock = { inStock } />
                     </div>
                     <div className='quantity'>
-                        <span onClick={
-                            () => {increaseQuantityOfProduct({
-                                cartId: cartId, 
-                                itemsInBag: itemsInBag, 
-                                update: update, 
-                                increaseNumberOfItemsInBag: increaseNumberOfItemsInBag})}
-                            } className='attribute-option text plus-minus'>
+                        <span 
+                            onClick={() => dispatch(increaseQuantityOfProduct({ cartId: cartId }))} 
+                            className='attribute-option text plus-minus'>
                             +
                         </span>
                         <span className='attribute-number'>
                             {quantity}
                         </span>
-                        <span onClick={
-                            () => {removeFromBag({
-                                cartId: cartId, 
-                                itemsInBag: itemsInBag, 
-                                update: update,
-                                decreaseNumberOfItemsInBag: decreaseNumberOfItemsInBag})}
-                            } className='attribute-option text plus-minus'>
+                        <span 
+                            onClick={() => dispatch(removeFromBag({ cartId: cartId }))}  
+                            className='attribute-option text plus-minus'>
                             -
                         </span>
                     </div>
@@ -63,20 +60,6 @@ class Items extends Component {
                         </span>
                     </div>
                 </div>)})}
-}
-
-const mapStateToProps = (state) => ({
-    choosenCurrency: state.choosenCurrency,
-    itemsInBag: state.itemsInBag,
-    currencyToShow: state.currencyToShow
-})
-
-const mapDispatchToProps = () => ({ 
-    update,
-    increaseNumberOfItemsInBag,
-    decreaseNumberOfItemsInBag
-});
   
-  
-export default connect(mapStateToProps, mapDispatchToProps())(Items);
+export default Items;
   

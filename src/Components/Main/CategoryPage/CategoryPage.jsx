@@ -1,141 +1,86 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './CategoryPage.css';
 import CartIcon from '../../../Images/cart-icon.svg';
-import {Link} from 'react-router-dom';
-import {useParams} from "react-router-dom";
-import {getCategory} from '../../../Queries';
-import { connect } from "react-redux";
-import { update, increaseNumberOfItemsInBag } from '../../../Store';
-import { addInBag } from '../../../Utils'
+import { Link } from 'react-router-dom';
+import { useParams } from "react-router-dom";
+import { getCategory } from '../../../Queries';
+import { update, addInBag } from '../../../Store';
+import { useSelector, useDispatch } from "react-redux";
 
-class CategoryPage extends React.Component {
+function CategoryPage() {
 
-  state = {
-    addToCart: false,
-    overId: '',
-    categoryData: '',
-    categoryName: ''
-  };
+  const dispatch = useDispatch()
+  const params = useParams()
+  const {category: paramsCategory} = params;
+  const [addToCart, setAddToCart] = useState(false)
+  const [overId, setOverId] = useState('')
+  const [categoryData, setCategoryData] = useState([])
+  const [categoryName, setCategoryName] = useState('')
 
-  async componentDidMount(){
-    
-    const {params, defaultCategory, update} = this.props;
-    const {categoryData} = this.state;
-    const {category: paramsCategory} = params;
+  const defaultCategory = useSelector((state) => state.defaultCategory)
+  const choosenCurrency = useSelector((state) => state.choosenCurrency)
+  const currencyToShow = useSelector((state) => state.currencyToShow)
 
-    if(paramsCategory && (categoryData === '')){
-      const categoryResult = await getCategory(paramsCategory)
-      const {category} = categoryResult;
-
-      if(category !== null){
+  useEffect(() => {
+    if(paramsCategory && (categoryData !== null) && (categoryData.length === 0)){
+      async function fetchCategory() {
+        const categoryResult = await getCategory(paramsCategory)
+        const { category } = categoryResult;
+        if(category !== null){
+          const {products} = category;
+            setCategoryData(products)
+            setCategoryName(paramsCategory)
+            dispatch(update({name: 'currentCategory', value: paramsCategory}))
+            dispatch(update({name: 'choosenAttributes', value: []}))
+        }else{
+          setCategoryData(null)
+        }
+      }
+      fetchCategory()
+    }else if(!paramsCategory && defaultCategory && (categoryData !== null) && (categoryData.length === 0)){
+      async function fetchCategory() {
+        const { name } = defaultCategory;
+        const categoryResult = await getCategory(name)
+        const {category} = categoryResult;
         const {products} = category;
-          this.setState({
-            ...this.state, 
-            categoryData: products, 
-            categoryName: paramsCategory})
-          update({name: 'currentCategory', value: paramsCategory})
-          update({name: 'choosenAttributes', value: []})
-      }else{
-        this.setState({
-          ...this.state, 
-          categoryData: null})
+
+        setCategoryData(products)
+        setCategoryName(name)
+        dispatch(update({name: 'currentCategory', value: name}))
+        dispatch(update({name: 'choosenAttributes', value: []}))
       }
-    }else if(!paramsCategory && defaultCategory && (categoryData === '')){
-      const {name} = defaultCategory;
-      const categoryResult = await getCategory(name)
-      const {category} = categoryResult;
-      const {products} = category;
-
-      this.setState({
-        ...this.state, 
-        categoryData: products, 
-        categoryName: name})
-      update({name: 'currentCategory', value: name})
-      update({name: 'choosenAttributes', value: []})
+      fetchCategory()
     } 
-  }
+  })
 
-  async componentDidUpdate(prevProps, prevState){
-    const {params, defaultCategory, update} = this.props;
-    const {categoryData} = this.state;
-    const {category: paramsCategory} = params;
-
-    if(paramsCategory && (categoryData === '')){
+  useEffect(() => {
+    async function fetchCategory() {
       const categoryResult = await getCategory(paramsCategory)
-      const {category} = categoryResult;
-      const {products} = category;
-
+      const { category } = categoryResult;
       if(category !== null){
-          this.setState({
-            ...this.state, 
-            categoryData: products, 
-            categoryName: paramsCategory})
-          update({name: 'currentCategory', value: paramsCategory})
-          update({name: 'choosenAttributes', value: []})
+        const { products } = category;
+        setCategoryData(products)
+        setCategoryName(paramsCategory)
+        dispatch(update({name: 'currentCategory', value: paramsCategory}))
+        dispatch(update({name: 'choosenAttributes', value: []}))
       }else{
-        this.setState({
-          ...this.state, 
-          categoryData: null})
-      }
-    } 
-    
-    if(!paramsCategory && defaultCategory && (categoryData === '')){
-      const {name} = defaultCategory;
-      const categoryResult = await getCategory(name)
-      const {category} = categoryResult;
-      const {products} = category;
-      
-      this.setState({
-        ...this.state, 
-        categoryData: products, 
-        categoryName: name})
-      update({name: 'currentCategory', value: name})
-      update({name: 'choosenAttributes', value: []})
-    }
-
-    if(paramsCategory !== prevProps.params.category){
-      const categoryResult = await getCategory(paramsCategory)
-      const {category} = categoryResult;
-      const {products} = category;
-      if(category !== null){
-          this.setState({
-            ...this.state, 
-            categoryData: products, 
-            categoryName: paramsCategory})
-          update({name: 'currentCategory', value: paramsCategory})
-          update({name: 'choosenAttributes', value: []})
-      }else{
-        this.setState({
-          ...this.state, 
-          categoryData: null})
+        setCategoryData(null)
       }
     }
+    if(paramsCategory !== undefined) fetchCategory()
+  }, [paramsCategory])
+
+  const showAddToCart = (event, props) => {
+    setAddToCart(!addToCart)
+    setOverId(props)
   }
 
-  showAddToCart = (event, props) => {
-    const {addToCart} = this.state;
-    this.setState({ addToCart: !addToCart, overId: props });
-  }
-
-  render() {
-
-    const {categoryData, overId} = this.state
-    const {
-      choosenCurrency, 
-      currencyToShow, 
-      itemsInBag,
-      numberOfItemsInBag,
-      choosenAttributes,
-      notificationArr,
-      notificationKey,
-      increaseNumberOfItemsInBag, 
-      update } = this.props;
-    const {symbol} = choosenCurrency;
-    const categoryName = this.state.categoryName && this.state.categoryName[0].toUpperCase() + this.state.categoryName.slice(1)
+    const { symbol } = choosenCurrency;
+    const categoryNameToShow = categoryName && categoryName[0].toUpperCase() + categoryName.slice(1)
     
     if(categoryData !== null){
       return (<div className='items-container'>
-            <h1 className='category-title'>{categoryName}</h1>
+            <h1 className='category-title'>{categoryNameToShow}</h1>
             <div className='items'>
               {categoryData && categoryData.map((item) => {
                 
@@ -143,23 +88,14 @@ class CategoryPage extends React.Component {
 
                 return(
                 <div 
-                  onMouseEnter={event => this.showAddToCart(event, id)}
-                  onMouseLeave={this.showAddToCart}
+                  onMouseEnter={event => showAddToCart(event, id)}
+                  onMouseLeave={showAddToCart}
                   key={id} 
                   className='single-item'>
                     {inStock &&
                       (overId && overId === id) 
                       && <div onClick={
-                        () => {addInBag({
-                          item: item,
-                          choosenAttributes: choosenAttributes, 
-                          itemsInBag: itemsInBag, 
-                          numberOfItemsInBag: numberOfItemsInBag, 
-                          increaseNumberOfItemsInBag: increaseNumberOfItemsInBag, 
-                          notificationArr: notificationArr,
-                          notificationKey: notificationKey,
-                          update: update
-                        })}}>
+                        () => {addInBag({ item: item })}}>
                           <img src={CartIcon} className='cart-icon' alt="Add to cart" />
                         </div>} 
                     <Link 
@@ -187,28 +123,5 @@ class CategoryPage extends React.Component {
       return (<div>Sorry, we can't find that category.</div>)
     }
   }
-}
-
-const Category = (props) => (
-  <CategoryPage
-    {...props}
-    params={useParams()}
-  />)
-
-  const mapStateToProps = (state) => ({
-    defaultCategory: state.defaultCategory,
-    choosenCurrency: state.choosenCurrency,
-    currencyToShow: state.currencyToShow,
-    itemsInBag: state.itemsInBag,
-    numberOfItemsInBag: state.numberOfItemsInBag,
-    choosenAttributes: state.choosenAttributes,
-    notificationArr: state.notificationArr,
-    notificationKey: state.notificationKey
-  })
   
-  const mapDispatchToProps = () => ({ 
-    update,
-    increaseNumberOfItemsInBag
-  });
-  
-  export default connect(mapStateToProps, mapDispatchToProps())(Category);
+export default CategoryPage;

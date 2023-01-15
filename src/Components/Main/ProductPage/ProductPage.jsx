@@ -5,8 +5,7 @@ import parse from 'html-react-parser';
 import { getProduct } from '../../../Queries';
 import { connect } from "react-redux";
 import Attributes from '../Attributes';
-import { generateDefaultAttributes, addInBag } from '../../../Utils'
-import { update, increaseNumberOfItemsInBag } from '../../../Store'
+import { update, increaseNumberOfItemsInBag, generateDefaultAttributes, addInBag } from '../../../Store'
 
 class ProductPage extends React.Component {
 
@@ -35,7 +34,7 @@ class ProductPage extends React.Component {
           ...this.state, 
           productData: product
         })
-        generateDefaultAttributes({product: product, update: update})
+        /* generateDefaultAttributes({product: product, update: update}) */
       }else{
           this.setState({
             ...this.state, 
