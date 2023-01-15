@@ -1,99 +1,132 @@
-import { Component } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { update } from '../../Store';
-import { connect } from "react-redux";
 
-class Attributes extends Component {
+function Attributes({
+  attributes: arrayOfAttributes, choosenAttributesFromCart, from, inStock,
+}) {
+  const dispatch = useDispatch();
+  const attributesFromState = useSelector((state) => state.choosenAttributes);
 
-    selectAttribute({id, item}){
-        const { choosenAttributes, update } = this.props;
-        let newArray = [];
-    
-        choosenAttributes.forEach((key) =>
-            {if(Object.keys(key)[0] === id){
-              newArray.push({[id]: item})
-            }else{
-              newArray.push({[Object.keys(key)[0]]: Object.values(key)[0]})
-            }}
-        )
-        update({name: 'choosenAttributes', value: newArray})
+  const selectAttribute = ({ id, item }) => {
+    const newArray = [];
+
+    attributesFromState.forEach((key) => {
+      if (Object.keys(key)[0] === id) {
+        newArray.push({ [id]: item });
+      } else {
+        newArray.push({ [Object.keys(key)[0]]: Object.values(key)[0] });
       }
+    });
+    dispatch(update({ name: 'choosenAttributes', value: newArray }));
+  };
 
-    render() {
+  return (arrayOfAttributes && arrayOfAttributes.map((attribute) => {
+    const newAttribute = JSON.parse(JSON.stringify(attribute));
+    let selectingEnabled = false;
+    const choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesFromCart;
 
-        const {
-          attributes: arrayOfAttributes, 
-          from, 
-          choosenAttributes: attributesFromState, 
-          choosenAttributesFromCart, 
-          inStock} = this.props;
+    if (from === 'product-page') { selectingEnabled = inStock && true; }
 
-        return(arrayOfAttributes && arrayOfAttributes.map((attribute, index) => {
-    
-          let newAttribute = JSON.parse(JSON.stringify(attribute));
-          let selectingEnabled = false;
-          let choosenAttributes = from === 'product-page' ? attributesFromState : choosenAttributesFromCart;
+    const { id } = attribute;
+    const foundSingle = Object.values(choosenAttributes)
+      .find((singleAttribute) => singleAttribute[id]);
 
-          if(from === 'product-page'){inStock ? selectingEnabled = true : selectingEnabled = false}
+    newAttribute.selectedValue = foundSingle[id];
 
-          for(const choosenAttribute in choosenAttributes){
-            const attributeToCompare = choosenAttributes[choosenAttribute];
-            const {id} = attribute;
-            if(attributeToCompare[id]){
-              newAttribute.selectedValue = attributeToCompare[id];
-            }
-          }
-    
-          const {id: attributeId, name, items, type, selectedValue} = newAttribute;
-          const {id: valueId} = selectedValue;
-    
-          return (<div key={attributeId} className='attribute'>
-                    <span className={inStock ? 'attribute-name' : 'attribute-name bleached-text'}>{name}:</span>
-                    <div className='attribute-options'>
-                      {items && items.map((item) => {
-                        const {id: itemId, value} = item;
-                        return (
-                          type === 'swatch'
-                          ? (selectedValue && itemId === valueId) 
-                            ? <span 
-                                key={itemId} 
-                                style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} 
-                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
-                                className={inStock ? 'attribute-option swatch selected' : 'attribute-option swatch opacity'}>
-                              </span>
-                            : <span 
-                                key={itemId} 
-                                style={selectingEnabled? {cursor: 'pointer', backgroundColor: value} : {backgroundColor: value}} 
-                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
-                                className={inStock ? 'attribute-option swatch' : 'attribute-option swatch opacity'}>
-                              </span>
-                          : (selectedValue && itemId === valueId) 
-                            ? <span 
-                                key={itemId} 
-                                style={selectingEnabled ? {cursor: 'pointer'} : null} 
-                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
-                                className={inStock ? 'attribute-option text selected' : 'attribute-option text out-of-stock'}>
-                                  {value}
-                              </span>
-                            : <span 
-                                key={itemId} 
-                                style={selectingEnabled ? {cursor: 'pointer'} : null} 
-                                onClick={selectingEnabled ? () => this.selectAttribute({id: attributeId, item: item}) : null} 
-                                className={inStock ? 'attribute-option text' : 'attribute-option text out-of-stock'}>
-                                  {value}
-                              </span>
-                        )})}
-                    </div>
-                  </div>)
-        }))
-  }}
+    const {
+      id: attributeId, name, items, type, selectedValue,
+    } = newAttribute;
+    const { id: valueId } = selectedValue;
 
-const mapStateToProps = (state) => ({
-    choosenAttributes: state.choosenAttributes
-})
+    return (
+      <div key={attributeId} className="attribute">
+        <span className={inStock ? 'attribute-name' : 'attribute-name bleached-text'}>
+          {name}
+          :
+        </span>
+        <div className="attribute-options">
+          {items && items.map((item) => {
+            const { id: itemId, value } = item;
+            const isSelectedSwatch = (selectedValue && itemId === valueId)
+              ? (
+                <span
+                  key={itemId}
+                  style={selectingEnabled ? { cursor: 'pointer', backgroundColor: value } : { backgroundColor: value }}
+                  role="button"
+                  aria-label="Attribute option"
+                  tabIndex={0}
+                  onKeyUp={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  onClick={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  className={inStock ? 'attribute-option swatch selected' : 'attribute-option swatch opacity'}
+                />
+              )
+              : (
+                <span
+                  key={itemId}
+                  style={selectingEnabled ? { cursor: 'pointer', backgroundColor: value } : { backgroundColor: value }}
+                  role="button"
+                  aria-label="Attribute option"
+                  tabIndex={0}
+                  onKeyUp={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  onClick={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  className={inStock ? 'attribute-option swatch' : 'attribute-option swatch opacity'}
+                />
+              );
 
-const mapDispatchToProps = () => ({ 
-    update
-});
-  
-export default connect(mapStateToProps, mapDispatchToProps())(Attributes);
-  
+            const isSelectedText = (selectedValue && itemId === valueId)
+              ? (
+                <span
+                  key={itemId}
+                  style={selectingEnabled ? { cursor: 'pointer' } : null}
+                  role="button"
+                  aria-label="Attribute option"
+                  tabIndex={0}
+                  onKeyUp={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  onClick={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  className={inStock ? 'attribute-option text selected' : 'attribute-option text out-of-stock'}
+                >
+                  {value}
+                </span>
+              )
+              : (
+                <span
+                  key={itemId}
+                  style={selectingEnabled ? { cursor: 'pointer' } : null}
+                  role="button"
+                  aria-label="Attribute option"
+                  tabIndex={0}
+                  onKeyUp={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  onClick={selectingEnabled
+                    ? () => selectAttribute({ id: attributeId, item })
+                    : null}
+                  className={inStock ? 'attribute-option text' : 'attribute-option text out-of-stock'}
+                >
+                  {value}
+                </span>
+              );
+            return (
+              type === 'swatch' ? isSelectedSwatch : isSelectedText
+            );
+          })}
+        </div>
+      </div>
+    );
+  }));
+}
+
+export default Attributes;

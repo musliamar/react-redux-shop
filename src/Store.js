@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit'
+/* eslint-disable no-param-reassign */
+import { createSlice } from '@reduxjs/toolkit';
 import SmallCartIcon from './Images/small-cart-icon.svg';
 
 const initialState = {
@@ -14,180 +15,186 @@ const initialState = {
   sumOfPrices: 0,
   choosenAttributes: [],
   notificationArr: [],
-  notificationKey: 0
-}
+  notificationKey: 0,
+};
 
 function quantityHelper({ cartId: passedCartId, itemsInBag: items }) {
   const newItems = items.map((item) => {
-    let itemCopy = JSON.parse(JSON.stringify(item))
-    let {cartId} = itemCopy;
-    if(cartId === passedCartId){
+    const itemCopy = JSON.parse(JSON.stringify(item));
+    const { cartId } = itemCopy;
+    if (cartId === passedCartId) {
       itemCopy.quantity += 1;
     }
-    return itemCopy
-  })
-  return newItems
+    return itemCopy;
+  });
+  return newItems;
 }
+
+export const generateDefaultAttributes = ({ productToGenerate }) => {
+  const { category } = productToGenerate;
+  const newChoosenAttributes = [];
+  Object.keys(productToGenerate).forEach((item) => {
+    if ((item === 'attributes')) {
+      Object.values(productToGenerate[item]).forEach((attribute) => {
+        const { id, items } = attribute;
+        const attributeToAdd = { [id]: items[0] };
+        newChoosenAttributes.push(attributeToAdd);
+      });
+    }
+  });
+  return { category, newChoosenAttributes };
+};
 
 export const slice = createSlice({
   name: 'store',
   initialState,
   reducers: {
     update: (state, action) => {
-      state[action.payload.name] = action.payload.value
+      state[action.payload.name] = action.payload.value;
     },
     increaseNumberOfItemsInBag: (prev) => {
-      prev.numberOfItemsInBag += 1
+      prev.numberOfItemsInBag += 1;
     },
     decreaseNumberOfItemsInBag: (prev) => {
-      prev.numberOfItemsInBag -= 1
+      prev.numberOfItemsInBag -= 1;
     },
     increaseQuantityOfProduct: (state, action) => {
-      state.itemsInBag = quantityHelper({ cartId: action.payload.cartId, itemsInBag: state.itemsInBag})
-      state.numberOfItemsInBag += 1
+      state.itemsInBag = quantityHelper({
+        cartId: action.payload.cartId,
+        itemsInBag: state.itemsInBag,
+      });
+      state.numberOfItemsInBag += 1;
     },
     removeFromBag: (state, action) => {
-      const { cartId: passedCartId } = action.payload
-      let items = [...state.itemsInBag]
-      let last = {isLast: false, found: false, index: 0};
+      const { cartId: passedCartId } = action.payload;
+      const items = [...state.itemsInBag];
+      let last = { isLast: false, found: false, index: 0 };
 
-      let newItems = items.map((item) => {
-      let itemCopy = JSON.parse(JSON.stringify(item))
-      let {cartId, quantity} = itemCopy;
-      if(cartId === passedCartId){
-        if(quantity > 1){
-          itemCopy.quantity -= 1;
-        }else{
-          last = {isLast: true, index: items.indexOf(item)};
+      const newItems = items.map((item) => {
+        const itemCopy = JSON.parse(JSON.stringify(item));
+        const { cartId, quantity, prices } = itemCopy;
+        if (cartId === passedCartId) {
+          if (quantity > 1) {
+            itemCopy.quantity -= 1;
+          } else {
+            last = {
+              isLast: true,
+              index: items.indexOf(item),
+              amountToDecrease: prices[state.currencyToShow].amount,
+            };
+          }
         }
-      }
-      return itemCopy;
-      })
+        return itemCopy;
+      });
 
-      if(last.isLast){
+      if (last.isLast) {
         newItems.splice(items.indexOf(last.index), 1);
       }
-      state.itemsInBag = newItems
-      state.numberOfItemsInBag -= 1
+
+      state.itemsInBag = newItems;
+      state.numberOfItemsInBag -= 1;
     },
     addInBag: (state, action) => {
-
-      const { item } = action.payload
+      const { item } = action.payload;
       const product = JSON.parse(JSON.stringify(item));
-      let items = [...state.itemsInBag]
-      const {id} = product;
+      const items = [...state.itemsInBag];
+      const { id } = product;
 
       const generateCartIdOfItem = ({ newChoosenAttributes, newId }) => {
-        const generateIdForCart = newId.split('-')
-        let attributes = [...newChoosenAttributes]
+        const generateIdForCart = newId.split('-');
+        const attributes = [...newChoosenAttributes];
         let transformedAttribute;
-    
-        attributes.forEach((attribute) => 
-          {
-          const {id, item} = attribute;
-          if(id){
-            transformedAttribute = {[id]: item}
-          }else{
+
+        attributes.forEach((attribute) => {
+          const { attributeId, item: attributeItem } = attribute;
+          if (attributeId) {
+            transformedAttribute = { [attributeId]: attributeItem };
+          } else {
             transformedAttribute = attribute;
           }
-          
-          Object.keys(transformedAttribute).forEach((key) =>
-          {
-            const {id} = transformedAttribute[key];
-            if(id === 'Yes'){
+
+          Object.keys(transformedAttribute).forEach((key) => {
+            const { id: transformedAttributeId } = transformedAttribute[key];
+            if (transformedAttributeId === 'Yes') {
               const splitted = key.split(' ');
               const joined = splitted.join('-');
-              generateIdForCart.push(joined.toLowerCase())
-            }else if(id !== 'No'){
-              generateIdForCart.push(id.toLowerCase())
+              generateIdForCart.push(joined.toLowerCase());
+            } else if (transformedAttributeId !== 'No') {
+              generateIdForCart.push(transformedAttributeId.toLowerCase());
             }
-           })
-          })
-        return generateIdForCart.join('-'); 
-      }
-
-      const generateDefaultAttributes = ({ productToGenerate }) => {
-        const { category } = productToGenerate;
-        const newChoosenAttributes = [];
-        Object.keys(product).forEach((item) => {
-          if((item === 'attributes')){
-            Object.values(product[item]).forEach((attribute) => {
-              const {id, items} = attribute;
-              const attributeToAdd = {[id]: items[0]}
-              newChoosenAttributes.push(attributeToAdd)
-            })
-          }
-        })
-        state.choosenAttributes = newChoosenAttributes
-        state.currentCategory = category
-    }
-
-      const showNotificationAndUpdateCart = ({ newItemsInBag, newProduct, newNumberOfItemsInBag}) => {
-        const {brand, name} = newProduct;
-        const notification =
-            `<div key='${state.notificationKey}' className='message'>
-              <p><img src='${SmallCartIcon}' className='cart-icon' alt='Cart icon in notification' /> 
-                Product ${brand} ${name} has been added in bag.</p>
-                </div>`;
-
-        const notificationToSend = state.notificationArr.concat(notification)
-        state.notificationArr = notificationToSend
-        state.notificationKey = state.notificationKey + 1
-        state.itemsInBag = newItemsInBag
-        state.numberOfItemsInBag = newNumberOfItemsInBag
-        setTimeout(removeNotification(), 3000);
-      }
+          });
+        });
+        return generateIdForCart.join('-');
+      };
 
       const removeNotification = () => {
         const { length } = state.notificationArr;
         const newArr = length ? state.notificationArr.slice(0, length - 1) : [];
-        state.notificationArr = newArr
-        state.notificationKey = state.notificationKey - 1
-      }
+        state.notificationArr = newArr;
+        state.notificationKey -= 1;
+      };
 
-      product.choosenAttributes = state.choosenAttributes.length === 0 
-                                ? generateDefaultAttributes({ productToGenerate: item }) 
-                                : state.choosenAttributes;
+      const showNotificationAndUpdateCart = ({ newProduct }) => {
+        const {
+          brand, name, quantity,
+        } = newProduct;
+        const notification = `<div key='${state.notificationKey}' className='message'>
+              <p><img src='${SmallCartIcon}' className='cart-icon' alt='Cart icon in notification' /> 
+                Product ${brand} ${name} has been added in bag.</p>
+                </div>`;
 
-      product.cartId = generateCartIdOfItem({newId: id, newChoosenAttributes: product.choosenAttributes})
-      const {cartId} = product;
+        const notificationToSend = state.notificationArr.concat(notification);
+        state.notificationArr = notificationToSend;
+        state.notificationKey += 1;
+        state.itemsInBag = [...items, product];
+        state.numberOfItemsInBag += quantity;
+        setTimeout(removeNotification(), 3000);
+      };
 
-      if(items.length !== 0){
+      const attributesGenerator = ({ productToGenerate }) => {
+        const generatedResult = generateDefaultAttributes({ productToGenerate });
+        return generatedResult.newChoosenAttributes;
+      };
+
+      product.choosenAttributes = state.choosenAttributes.length === 0
+        ? attributesGenerator({ productToGenerate: item })
+        : state.choosenAttributes;
+
+      product.cartId = generateCartIdOfItem({
+        newId: id,
+        newChoosenAttributes: product.choosenAttributes,
+      });
+      const { cartId } = product;
+
+      if (items.length !== 0) {
         let found = false;
-        items.forEach((item) => {
-          const {cartId: itemCartId} = item;
-          if(itemCartId === cartId){
+        items.forEach((singleItem) => {
+          const { cartId: itemCartId } = singleItem;
+          if (itemCartId === cartId) {
             found = true;
-            state.itemsInBag = quantityHelper({ cartId: itemCartId, itemsInBag: state.itemsInBag})
-            state.numberOfItemsInBag += 1
+            state.itemsInBag = quantityHelper({ cartId: itemCartId, itemsInBag: state.itemsInBag });
+            state.numberOfItemsInBag += 1;
           }
-        })
-        if(!found){
+        });
+        if (!found) {
           product.quantity = 1;
-          showNotificationAndUpdateCart({
-            newProduct: product,
-            newItemsInBag: [...items, product],
-            newNumberOfItemsInBag: state.numberOfItemsInBag + product.quantity      
-          })
+          showNotificationAndUpdateCart({ newProduct: product });
         }
-      }else{
+      } else {
         product.quantity = 1;
-        showNotificationAndUpdateCart({
-          newProduct: product,
-          newItemsInBag: [...items, product],
-          newNumberOfItemsInBag: state.numberOfItemsInBag + product.quantity
-        })
+        showNotificationAndUpdateCart({ newProduct: product });
       }
-    }
+    },
   },
-})
+});
 
-export const { 
+export const {
   update,
   addInBag,
   increaseQuantityOfProduct,
   removeFromBag,
   increaseNumberOfItemsInBag,
-  decreaseNumberOfItemsInBag } = slice.actions
+  decreaseNumberOfItemsInBag,
+} = slice.actions;
 
-export default slice.reducer
+export default slice.reducer;
