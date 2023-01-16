@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import SmallCartIcon from '../../Images/small-cart-icon.svg';
 import MinicartItems from './MinicartItems';
+import './Minicart.css';
 
 function Minicart({ openBox, closeBox }) {
   const choosenCurrency = useSelector((state) => state.choosenCurrency);
@@ -39,7 +40,7 @@ function Minicart({ openBox, closeBox }) {
                   {' '}
                   items
                 </div>
-                <div className="items">
+                <div className="minicart-items">
                   <MinicartItems />
                 </div>
               </div>

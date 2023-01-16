@@ -1,0 +1,25 @@
+.currency .first-currency{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.currency .currency-arrow-icon {
+    width: 10px;
+}
+
+.currency .currency-tooltip{
+    left: -37px;
+    width: 110px;
+}
+
+.currency:hover .tooltip-text {
+    visibility: visible;
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+    -o-animation: fadeIn 0.5s;
+    -ms-animation: fadeIn 0.5s;
+}

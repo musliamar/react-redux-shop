@@ -1,19 +1,3 @@
-header .minicart-main ::-webkit-scrollbar {
-    width: 5px;
-}
-  
-header .minicart-main ::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-}
-   
-header .minicart-main ::-webkit-scrollbar-thumb {
-    background: #888; 
-}
-  
-header .minicart-main ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-}
-
 header nav a {
     text-decoration: none;
     color: #5ECE7B;
@@ -23,7 +7,7 @@ header{
     position: relative;
     padding-left: 9%; 
     padding-right: 9%;
-    padding-top: 2%;  
+    padding-top: 30px;  
     z-index: 3;
     background-color: #fff;
     animation: fadeIn 0.5s;
@@ -54,17 +38,6 @@ header .currency {
     cursor: pointer;
 }
 
-header .total-price{
-    font-family: 'Roboto';
-    margin-top: 30px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    font-weight: 700;
-    font-size: 16px;
-}
-
 header .tooltip-text {
     visibility: hidden;
     bottom: 140%;
@@ -76,25 +49,6 @@ header .tooltip-text {
     padding: 5px 0;
     position: absolute;
     z-index: 1;
-}
-
-header .currency-tooltip{
-    left: -37px;
-    width: 110px;
-}
- 
-header .cart-tooltip{
-    left: -27px;
-    width: 70px;
-}
-
-header .currency:hover .tooltip-text {
-    visibility: visible;
-    animation: fadeIn 0.5s;
-    -webkit-animation: fadeIn 0.5s;
-    -moz-animation: fadeIn 0.5s;
-    -o-animation: fadeIn 0.5s;
-    -ms-animation: fadeIn 0.5s;
 }
  
 header .box{
@@ -136,18 +90,6 @@ header .box .currency-item:hover{
 	background: #eee;
 }
 
-header .first-currency{
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-}
-
-header .currency-arrow-icon {
-    width: 10px;
-}
-
 header .cart:hover .tooltip-text {
     visibility: visible;
     animation: fadeIn 0.5s;
@@ -184,204 +126,6 @@ header .empty{
     padding: 15px;
     padding-top: 30px;
     padding-bottom: 30px;
-}
-
-header .small-cart-icon{
-    width: 100%;
-    cursor: pointer;
-}
-
-header .items-number{
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-direction: column;
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 16px;
-    left: 10px;
-    bottom: 13px;
-    background-color: #000;
-    color: #fff;
-    text-align: center;
-    position: absolute;
-    width: 17px;
-    height: 17px;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -o-radius: 50%;
-    -ms-radius: 50%;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-header .minicart-main .title {
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 160%;
-    color: #1D1F22;
-    padding-bottom: 15px;
-}
-
-header .minicart-main .items {
-    display: flex;
-    flex-flow: row wrap;
-    width: 100%;
-    gap: 0;
-    padding-right: 15px;
-    max-height: 450px;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-
-header .minicart-main span{
-    display: block;
-}
-
-header .minicart-main .items .single {
-    display: flex;
-    flex-direction: row;
-    padding-bottom: 30px;
-    justify-content: space-between;
-    width: 100%;
-}
-
-header .minicart-main .attributes {
-    width: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 8px;
-}
-
-header .minicart-main .brand-name {
-    font-weight: 300;
-    font-size: 16px;
-    line-height: 160%;
-}
-
-header .minicart-main .price {
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 160%;
-}
-
-header span.attribute-option.text {
-    min-height: 24px;
-    min-width: 15px;
-    padding-right: 5px;
-    padding-left: 5px;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-}
-
-header span.attribute-option.swatch {
-    height: 16px;
-    width: 16px;
-}
-
-header .minicart-main span.attribute-name {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 16px;
-    padding-top: 0px;
-    text-transform: none;
-    color: #1D1F22;
-    font-family: 'Raleway';
-    font-style: normal;
-}
-
-header .minicart-main span.plus-minus {
-    border-style: solid;
-    border-width: 1px;
-    text-align: center;
-    font-family: 'Source Sans Pro';
-    font-weight: 300;
-    font-size: 20px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-    padding-left: 0px;
-    padding-right: 0px;
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-header .minicart-main .display-inline{
-    display: inline;
-}
-
-header .minicart-main .quantity {
-    display: flex;
-    width: 25px;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-header .minicart-main .gallery{
-    width: 121px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-header .minicart-main .item-image{
-    width: 100%;
-    height: 100%;
-    object-fit: contain; 
-}
-
-header .minicart-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-    margin-top: 30px;
-}
-
-header .minicart-buttons a {
-    height: 40px;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 120%;
-    width: 50%;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-header .view-bag {
-    border-style: solid;
-    border-width: 1px;
-    color: #000;
-}
-
-header .checkout {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 120%;
-    text-transform: uppercase;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #5ECE7B;
-    background: #5ECE7B;
-    color: #fff;
-    cursor: pointer;
-    width: 50%;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 header .container{

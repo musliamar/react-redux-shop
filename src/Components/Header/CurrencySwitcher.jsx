@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import ArrowUp from '../../Images/arrow-up.svg';
 import { update } from '../../Store';
+import './CurrencySwitcher.css';
 
 function Actions({ openBox }) {
   const dispatch = useDispatch();

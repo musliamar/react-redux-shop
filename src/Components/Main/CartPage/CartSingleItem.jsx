@@ -6,6 +6,7 @@ import ArrowLeft from '../../../Images/arrow-left.svg';
 import ArrowRight from '../../../Images/arrow-right.svg';
 import Attributes from '../../Attributes';
 import { increaseQuantityOfProduct, removeFromBag } from '../../../Store';
+import './CartSingleItem.css';
 
 function Item({ item }) {
   const dispatch = useDispatch();
@@ -132,7 +133,7 @@ function Item({ item }) {
   return (
     <>
       <div className="divider" />
-      <div className="single">
+      <div className="cart-single-item">
         <div className="summary">
           <div className="brand-name">
             <Link

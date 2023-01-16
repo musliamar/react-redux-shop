@@ -1,0 +1,109 @@
+.minicart-items {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    gap: 0;
+    padding-right: 15px;
+    max-height: 450px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.minicart-items .single {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 30px;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.minicart-items .attributes {
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.minicart-items .brand-name {
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 160%;
+}
+
+.minicart-items .price {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 160%;
+}
+
+.minicart-items span.attribute-option.text {
+    min-height: 24px;
+    min-width: 15px;
+    padding-right: 5px;
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.minicart-items span.attribute-option.swatch {
+    height: 16px;
+    width: 16px;
+}
+
+.minicart-items span.attribute-name {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    padding-top: 0px;
+    text-transform: none;
+    color: #1D1F22;
+    font-family: 'Raleway';
+    font-style: normal;
+}
+
+.minicart-items span.plus-minus {
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
+    font-family: 'Source Sans Pro';
+    font-weight: 300;
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    padding-left: 0px;
+    padding-right: 0px;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.minicart-items .quantity {
+    display: flex;
+    width: 25px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.minicart-items .gallery{
+    width: 121px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.minicart-items .item-image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}

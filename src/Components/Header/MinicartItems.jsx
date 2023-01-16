@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Attributes from '../Attributes';
 import { increaseQuantityOfProduct, removeFromBag } from '../../Store';
+import './MinicartItems.css';
 
 function Items() {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ function Items() {
             tabIndex={0}
             onKeyUp={() => dispatch(increaseQuantityOfProduct({ cartId }))}
             onClick={() => dispatch(increaseQuantityOfProduct({ cartId }))}
-            className="attribute-option text plus-minus"
+            className="plus-minus"
           >
             +
           </span>
@@ -61,7 +62,7 @@ function Items() {
             tabIndex={0}
             onKeyUp={() => dispatch(removeFromBag({ cartId }))}
             onClick={() => dispatch(removeFromBag({ cartId }))}
-            className="attribute-option text plus-minus"
+            className="plus-minus"
           >
             -
           </span>

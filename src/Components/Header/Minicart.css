@@ -1,0 +1,119 @@
+.cart .minicart-main ::-webkit-scrollbar {
+    width: 5px;
+}
+  
+.cart .minicart-main ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+   
+.cart .minicart-main ::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+  
+.cart .minicart-main ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.cart .small-cart-icon{
+    width: 100%;
+    cursor: pointer;
+}
+
+.cart .items-number{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 16px;
+    left: 10px;
+    bottom: 13px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -o-radius: 50%;
+    -ms-radius: 50%;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.cart .cart-tooltip{
+    left: -27px;
+    width: 70px;
+}
+
+.cart .minicart-main .title {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 160%;
+    color: #1D1F22;
+    padding-bottom: 15px;
+}
+
+.cart .minicart-main span{
+    display: block;
+}
+
+.cart .view-bag {
+    border-style: solid;
+    border-width: 1px;
+    color: #000;
+}
+
+.cart .checkout {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 120%;
+    text-transform: uppercase;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #5ECE7B;
+    background: #5ECE7B;
+    color: #fff;
+    cursor: pointer;
+    width: 50%;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart .minicart-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.cart .minicart-buttons a {
+    height: 40px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 120%;
+    width: 50%;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart .minicart-main .display-inline{
+    display: inline;
+}
+
+.cart .total-price{
+    font-family: 'Roboto';
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 16px;
+}
