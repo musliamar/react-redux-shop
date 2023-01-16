@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import parse from 'html-react-parser';
 import { useSelector, useDispatch } from 'react-redux';
 import { getProduct } from '../../../Queries';
-import Attributes from '../Attributes';
+import Attributes from '../../Attributes';
 import { generateDefaultAttributes, addInBag, update } from '../../../Store';
 
 function ProductPage() {

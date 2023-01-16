@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ArrowLeft from '../../../Images/arrow-left.svg';
 import ArrowRight from '../../../Images/arrow-right.svg';
-import Attributes from '../Attributes';
+import Attributes from '../../Attributes';
 import { increaseQuantityOfProduct, removeFromBag } from '../../../Store';
 
 function Item({ item }) {

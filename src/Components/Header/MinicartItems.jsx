@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import Attributes from '../Main/Attributes';
+import Attributes from '../Attributes';
 import { increaseQuantityOfProduct, removeFromBag } from '../../Store';
 
 function Items() {
@@ -8,7 +8,6 @@ function Items() {
   const choosenCurrency = useSelector((state) => state.choosenCurrency);
   const itemsInBag = useSelector((state) => state.itemsInBag);
   const currencyToShow = useSelector((state) => state.currencyToShow);
-
   const { symbol } = choosenCurrency;
 
   return itemsInBag?.map((item) => {

@@ -1,8 +1,7 @@
 import './App.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import parse from 'html-react-parser';
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import CategoryPage from './Components/Main/CategoryPage/CategoryPage';
@@ -10,6 +9,7 @@ import CartPage from './Components/Main/CartPage/CartPage';
 import ProductPage from './Components/Main/ProductPage/ProductPage';
 import { update } from './Store';
 import { getCategoriesList, getCurrenciesList, getCategory } from './Queries';
+import SmallCartIcon from './Images/small-cart-icon.svg';
 
 function App() {
   const dispatch = useDispatch();
@@ -19,7 +19,6 @@ function App() {
   const currentlyOpen = useSelector((state) => state.currentlyOpen);
   const notificationArr = useSelector((state) => state.notificationArr);
   const itemsInBag = useSelector((state) => state.itemsInBag);
-  const [notificationsArray, setNotificationsArray] = useState({});
 
   const runOnFirstVisitWithoutLocalStorage = async () => {
     const categories = await getCategoriesList();
@@ -51,13 +50,8 @@ function App() {
     window.onmouseout = (event) => {
       const { relatedTarget, toElement } = event;
       const target = relatedTarget || toElement;
-
       if (!target || target.nodeName === 'HTML') {
-        setNotificationsArray({
-          ...notificationsArray,
-          notificationArr: [],
-          notificationKey: 0,
-        });
+        dispatch(update({ name: 'notificationArr', value: [] }));
       }
     };
   });
@@ -75,7 +69,34 @@ function App() {
     dispatch(update({ name: 'sumOfPrices', value: sumOfAllPricesRaw.toFixed(2) }));
   }, [itemsInBag]);
 
-  const parsedNotifications = notificationArr.map((n) => parse(n));
+  useEffect(() => {
+    const startFetch = setTimeout(() => {
+      const newArr = notificationArr.length
+        ? notificationArr.slice(1)
+        : [];
+
+      dispatch(update({ name: 'notificationArr', value: newArr }));
+    }, 2000);
+    return () => clearTimeout(startFetch);
+  }, [notificationArr.length]);
+
+  const showNotifications = notificationArr.map((notification) => {
+    const { brand, name, cartId } = notification;
+    return (
+      <div key={cartId} className="message">
+        <p>
+          <img src={SmallCartIcon} className="cart-icon" alt="Cart icon in notification" />
+          Product
+          {' '}
+          {brand}
+          {' '}
+          {name}
+          {' '}
+          has been added in bag.
+        </p>
+      </div>
+    );
+  }).reverse();
 
   return (
     <div className="App">
@@ -94,7 +115,7 @@ function App() {
         </Routes>
         <div className="notification">
           <div className="container">
-            {parsedNotifications}
+            {showNotifications}
           </div>
         </div>
       </main>

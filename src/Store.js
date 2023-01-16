@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import SmallCartIcon from './Images/small-cart-icon.svg';
 
 const initialState = {
   choosenCurrency: '',
@@ -15,7 +14,6 @@ const initialState = {
   sumOfPrices: 0,
   choosenAttributes: [],
   notificationArr: [],
-  notificationKey: 0,
 };
 
 function quantityHelper({ cartId: passedCartId, itemsInBag: items }) {
@@ -127,28 +125,11 @@ export const slice = createSlice({
         return generateIdForCart.join('-');
       };
 
-      const removeNotification = () => {
-        const { length } = state.notificationArr;
-        const newArr = length ? state.notificationArr.slice(0, length - 1) : [];
-        state.notificationArr = newArr;
-        state.notificationKey -= 1;
-      };
-
       const showNotificationAndUpdateCart = ({ newProduct }) => {
-        const {
-          brand, name, quantity,
-        } = newProduct;
-        const notification = `<div key='${state.notificationKey}' className='message'>
-              <p><img src='${SmallCartIcon}' className='cart-icon' alt='Cart icon in notification' /> 
-                Product ${brand} ${name} has been added in bag.</p>
-                </div>`;
-
-        const notificationToSend = state.notificationArr.concat(notification);
-        state.notificationArr = notificationToSend;
-        state.notificationKey += 1;
-        state.itemsInBag = [...items, product];
-        state.numberOfItemsInBag += quantity;
-        setTimeout(removeNotification(), 3000);
+        const newNotificationArr = [...state.notificationArr];
+        state.notificationArr = [...newNotificationArr, newProduct];
+        state.itemsInBag = [...items, newProduct];
+        state.numberOfItemsInBag += 1;
       };
 
       const attributesGenerator = ({ productToGenerate }) => {
